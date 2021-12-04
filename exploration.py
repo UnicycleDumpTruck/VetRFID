@@ -30,7 +30,7 @@ print("Available Antennas: ", reader.get_antennas())
 print("Connected Antenna Ports: ", reader.get_connected_ports())
 print("Supported Power Range in centidBm", reader.get_power_range())
 
-reader.set_read_plan([1], "GEN2", read_power=1900)
+reader.set_read_plan([1], "GEN2", bank=["user"], read_power=1900)
 print(reader.read())
 
 # reader.start_reading(callback, on_time=250, off_time=0)
