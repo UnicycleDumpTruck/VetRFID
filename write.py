@@ -11,6 +11,10 @@ print(reader.get_supported_regions())
 reader.set_read_plan([1,2], "GEN2", read_power=1900) # Adding bank= causes segmentation fault, maybe tags don't support
 #print(reader.read())
 
-reader.start_reading(lambda tag: print(tag.epc, tag.antenna, tag.read_count, tag.rssi))
-time.sleep(5)
-reader.stop_reading()
+old_epc = b'E28011303000020796DCE55A'
+new_epc = b'000000000001000120211207'
+
+if reader.write(epc_code=new_epc, epc_target=old_epc):
+    print('Rewrited "{}" with "{}"'.format(old_epc, new_epc))
+else:
+    print('No tag found')
