@@ -44,6 +44,6 @@ time.sleep(10)
 reader.stop_reading()
 
 print("Testing new read with print_tag function and on_time, off_time...")
-reader.start_reading(print_tag, on_time=250, off_time=0)
+reader.start_reading(print_tag, on_time=1000, off_time=0)
 time.sleep(10)
 reader.stop_reading()

@@ -1,1 +1,2 @@
-TID, first_seen, last_seen, num_reads
+epc, species, first_seen, last_seen, num_reads
+b'000000000001000120211207',b'0001',2021-12-07 16:59:28.872980,2021-12-07 16:59:28.872980,1
