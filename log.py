@@ -1,13 +1,5 @@
-#!/usr/bin/env python3
-from __future__ import print_function
-import time
 from datetime import datetime
-import mercury
 import pandas as pd
-
-import log.py
-
-reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 
 
 def log_tag(tag):
@@ -28,12 +20,3 @@ def log_tag(tag):
                                  current_time, current_time, previous_num_reads + 1]
     print("Dataframe after:\n", df.to_string())
     df.to_csv('tag_log.csv', index=False)  # , index=False
-
-
-# Adding bank= causes segmentation fault, maybe tags don't support
-reader.set_read_plan([1, 2], "GEN2", read_power=1900)
-# print(reader.read())
-
-reader.start_reading(log_tag)
-time.sleep(1)
-reader.stop_reading()
