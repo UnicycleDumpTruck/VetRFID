@@ -43,7 +43,7 @@ def print_log_dict(ldict):
 
 
 def log_epc(epc): # string input
-    log_dict = json_import('jlog.txt')
+    log_dict = json_import('jlog.json')
     if log_dict.get(epc):
         #print(epc)
         log_dict[epc]['last_seen'] = str(datetime.now())
@@ -54,8 +54,7 @@ def log_epc(epc): # string input
                                 'last_seen':str(datetime.now()),
                                 'num_reads':'1',
                                 }
-    #log_dict['100000000000000000000000']['species'] = "cat"
-    json_export('jlog.txt', log_dict)
+    json_export('jlog.json', log_dict)
 
 def log_tag(tag):
     string_epc = epc_to_string(tag.epc)
