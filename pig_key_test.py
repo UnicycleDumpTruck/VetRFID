@@ -60,6 +60,7 @@ def on_tag_read(epc):
                               x=window.width//2, y=window.height//2,
                               anchor_x='center', anchor_y='center')
     label.draw()
+    pyglet.clock.schedule_once(callback, 1)        # called in 5 seconds
 
 
 @window.event
