@@ -9,15 +9,15 @@ import os
 from pyglet.event import EventDispatcher
 
 
-#reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
-reader = mercury.Reader("tmr:///com2", protocol="GEN2")
+# #reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
+# reader = mercury.Reader("tmr:///com2", protocol="GEN2")
 
-print(reader.get_model())
-print(reader.get_supported_regions())
+# print(reader.get_model())
+# print(reader.get_supported_regions())
 
-# Adding bank= causes segmentation fault, maybe tags don't support
-reader.set_read_plan([1, 2], "GEN2", read_power=1900)
-# print(reader.read())
+# # Adding bank= causes segmentation fault, maybe tags don't support
+# reader.set_read_plan([1, 2], "GEN2", read_power=1900)
+# # print(reader.read())
 
 
 os.environ['DISPLAY'] = ':1'
@@ -45,9 +45,10 @@ td = TagDispatcher()
 
 @window.event
 def on_draw():
-    window.clear()
-    image.blit(0, 0)
-    label.draw()
+    pass
+    # window.clear()
+    # image.blit(0, 0)
+    # label.draw()
 
 
 @window.event
@@ -58,20 +59,35 @@ def on_tag_read(epc):
                               font_size=36,
                               x=window.width//2, y=window.height//2,
                               anchor_x='center', anchor_y='center')
+    label.draw()
+
+
+@window.event
+def callback(dt):
+    print(dt, " seconds since.")
+    window.clear()
+    image.blit(0, 0)
+
+
+@window.event
+def on_key_press(symbol, modifiers):
+    window.clear()
 
 
 @window.event
 def on_key_release(symbol, modifiers):
-    label = pyglet.text.Label(symbol,
+    label = pyglet.text.Label("Keypress!",
                               font_name='Times New Roman',
                               font_size=36,
                               x=window.width//2, y=window.height//2,
                               anchor_x='center', anchor_y='center')
+    label.draw()
+    pyglet.clock.schedule_once(callback, 5)        # called in 5 seconds
 
 
 # reader.start_reading(log.log_tag)
-reader.start_reading(td.tag_read)
+# reader.start_reading(td.tag_read)
 
 pyglet.app.run()
 
-reader.stop_reading()
+# reader.stop_reading()
