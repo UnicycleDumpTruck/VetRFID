@@ -9,18 +9,18 @@ import os
 from pyglet.event import EventDispatcher
 
 
-# #reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
+reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 # reader = mercury.Reader("tmr:///com2", protocol="GEN2")
 
-# print(reader.get_model())
-# print(reader.get_supported_regions())
+print(reader.get_model())
+print(reader.get_supported_regions())
 
-# # Adding bank= causes segmentation fault, maybe tags don't support
-# reader.set_read_plan([1, 2], "GEN2", read_power=1900)
-# # print(reader.read())
+# Adding bank= causes segmentation fault, maybe tags don't support
+reader.set_read_plan([1, 2], "GEN2", read_power=1900)
+# print(reader.read())
 
 
-os.environ['DISPLAY'] = ':1'
+# os.environ['DISPLAY'] = ':1'
 window = pyglet.window.Window()
 image = pyglet.resource.image('media/dog/xray/001.png')
 
@@ -33,10 +33,11 @@ label = pyglet.text.Label('Neigh/Woof/Meow',
 
 class TagDispatcher(EventDispatcher):
     def tag_read(self, epc):
-        self.dispatch_event('on_tag_read', epc.epc)
+        print(epc)
+        self.dispatch_event('on_tag_read', epc)
 
     def on_tag_read(self, epc):
-        print("TagDispatcher Dispatched: ", epc.epc)
+        print("TagDispatcher Dispatched: ", epc)
 
 
 TagDispatcher.register_event_type('on_tag_read')
@@ -87,8 +88,8 @@ def on_key_release(symbol, modifiers):
 
 
 # reader.start_reading(log.log_tag)
-# reader.start_reading(td.tag_read)
+reader.start_reading(td.tag_read)
 
 pyglet.app.run()
 
-# reader.stop_reading()
+reader.stop_reading()

@@ -9,8 +9,8 @@ import os
 from pyglet.event import EventDispatcher
 
 
-#reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
-reader = mercury.Reader("tmr:///com2", protocol="GEN2")
+reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
+#reader = mercury.Reader("tmr:///dev/ttyACM0")
 
 print(reader.get_model())
 print(reader.get_supported_regions())
@@ -20,7 +20,7 @@ reader.set_read_plan([1, 2], "GEN2", read_power=1900)
 # print(reader.read())
 
 
-os.environ['DISPLAY'] = ':1'
+#os.environ['DISPLAY'] = ':1'
 window = pyglet.window.Window()
 image = pyglet.resource.image('media/dog/xray/001.png')
 
