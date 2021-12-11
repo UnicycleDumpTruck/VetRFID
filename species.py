@@ -10,7 +10,7 @@ def json_import(filename):
     return js
 
 
-def epc_species_str(species_num):
+def species_str(species_num):
     return species_names[species_num]
 
 
