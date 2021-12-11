@@ -24,31 +24,48 @@ dog = pyglet.resource.image('media/dog/xray/001.png')
 cat = pyglet.resource.image('media/cat/xray/001.jpg')
 horse = pyglet.resource.image('media/horse/xray/001.jpg')
 
+text_for_label = "external variable"
+
+ext_label = pyglet.text.Label("External label",
+                        color=(255,0,0,255),
+                        font_size=12)
+
+
 
 class MyWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_batch = pyglet.graphics.Batch()
         self.label = pyglet.text.Label("Test!",
+                                batch = self.label_batch,
                                 color=(255,0,0,255),
                                 font_size=12,
                                 x=self.width//2, y=self.height//3,
                                 anchor_x='center', anchor_y='center')
         self.image = dog
+
+
     def on_tag_read(self, epc):
         self.clear()
         self.image = cat
         print("Window Class rx epc: ", epc)
-        # image.blit(0,0)
-        self.label = pyglet.text.Label("Rx, Rx, Rx!",
+        new_text = "Rx from new_text"
+
+        self.flip() # Required to cause window refresh
+        pyglet.clock.schedule_once(self.callback, 5)        # called in 5 seconds
+        pyglet.clock.schedule_once(self.label_change, 0, "Silly")
+        #self.label_change(0, "not really") # Does not work
+
+        #return EVENT_HANDLED
+
+    def label_change(self, dt, label_text):
+        self.label = pyglet.text.Label(text=label_text,
                                 color=(255,0,0,255),
                                 font_size=12,
                                 x=self.width//2, y=self.height//3,
                                 anchor_x='center', anchor_y='center')
         self.label.draw()
-        # print(self.label.text)
-        self.flip() # Required to cause window refresh
-        pyglet.clock.schedule_once(self.callback, 5)        # called in 5 seconds
-        return EVENT_HANDLED
+
 
     def on_key_release(self, symbol, modifiers):
         print("Window RX Keypress")
@@ -57,9 +74,7 @@ class MyWindow(pyglet.window.Window):
         #self.label.text("Keypress!")
         self.label = pyglet.text.Label("Keys, keys, keys!",
                                 color=(255,0,0,255),
-                                font_size=12,
-                                x=self.width//2, y=self.height//3,
-                                anchor_x='center', anchor_y='center')
+                                font_size=12)
         self.label.draw()
         pyglet.clock.schedule_once(self.callback, 5)        # called in 5 seconds
 
@@ -67,14 +82,12 @@ class MyWindow(pyglet.window.Window):
         print(dt, " seconds since.")
         # self.clear()
         self.image = dog
-        self.label = pyglet.text.Label("Keys, keys, keys!",
+        self.label = pyglet.text.Label("idle, idle, idle!",
                                 color=(255,0,0,255),
                                 font_size=12,
                                 x=self.width//2, y=self.height//3,
                                 anchor_x='center', anchor_y='center')
         self.label.draw()
-
-        # image.blit(0, 0)
 
 
     def on_key_press(self, symbol, modifiers):
@@ -85,8 +98,9 @@ class MyWindow(pyglet.window.Window):
         self.clear()
         self.image.blit(0,0)
         self.label.draw()
+        # self.label_batch.draw()
         print("on draw label text: ", self.label.text)
-        #self.flip()
+        # self.flip()
 
 
 
@@ -110,8 +124,7 @@ TagDispatcher.register_event_type('on_tag_read')
 
 
 # os.environ['DISPLAY'] = ':1'
-# window = pyglet.window.Window()
-window = MyWindow(300,300, "Pet U", True)
+window = MyWindow(600,600, "Pet U", True)
 event_logger = pyglet.window.event.WindowEventLogger()
 window.push_handlers(event_logger)
 
