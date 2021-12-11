@@ -7,9 +7,12 @@ import log
 import pyglet
 import os
 from pyglet.event import EventDispatcher
+import epc
 
 
+#reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
+
 #reader = mercury.Reader("tmr:///dev/ttyACM0")
 
 print(reader.get_model())
@@ -18,6 +21,17 @@ print(reader.get_supported_regions())
 # Adding bank= causes segmentation fault, maybe tags don't support
 reader.set_read_plan([1, 2], "GEN2", read_power=1900)
 # print(reader.read())
+
+class TagDispatcher(EventDispatcher):
+    def tag_read(self, bepc):
+        self.dispatch_event('on_tag_read', epc.epc_to_string(bepc))
+
+    def on_tag_read(self, bepc):
+        print("TagDispatcher Dispatched: ", epc.epc_to_string(bepc))
+
+
+TagDispatcher.register_event_type('on_tag_read')
+td = TagDispatcher()
 
 
 #os.environ['DISPLAY'] = ':1'
@@ -31,42 +45,33 @@ label = pyglet.text.Label('Neigh/Woof/Meow',
                           anchor_x='center', anchor_y='center')
 
 
-class TagDispatcher(EventDispatcher):
-    def tag_read(self, epc):
-        self.dispatch_event('on_tag_read', epc.epc)
-
-    def on_tag_read(self, epc):
-        print("TagDispatcher Dispatched: ", epc.epc)
-
-
-TagDispatcher.register_event_type('on_tag_read')
-td = TagDispatcher()
-
-
 @window.event
 def on_draw():
-    window.clear()
-    image.blit(0, 0)
-    label.draw()
+    # window.clear()
+    # image.blit(0, 0)
+    # label.draw()
+    pass
 
 
 @window.event
 def on_tag_read(epc):
     print("Window rx epc: ", epc)
-    label = pyglet.text.Label(epc.epc,
+    label = pyglet.text.Label(epc,
                               font_name='Times New Roman',
                               font_size=36,
                               x=window.width//2, y=window.height//2,
                               anchor_x='center', anchor_y='center')
+    label.draw()
 
 
 @window.event
 def on_key_release(symbol, modifiers):
-    label = pyglet.text.Label(symbol,
+    label = pyglet.text.Label(str(symbol),
                               font_name='Times New Roman',
                               font_size=36,
                               x=window.width//2, y=window.height//2,
                               anchor_x='center', anchor_y='center')
+    # label.draw()
 
 
 # reader.start_reading(log.log_tag)

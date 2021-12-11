@@ -1,6 +1,4 @@
 from datetime import datetime
-import csv
-import json
 import files
 import epc
 import species
@@ -24,7 +22,7 @@ def log_epc(epc): # string input
         log_dict[epc]['last_seen'] = str(datetime.now())
         log_dict[epc]['num_reads'] = str(int(log_dict[epc]['num_reads']) + 1)
     else:
-        log_dict[epc] =  { 'species':epc.epc_species_str(epc), 
+        log_dict[epc] =  { 'species':species.species_str(epc.epc_species_str(epc)), 
                                 'first_seen':str(datetime.now()),
                                 'last_seen':str(datetime.now()),
                                 'num_reads':'1',
