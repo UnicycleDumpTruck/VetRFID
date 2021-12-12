@@ -8,6 +8,8 @@ import pyglet
 import os
 from pyglet.event import EVENT_HANDLED, EventDispatcher
 import epc
+import files
+import species
 
 
 reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
@@ -38,12 +40,16 @@ class MyWindow(pyglet.window.Window):
                                        anchor_x='center', anchor_y='center')
         self.image = dog
 
-    def on_tag_read(self, epc):
+    def on_tag_read(self, tag):
         self.clear()
         self.image = cat
-        print("Window Class rx epc: ", epc)
-        #clock.schedule_once(self.label_change, 0, epc)
-        self.label = pyglet.text.Label(text=epc,
+        spec = species.species_str(epc.epc_species_num(tag)).lower()
+        media_dir = 'xray'
+        media_type = 'img'
+        self.image = files.random_species_dir_type(spec, media_dir, media_type)
+        print("Window Class rx epc: ", tag)
+        #clock.schedule_once(self.label_change, 0, tag) workaround before label change worked
+        self.label = pyglet.text.Label(text=tag,
                                        color=(255, 0, 0, 255),
                                        font_size=36,
                                        x=self.width//2, y=self.height//2,
@@ -51,10 +57,8 @@ class MyWindow(pyglet.window.Window):
         self.label.draw()
 
         self.flip()  # Required to cause window refresh
-        #clock.schedule_once(self.idle, 5)
-        # self.label_change(0, "not really") # Does not work
 
-        # return EVENT_HANDLED
+        return EVENT_HANDLED
 
     def label_change(self, dt, label_text):
         print("Seconds before label change: ", dt)
@@ -74,20 +78,18 @@ class MyWindow(pyglet.window.Window):
         print("Window RX Keypress")
         self.clear()
         self.image = horse
-        # self.label.text("Keypress!")
         self.label = pyglet.text.Label("Keys, keys, keys!",
                                        color=(255, 0, 0, 255),
                                        x=self.width//2, y=self.height//2,
                                        font_size=12)
         self.label.draw()
-        # called in 5 seconds
-        clock.schedule_once(self.idle, 5)
+        clock.schedule_once(self.idle, 2)
 
     def idle(self, dt):
         clock.unschedule(self.idle)
         print("Going idle, ", dt, " seconds since scan.")
-        # self.clear()
-        self.image = dog
+        self.clear() # why commented out?
+        self.image = None
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(0, 255, 0, 255),
                                        font_size=24,
@@ -97,7 +99,8 @@ class MyWindow(pyglet.window.Window):
 
     def on_draw(self):
         self.clear()
-        self.image.blit(0, 0)
+        if self.image:
+            self.image.blit(0, 0)
         self.label.draw()
         # self.label_batch.draw()
         #print("on draw label text: ", self.label.text)
@@ -142,7 +145,7 @@ TagDispatcher.register_event_type('on_tag_read')
 
 
 # os.environ['DISPLAY'] = ':1'
-window = MyWindow(600, 600, "Pet U", True)
+window = MyWindow(900, 800, "Pet U", True)
 # event_logger = pyglet.window.event.WindowEventLogger()
 # window.push_handlers(event_logger)
 
@@ -152,7 +155,7 @@ td = TagDispatcher(window)
 
 # reader.start_reading(log.log_tag)
 # reader.start_reading(td.tag_read)
-clock.schedule_interval(td.read_tags, 0.25)   # called once a second
+clock.schedule_interval(td.read_tags, 0.1)   # called once a second
 pyglet.app.run()
 
 # reader.stop_reading()
