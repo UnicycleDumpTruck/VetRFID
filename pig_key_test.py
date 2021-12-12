@@ -7,6 +7,8 @@ import log
 import pyglet
 import os
 from pyglet.event import EventDispatcher
+import os
+import random
 
 
 # #reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
@@ -65,25 +67,34 @@ def on_tag_read(epc):
 
 @window.event
 def callback(dt):
-    print(dt, " seconds since.")
+    print(dt, " seconds since callback timer started.")
     window.clear()
-    image.blit(0, 0)
-
-
-@window.event
-def on_key_press(symbol, modifiers):
-    window.clear()
-
-
-@window.event
-def on_key_release(symbol, modifiers):
-    label = pyglet.text.Label("Keypress!",
+    # image.blit(0, 0)
+    label = pyglet.text.Label("Idle screen",
                               font_name='Times New Roman',
                               font_size=36,
                               x=window.width//2, y=window.height//2,
                               anchor_x='center', anchor_y='center')
     label.draw()
-    pyglet.clock.schedule_once(callback, 5)        # called in 5 seconds
+
+
+@window.event
+def on_key_press(symbol, modifiers):
+    window.clear()
+    image = pyglet.resource.image("media/cat/xray/" + random.choice(os.listdir("media/cat/xray/"))  # change dir name to whatever
+                                  )
+    image.blit(0, 0)
+
+
+@window.event
+def on_key_release(symbol, modifiers):
+    label = pyglet.text.Label("Keypress!",
+                              font_name='Impact',
+                              font_size=64,
+                              x=window.width//2, y=window.height//2,
+                              anchor_x='center', anchor_y='center')
+    label.draw()
+    pyglet.clock.schedule_once(callback, 1)        # called in 5 seconds
 
 
 # reader.start_reading(log.log_tag)
