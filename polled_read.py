@@ -24,19 +24,14 @@ dog = pyglet.resource.image('media/dog/xray/001.png')
 cat = pyglet.resource.image('media/cat/xray/001.jpg')
 horse = pyglet.resource.image('media/horse/xray/001.jpg')
 
-text_for_label = "external variable"
-
-ext_label = pyglet.text.Label("External label",
-                              color=(255, 0, 0, 255),
-                              font_size=12)
-
+clock = pyglet.clock.get_default()
 
 class MyWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.label_batch = pyglet.graphics.Batch()
+        #self.label_batch = pyglet.graphics.Batch()
         self.label = pyglet.text.Label("Test!",
-                                       batch=self.label_batch,
+                                       #batch=self.label_batch,
                                        color=(255, 0, 0, 255),
                                        font_size=12,
                                        x=self.width//2, y=self.height//3,
@@ -47,23 +42,33 @@ class MyWindow(pyglet.window.Window):
         self.clear()
         self.image = cat
         print("Window Class rx epc: ", epc)
-        new_text = "Rx from new_text"
+        #clock.schedule_once(self.label_change, 0, epc)
+        self.label = pyglet.text.Label(text=epc,
+                                       color=(255, 0, 0, 255),
+                                       font_size=36,
+                                       x=self.width//2, y=self.height//2,
+                                       anchor_x='center', anchor_y='center')
+        self.label.draw()
 
         self.flip()  # Required to cause window refresh
-        # called in 5 seconds
-        pyglet.clock.schedule_once(self.callback, 5)
-        pyglet.clock.schedule_once(self.label_change, 0, "Silly")
+        #clock.schedule_once(self.idle, 5)
         # self.label_change(0, "not really") # Does not work
 
         # return EVENT_HANDLED
 
     def label_change(self, dt, label_text):
+        print("Seconds before label change: ", dt)
         self.label = pyglet.text.Label(text=label_text,
                                        color=(255, 0, 0, 255),
-                                       font_size=12,
-                                       x=self.width//2, y=self.height//3,
+                                       font_size=36,
+                                       x=self.width//2, y=self.height//2,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
+
+
+    def on_key_press(self, symbol, modifiers):
+        self.clear()
+        self.flip()
 
     def on_key_release(self, symbol, modifiers):
         print("Window RX Keypress")
@@ -72,31 +77,30 @@ class MyWindow(pyglet.window.Window):
         # self.label.text("Keypress!")
         self.label = pyglet.text.Label("Keys, keys, keys!",
                                        color=(255, 0, 0, 255),
+                                       x=self.width//2, y=self.height//2,
                                        font_size=12)
         self.label.draw()
         # called in 5 seconds
-        pyglet.clock.schedule_once(self.callback, 5)
+        clock.schedule_once(self.idle, 5)
 
-    def callback(self, dt):
-        print(dt, " seconds since.")
+    def idle(self, dt):
+        clock.unschedule(self.idle)
+        print("Going idle, ", dt, " seconds since scan.")
         # self.clear()
         self.image = dog
-        self.label = pyglet.text.Label("idle, idle, idle!",
-                                       color=(255, 0, 0, 255),
-                                       font_size=12,
-                                       x=self.width//2, y=self.height//3,
+        self.label = pyglet.text.Label('Please place the patient in the scanning area.',
+                                       color=(0, 255, 0, 255),
+                                       font_size=24,
+                                       x=self.width//2, y=self.height//2,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
-
-    def on_key_press(self, symbol, modifiers):
-        self.clear()
 
     def on_draw(self):
         self.clear()
         self.image.blit(0, 0)
         self.label.draw()
         # self.label_batch.draw()
-        print("on draw label text: ", self.label.text)
+        #print("on draw label text: ", self.label.text)
         # self.flip()
 
 
@@ -106,19 +110,26 @@ class TagDispatcher(EventDispatcher):
         self.window1 = window1
 
     def read_tags(self, dt):
-        print("td read tags: ", reader.read())
-        epc_string = "TEST_EPC_STRING"
-        # epc_strings = [epc.epc_to_string(bepc) for bepc in list(reader.read())]
-        # if epc_strings:
-        #     print("epc_strings")
-        #     for epc in epc_strings:
-        #         pass
-        self.window1.dispatch_event('on_tag_read', epc_string)
+        tag_list = reader.read()
+        if tag_list:
+            clock.unschedule(self.window1.idle)
+            for tag in tag_list:
+                print("Read EPC: ", epc.epc_to_string(tag), ", RSSI: ", tag.rssi)
+            tag_list.sort(key = lambda tag: tag.rssi)
+            best_tag = tag_list[0]
+            best_tag_string = epc.epc_to_string(best_tag)
+            print("Highest signal from read: ", best_tag_string)
+            self.window1.dispatch_event('on_tag_read', best_tag_string)
+            print("Dispacted tag: ", best_tag_string)
+        else:
+            # TODO Idle monitors of empty antennas.
+            
+            clock.schedule_once(self.window1.idle, 5)
 
-    def tag_read(self, bepc):
-        epc_string = epc.epc_to_string(bepc)
+
+    def tag_read(self, tag):
+        epc_string = epc.epc_to_string(tag)
         # print("Tag read: ", epc_string)
-        # self.dispatch_event('on_tag_read', epc_string)
         self.window1.dispatch_event('on_tag_read', epc_string)
 
     def on_tag_read(self, epc):
@@ -132,8 +143,8 @@ TagDispatcher.register_event_type('on_tag_read')
 
 # os.environ['DISPLAY'] = ':1'
 window = MyWindow(600, 600, "Pet U", True)
-event_logger = pyglet.window.event.WindowEventLogger()
-window.push_handlers(event_logger)
+# event_logger = pyglet.window.event.WindowEventLogger()
+# window.push_handlers(event_logger)
 
 
 td = TagDispatcher(window)
@@ -141,7 +152,7 @@ td = TagDispatcher(window)
 
 # reader.start_reading(log.log_tag)
 # reader.start_reading(td.tag_read)
-pyglet.clock.schedule_interval(td.read_tags, 1)   # called once a second
+clock.schedule_interval(td.read_tags, 0.25)   # called once a second
 pyglet.app.run()
 
 # reader.stop_reading()
