@@ -105,6 +105,16 @@ class TagDispatcher(EventDispatcher):
         super().__init__(*args, **kwargs)
         self.window1 = window1
 
+    def read_tags(self, dt):
+        print("td read tags: ", reader.read())
+        epc_string = "TEST_EPC_STRING"
+        # epc_strings = [epc.epc_to_string(bepc) for bepc in list(reader.read())]
+        # if epc_strings:
+        #     print("epc_strings")
+        #     for epc in epc_strings:
+        #         pass
+        self.window1.dispatch_event('on_tag_read', epc_string)
+
     def tag_read(self, bepc):
         epc_string = epc.epc_to_string(bepc)
         # print("Tag read: ", epc_string)
@@ -130,8 +140,8 @@ td = TagDispatcher(window)
 
 
 # reader.start_reading(log.log_tag)
-reader.start_reading(td.tag_read)
-
+# reader.start_reading(td.tag_read)
+pyglet.clock.schedule_interval(td.read_tags, 1)   # called once a second
 pyglet.app.run()
 
-reader.stop_reading()
+# reader.stop_reading()
