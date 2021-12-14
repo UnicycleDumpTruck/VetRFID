@@ -3,6 +3,7 @@
 
 import json
 
+
 def json_import(filename):
     with open(filename, 'r') as f:
         data = f.read()
@@ -11,7 +12,7 @@ def json_import(filename):
 
 
 def species_str(species_num):
-    return species_names[species_num]
+    return species_names.get(species_num)
 
 
 species_names = json_import('species.json')
