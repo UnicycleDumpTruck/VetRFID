@@ -19,7 +19,7 @@ print(reader.get_model())
 print(reader.get_supported_regions())
 
 # Adding bank= causes segmentation fault, maybe tags don't support
-reader.set_read_plan([1, 2], "GEN2", read_power=1900)
+reader.set_read_plan([1, 2], "GEN2", read_power=1000)
 # print(reader.read())
 
 dog = pyglet.resource.image('media/dog/xray/001.png')
@@ -127,7 +127,7 @@ class TagDispatcher(EventDispatcher):
         else:
             # TODO Idle monitors of empty antennas.
             
-            clock.schedule_once(self.window1.idle, 5)
+            clock.schedule_once(self.window1.idle, 1)
 
 
     def tag_read(self, tag):
