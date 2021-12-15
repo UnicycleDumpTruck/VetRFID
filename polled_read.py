@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-import time
-from datetime import datetime
+# import time
+# from datetime import datetime
 import mercury
 import log
 import pyglet
-import os
-from pyglet.event import EVENT_HANDLED, EventDispatcher
+# import os
+# from pyglet.event import EVENT_HANDLED, EventDispatcher
 import epc
 import files
 import species
 
 
 reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
-# reader = mercury.Reader("tmr:///com2", protocol="GEN2")
 
 print(reader.get_model())
 print(reader.get_supported_regions())
@@ -22,21 +21,21 @@ print(reader.get_supported_regions())
 reader.set_read_plan([1, 2], "GEN2", read_power=1500)
 # print(reader.read())
 
-dog = pyglet.resource.image('media/dog/xray/001.png')
-cat = pyglet.resource.image('media/cat/xray/001.jpg')
-horse = pyglet.resource.image('media/horse/xray/001.jpg')
+# dog = pyglet.resource.image('media/dog/xray/001.png')
+# cat = pyglet.resource.image('media/cat/xray/001.jpg')
+# horse = pyglet.resource.image('media/horse/xray/001.jpg')
 
 clock = pyglet.clock.get_default()
 
 
-class MyWindow(pyglet.window.Window):
+class ScannerWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.label_batch = pyglet.graphics.Batch()
+        # self.label_batch = pyglet.graphics.Batch()
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
                                        font_size=24,
-                                       x=self.width//2, y=self.height//2,
+                                       x=self.width // 2, y=self.height // 2,
                                        anchor_x='center', anchor_y='center')
         self.image = None
 
@@ -48,26 +47,17 @@ class MyWindow(pyglet.window.Window):
         media_dir = 'xray'
         media_type = 'img'
         self.image = files.random_species_dir_type(spec, media_dir, media_type)
-        print("Window Class rx epc: ", tag_string)
+        # print("Window Class rx epc: ", tag_string)
         # clock.schedule_once(self.label_change, 0, tag) workaround before label change worked
         self.label = pyglet.text.Label(text=spec.capitalize(),
                                        color=(255, 0, 0, 255),
-                                       font_size=36,
-                                       x=self.width//2, y=self.height//2,
+                                       font_size=64,
+                                       x=self.width // 2, y=self.height // 2,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
 
         self.flip()  # Required to cause window refresh
-        return EVENT_HANDLED
-
-    # def label_change(self, dt, label_text):
-    #     print("Seconds before label change: ", dt)
-    #     self.label = pyglet.text.Label(text=label_text,
-    #                                    color=(255, 0, 0, 255),
-    #                                    font_size=36,
-    #                                    x=self.width//2, y=self.height//2,
-    #                                    anchor_x='center', anchor_y='center')
-    #     self.label.draw()
+        return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):
         self.clear()
@@ -76,10 +66,10 @@ class MyWindow(pyglet.window.Window):
     def on_key_release(self, symbol, modifiers):
         print("Window RX Keypress")
         self.clear()
-        self.image = horse
+        self.image = None
         self.label = pyglet.text.Label("Keys, keys, keys!",
                                        color=(255, 0, 0, 255),
-                                       x=self.width//2, y=self.height//2,
+                                       x=self.width // 2, y=self.height // 2,
                                        font_size=12)
         self.label.draw()
         clock.schedule_once(self.idle, 2)
@@ -92,7 +82,7 @@ class MyWindow(pyglet.window.Window):
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
                                        font_size=24,
-                                       x=self.width//2, y=self.height//2,
+                                       x=self.width // 2, y=self.height // 2,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
 
@@ -100,13 +90,14 @@ class MyWindow(pyglet.window.Window):
         self.clear()
         if self.image:
             self.image.blit(0, 0)
-        self.label.draw()
+        if self.label:
+            self.label.draw()
         # self.label_batch.draw()
-        #print("on draw label text: ", self.label.text)
+        # print("on draw label text: ", self.label.text)
         # self.flip()
 
 
-class TagDispatcher(EventDispatcher):
+class TagDispatcher(pyglet.event.EventDispatcher):
     def __init__(self, window1, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.window1 = window1
@@ -120,7 +111,7 @@ class TagDispatcher(EventDispatcher):
                     tag), ", RSSI: ", tag.rssi)
             tag_list.sort(key=lambda tag: tag.rssi)
             best_tag = tag_list[0]
-            #TODO log.log_tag(best_tag)
+            # TODO log.log_tag(best_tag)
             best_tag_string = epc.epc_to_string(best_tag)
             print("Highest signal from read: ", best_tag_string)
             self.window1.dispatch_event('on_tag_read', best_tag)
@@ -128,7 +119,7 @@ class TagDispatcher(EventDispatcher):
             # TODO send tag to correct monitors
         else:
             # TODO Idle monitors of empty antennas.
-            
+
             clock.schedule_once(self.window1.idle, 1)
 
     def tag_read(self, tag):
@@ -142,11 +133,11 @@ class TagDispatcher(EventDispatcher):
         pass
 
 
-MyWindow.register_event_type('on_tag_read')
+ScannerWindow.register_event_type('on_tag_read')
 TagDispatcher.register_event_type('on_tag_read')
 
 
-window = MyWindow(900, 800, "Pet U", True)
+window = ScannerWindow(900, 800, "Pet U", True)
 # event_logger = pyglet.window.event.WindowEventLogger()
 # window.push_handlers(event_logger)
 

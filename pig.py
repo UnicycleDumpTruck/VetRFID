@@ -10,10 +10,8 @@ from pyglet.event import EventDispatcher
 import epc
 
 
-#reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 
-#reader = mercury.Reader("tmr:///dev/ttyACM0")
 
 print(reader.get_model())
 print(reader.get_supported_regions())
@@ -21,6 +19,7 @@ print(reader.get_supported_regions())
 # Adding bank= causes segmentation fault, maybe tags don't support
 reader.set_read_plan([1, 2], "GEN2", read_power=1900)
 # print(reader.read())
+
 
 class TagDispatcher(EventDispatcher):
     def tag_read(self, bepc):
