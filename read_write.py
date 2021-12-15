@@ -14,7 +14,7 @@ reader.set_read_plan([1, 2], "GEN2", read_power=1900)
 
 serial_int = None
 with open("last_serial.txt", 'r') as f:
-    serial_int = int(f.readline.strip())
+    serial_int = int(f.readline().strip())
 
 tags_read = reader.read()
 print("Tags read: ", tags_read)
@@ -32,7 +32,7 @@ if tags_read:
                 break
 
     new_epc = str(serial_int + 1) + animal_string + \
-        datetime.now.strftime("%Y%m%d")
+        datetime.now().strftime("%Y%m%d")
     if len(new_epc) > 24:
         raise Exception("new_epc is too long: " + new_epc)
     if reader.write(epc_code=new_epc, epc_target=target_tag):
