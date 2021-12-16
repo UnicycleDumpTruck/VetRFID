@@ -9,6 +9,7 @@ class ScannerWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # self.label_batch = pyglet.graphics.Batch()
+        # TODO call self.idle() here instead of doing own label?
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
                                        font_size=24,
