@@ -4,13 +4,11 @@ from __future__ import print_function
 import pyglet
 import scanner_window
 import tag_dispatcher
-from izar import izarReader
+import izar
 
 
-# reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
-# print(reader.get_model())
-# reader.set_read_plan([1, 2], "GEN2", read_power=1500)
-reader = izarReader()
+# reader = izar.mockReader()
+reader = izar.izarReader()
 clock = pyglet.clock.get_default()
 
 window1 = scanner_window.ScannerWindow(900, 800, "Pet U 1", True)
