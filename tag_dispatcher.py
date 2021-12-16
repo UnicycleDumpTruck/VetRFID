@@ -3,14 +3,15 @@ import epc
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
-    def __init__(self, reader, window1, *args, **kwargs):
+    def __init__(self, reader, window1, window2, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.window1 = window1
+        self.window2 = window2
         self.reader = reader
         self.clock = pyglet.clock.get_default()
 
     def read_tags(self, dt):
-        tag_list = self.reader.read()
+        tag_list = self.reader.read()  # TODO set timeout
         if tag_list:
             self.clock.unschedule(self.window1.idle)
             for tag in tag_list:
@@ -20,8 +21,12 @@ class TagDispatcher(pyglet.event.EventDispatcher):
             best_tag = tag_list[0]
             # TODO log.log_tag(best_tag)
             best_tag_string = epc.epc_to_string(best_tag)
-            print("Highest signal from read: ", best_tag_string)
-            self.window1.dispatch_event('on_tag_read', best_tag)
+            print("Highest signal from read: ", best_tag_string,
+                  " on antenna: ", best_tag.antenna)
+            if best_tag.antenna > 2:
+                self.window2.dispatch_event('on_tag_read', best_tag)
+            else:
+                self.window1.dispatch_event('on_tag_read', best_tag)
             print("Dispacted tag: ", best_tag_string)
             # TODO send tag to correct monitors
         else:
