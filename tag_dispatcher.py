@@ -23,7 +23,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
             best_tag_string = epc.epc_to_string(best_tag)
             print("Highest signal from read: ", best_tag_string,
                   " on antenna: ", best_tag.antenna)
-            if best_tag.antenna > 2:
+            if best_tag.antenna > 1:
                 self.window2.dispatch_event('on_tag_read', best_tag)
             else:
                 self.window1.dispatch_event('on_tag_read', best_tag)
