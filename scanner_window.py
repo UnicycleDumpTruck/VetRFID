@@ -6,15 +6,22 @@ import log
 
 
 class ScannerWindow(pyglet.window.Window):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, window_number, **kwargs):
         super().__init__(*args, **kwargs)
         # self.label_batch = pyglet.graphics.Batch()
         # TODO call self.idle() here instead of doing own label?
+        self.window_number = window_number
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
                                        font_size=24,
                                        x=self.width // 2, y=self.height // 2,
                                        anchor_x='center', anchor_y='center')
+        self.window_label = pyglet.text.Label(str(self.window_number),
+                                       color=(255, 255, 255, 255),
+                                       font_size=24,
+                                       x=self.width // 2, y=self.height // 2,
+                                       anchor_x='center', anchor_y='center')
+
         self.image = None
         self.clock = pyglet.clock.get_default()
 
@@ -41,6 +48,7 @@ class ScannerWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         self.clear()
         self.flip()
+        pyglet.app.exit()
 
     def on_key_release(self, symbol, modifiers):
         print("Window RX Keypress")
@@ -71,6 +79,7 @@ class ScannerWindow(pyglet.window.Window):
             self.image.blit(0, 0)
         if self.label:
             self.label.draw()
+        self.window_label.draw()
         # self.label_batch.draw()
         # print("on draw label text: ", self.label.text)
         # self.flip()

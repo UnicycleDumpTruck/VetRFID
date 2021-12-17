@@ -14,16 +14,16 @@ class izarReader(mercury.Reader):
 
     def __init__(self, *args, **kwargs):
         """Encapsulate super init, read plan setup, print attributes."""
-        super().__init__(uri='llrp://izar-51e4c8.local', protocol="GEN2", *args, **kwargs)
+        super().__init__()
 
-        print(self.reader.get_model())
-        print("Serial: ", self.reader.get_serial())
-        print("Available Antennas: ", self.reader.get_antennas())
-        print("Connected Antenna Ports: ", self.reader.get_connected_ports())
+        print(self.get_model())
+        print("Serial: ", self.get_serial())
+        print("Available Antennas: ", self.get_antennas())
+        print("Connected Antenna Ports: ", self.get_connected_ports())
         print("Supported Power Range in centidBm",
-              self.reader.get_power_range())
+              self.get_power_range())
 
-        self.reader.set_read_plan([1, 2], "GEN2", read_power=1500)
+        self.set_read_plan([1, 2], "GEN2", read_power=1500)
         # return self ?
 
 
