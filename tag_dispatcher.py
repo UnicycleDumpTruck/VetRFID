@@ -1,5 +1,6 @@
 import pyglet
 import epc
+import log
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
@@ -18,34 +19,24 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
         if tag_list:
             for tag in tag_list:
-                print("Read EPC: ", epc.epc_to_string(
-                    tag), ", RSSI: ", tag.rssi)
+                print("Read EPC: ", tag, ", RSSI: ", tag.rssi)
                 win = self.antennas[tag.antenna]
                 sorted_tags[win].append(tag)
             for window in sorted_tags:
                 sorted_tags[window].sort(key=lambda tag: tag.rssi)
                 best_tag = sorted_tags[window][0]
-                # TODO log.log_tag(best_tag)
-                best_tag_string = epc.epc_to_string(best_tag)
-                print("Highest signal from read: ", best_tag_string,
+                log.log_tag(best_tag)
+                print("Highest signal from read: ", best_tag.epc,
                       " on antenna: ", best_tag.antenna)
                 window.dispatch_event('on_tag_read', best_tag)
-                print("Dispacted tag: ", best_tag_string)
+                print("Dispacted tag: ", best_tag)
                 # TODO send tag to correct monitors
-        else:
-            # TODO Idle monitors of empty antennas.
-            pass
-            # self.clock.schedule_once(self.window1.idle, 1)
 
     def tag_read(self, tag):
-        epc_string = epc.epc_to_string(tag)
-        # print("Tag read: ", epc_string)
-        self.window1.dispatch_event('on_tag_read', epc_string)
+        raise NotImplementedError
 
     def on_tag_read(self, epc):
-        # I don't think we need this function
-        # print("TagDispatcher Dispatched: ", epc)
-        pass
+        raise NotImplementedError
 
 
 TagDispatcher.register_event_type('on_tag_read')
