@@ -36,6 +36,7 @@ class mockReader():
 
     def read(self):
         """Every 10th read returns fake scans, others return empty list."""
+        self.counter += 1
         if self.counter > 10:
             return [
                 {'epc': b'111111111111000120211216',
