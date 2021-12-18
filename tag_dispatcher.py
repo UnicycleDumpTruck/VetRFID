@@ -3,36 +3,39 @@ import epc
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
-    def __init__(self, reader, window1, window2, *args, **kwargs):
+    def __init__(self, reader, windows, antennas, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.window1 = window1
-        self.window2 = window2
+        # self.window1 = window1
+        # self.window2 = window2
         self.reader = reader
         self.clock = pyglet.clock.get_default()
+        self.windows = windows
+        self.antennas = antennas
 
     def read_tags(self, dt):
         tag_list = self.reader.read()  # TODO set timeout
+        sorted_tags = {k: [] for k in self.windows.keys()}
+
         if tag_list:
-            self.clock.unschedule(self.window1.idle)
             for tag in tag_list:
                 print("Read EPC: ", epc.epc_to_string(
                     tag), ", RSSI: ", tag.rssi)
-            tag_list.sort(key=lambda tag: tag.rssi)
-            best_tag = tag_list[0]
-            # TODO log.log_tag(best_tag)
-            best_tag_string = epc.epc_to_string(best_tag)
-            print("Highest signal from read: ", best_tag_string,
-                  " on antenna: ", best_tag.antenna)
-            if best_tag.antenna > 1:
-                self.window2.dispatch_event('on_tag_read', best_tag)
-            else:
-                self.window1.dispatch_event('on_tag_read', best_tag)
-            print("Dispacted tag: ", best_tag_string)
-            # TODO send tag to correct monitors
+                win = self.antennas[tag.antenna]
+                sorted_tags[win].append(tag)
+            for window in sorted_tags:
+                sorted_tags[window].sort(key=lambda tag: tag.rssi)
+                best_tag = sorted_tags[window][0]
+                # TODO log.log_tag(best_tag)
+                best_tag_string = epc.epc_to_string(best_tag)
+                print("Highest signal from read: ", best_tag_string,
+                      " on antenna: ", best_tag.antenna)
+                window.dispatch_event('on_tag_read', best_tag)
+                print("Dispacted tag: ", best_tag_string)
+                # TODO send tag to correct monitors
         else:
             # TODO Idle monitors of empty antennas.
-
-            self.clock.schedule_once(self.window1.idle, 1)
+            pass
+            # self.clock.schedule_once(self.window1.idle, 1)
 
     def tag_read(self, tag):
         epc_string = epc.epc_to_string(tag)
