@@ -1,5 +1,6 @@
 import mercury
 import pyglet
+import epc
 
 # class izarReader():
 #     def __init__(self):
@@ -38,11 +39,12 @@ class mockReader():
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
         if self.counter > 10:
+            self.counter = 0
             return [
-                {'epc': b'111111111111000120211216',
-                    'antenna': '1', 'rssi': '-99'},
-                {'epc': b'222222222222000120211216',
-                 'antenna': '2', 'rssi': '-88'},
+                epc.fTag(
+                    b'111111111111000120211216', '1', '-99', '0', '1'),
+                epc.fTag(
+                    b'111111111112000220211216', '2', '-88', '0', '1'),
             ]
         else:
             return []

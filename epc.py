@@ -11,6 +11,18 @@ class rTag():
 # TODO add methods below to rTag class
 
 
+class fTag():
+    def __init__(self, epc, antenna, rssi, phase, read_count):
+        self.epc = epc
+        self.antenna = antenna
+        self.rssi = rssi
+        self.phase = phase
+        self.read_count = read_count
+
+    def __repr__(self):
+        return str(self.epc)
+
+
 def epc_serial(epc):
     """Return tag serial number portion of EPC code."""
     return epc[0:12]
