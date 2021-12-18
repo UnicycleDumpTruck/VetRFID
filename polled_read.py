@@ -11,7 +11,6 @@ reader = izar.mockReader()
 # reader = izar.izarReader('llrp://izar-51e4c8.local', protocol="GEN2")
 clock = pyglet.clock.get_default()
 
-# platform = pyglet.window.Window.get_platform()
 display = pyglet.canvas.get_display()
 screens = display.get_screens()
 for screen in screens:
