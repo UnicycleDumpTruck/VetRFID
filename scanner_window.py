@@ -1,8 +1,7 @@
-import pyglet
+from __future__ import annotations
+import pyglet  # type: ignore
 import files
 import epc
-import species
-import log
 from datetime import datetime
 
 
@@ -20,7 +19,7 @@ class ScannerWindow(pyglet.window.Window):
         self.species = None
         bdr = 10
         rectangle = pyglet.shapes.Rectangle(
-            bdr, bdr, self.width - (bdr*2), self.height - (bdr*2),
+            bdr, bdr, self.width - (bdr * 2), self.height - (bdr * 2),
             color=(255, 22, 20), batch=self.background_graphics_batch)
         rectangle.opacity = 128
         self.background_graphics.append(rectangle)
@@ -37,11 +36,11 @@ class ScannerWindow(pyglet.window.Window):
                                                x=15, y=self.height - 15,
                                                anchor_x='left', anchor_y='top',
                                                batch=self.graphics_batch)
-        # self.graphics.append(self.station_label)
+        # self.graphics.append(self.station_label) # keep out of batch to keep from delete
         self.image = None
         self.clock = pyglet.clock.get_default()
 
-    def on_tag_read(self, tag):
+    def on_tag_read(self, tag: epc.rTag | epc.fTag):
         self.clock.unschedule(self.idle)
         spec = tag.species_string().lower()
 

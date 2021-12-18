@@ -2,7 +2,6 @@ from __future__ import annotations
 from datetime import datetime
 import files
 import epc
-import species
 
 log_format = {
     "100000000000000000000000": {'species': 'horse', 'first_seen': str(datetime.now()), 'last_seen': str(datetime.now()), 'num_reads': '0'},

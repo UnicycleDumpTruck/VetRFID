@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-# import mercury
-import pyglet
+import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
 import izar

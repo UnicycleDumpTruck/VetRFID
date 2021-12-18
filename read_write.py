@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-import time
+# import time
 from datetime import datetime
-import mercury
-import log
+import mercury  # type: ignore
+# import log
 import species
 
 reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")

@@ -1,4 +1,5 @@
-import pyglet
+from __future__ import annotations
+import pyglet  # type: ignore
 import epc
 import log
 
@@ -32,10 +33,10 @@ class TagDispatcher(pyglet.event.EventDispatcher):
                 print("Dispacted tag: ", best_tag)
                 # TODO send tag to correct monitors
 
-    def tag_read(self, tag):
+    def tag_read(self, tag: epc.rTag | epc.fTag):
         raise NotImplementedError
 
-    def on_tag_read(self, epc):
+    def on_tag_read(self, tag: epc.rTag | epc.fTag):
         raise NotImplementedError
 
 

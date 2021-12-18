@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-import mercury
+import mercury  # type: ignore
 reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 
 print(reader.get_model())
@@ -14,6 +14,6 @@ old_epc = b'000000000005000520211212'
 new_epc = b'000000000005000420211212'
 
 if reader.write(epc_code=new_epc, epc_target=old_epc):
-    print('Rewrote "{}" with "{}"'.format(old_epc, new_epc))
+    print(f"Rewrote {str(old_epc)} with {str(new_epc)}")
 else:
     print('No tag found')

@@ -1,6 +1,5 @@
 import json
-import species
-import pyglet
+import pyglet  # type: ignore
 import os
 import random
 

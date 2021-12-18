@@ -1,5 +1,5 @@
-import mercury
-import pyglet
+from __future__ import annotations
+import mercury  # type: ignore
 import epc
 
 # class izarReader():
@@ -27,7 +27,7 @@ class izarReader(mercury.Reader):
         self.set_read_plan([1, 2], "GEN2", read_power=1500)
         # return self ?
 
-    def read(self):
+    def read(self) -> list[epc.rTag]:
         raw_tags = super().read()
         rtag_list = [epc.rTag(tag) for tag in raw_tags]
         return rtag_list
@@ -40,7 +40,7 @@ class mockReader():
         """Initialize counter at zero."""
         self.counter = 0
 
-    def read(self):
+    def read(self) -> list[epc.fTag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
         if self.counter > 10:
