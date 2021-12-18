@@ -16,14 +16,14 @@ class ScannerWindow(pyglet.window.Window):
         self.species = None
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
-                                       font_size=24,
+                                       font_size=24, font_name='Gilroy',
                                        x=self.width // 2, y=self.height // 2,
                                        anchor_x='center', anchor_y='center')
-        self.window_label = pyglet.text.Label(str(self.window_number),
+        self.window_label = pyglet.text.Label(f"Station #{str(self.window_number)}",
                                               color=(255, 255, 255, 255),
-                                              font_size=24,
-                                              x=self.width // 2, y=self.height // 2,
-                                              anchor_x='center', anchor_y='center')
+                                              font_size=24, font_name='Gilroy',
+                                              x=5, y=5,
+                                              anchor_x='left', anchor_y='bottom')
         self.image = None
         self.clock = pyglet.clock.get_default()
 
@@ -39,7 +39,7 @@ class ScannerWindow(pyglet.window.Window):
                 spec, self.media_dir, self.media_type)
             self.label = pyglet.text.Label(text=spec.capitalize(),
                                            color=(255, 0, 0, 255),
-                                           font_size=64,
+                                           font_size=64, font_name='Gilroy',
                                            x=self.width // 2, y=self.height // 2,
                                            anchor_x='center', anchor_y='center')
             self.label.draw()
@@ -71,7 +71,7 @@ class ScannerWindow(pyglet.window.Window):
         self.species = None
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
-                                       font_size=24,
+                                       font_size=24, font_name='Gilroy',
                                        x=self.width // 2, y=self.height // 2,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
