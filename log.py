@@ -17,11 +17,16 @@ def print_log_dict(ldict):
         print(itm[0], itm[1].values())
 
 
-def log_tag(tag: epc.rTag | epc.fTag):  # string input
+def log_tag(tag: epc.rTag | epc.fTag) -> datetime:  # string input
     """Log epc string to jlog.json file."""
     log_dict = files.json_import('jlog.json')
+    last_seen = None
     if log_dict.get(tag.epc):
         print(f"Logged: {tag.epc}")
+        last_seen = log_dict[tag.epc]['last_seen']
+        last_seen_obj = datetime.strptime(last_seen, "%Y-%m-%d %H:%M:%S.%f")
+        last_seen_str = datetime.strftime(last_seen_obj, "%m/%d/%Y, %H:%M:%S")
+        print(f"Tag last seen {last_seen_str}")
         log_dict[tag.epc]['last_seen'] = str(datetime.now())
         log_dict[tag.epc]['num_reads'] = str(
             int(log_dict[tag.epc]['num_reads']) + 1)
@@ -33,6 +38,7 @@ def log_tag(tag: epc.rTag | epc.fTag):  # string input
                              'num_reads': '1',
                              }
     files.json_export('jlog.json', log_dict)
+    return last_seen_obj
 
 
 # def log_tag(tag):

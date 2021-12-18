@@ -25,7 +25,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
             for window in sorted_tags:
                 sorted_tags[window].sort(key=lambda tag: tag.rssi)
                 best_tag = sorted_tags[window][0]
-                log.log_tag(best_tag)
+                best_tag.last_seen = log.log_tag(best_tag)
                 print("Highest signal from read: ", best_tag.epc,
                       " on antenna: ", best_tag.antenna)
                 window.dispatch_event('on_tag_read', best_tag)
