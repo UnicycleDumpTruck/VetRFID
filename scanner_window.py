@@ -29,8 +29,7 @@ class ScannerWindow(pyglet.window.Window):
 
     def on_tag_read(self, tag):
         self.clock.unschedule(self.idle)
-        tag_string = epc.epc_to_string(tag)
-        spec = species.species_str(epc.epc_species_num(tag_string)).lower()
+        spec = tag.species_string().lower()
 
         if spec != self.species:
             self.clear()
@@ -44,7 +43,7 @@ class ScannerWindow(pyglet.window.Window):
                                            anchor_x='right', anchor_y='bottom')
             self.label.draw()
             self.flip()  # Required to cause window refresh
-            self.clock.schedule_once(self.idle, 1)
+            self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):

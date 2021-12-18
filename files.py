@@ -16,7 +16,7 @@ def json_import(filename):
 def json_export(filename, ldict):
     """Write dictionary to filename as json."""
     with open(filename, 'w') as f:
-        jstr = json.dumps(ldict)
+        jstr = json.dumps(ldict, indent=4, sort_keys=True)
         f.write(jstr)
 
 

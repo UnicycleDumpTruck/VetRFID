@@ -1,7 +1,35 @@
 from __future__ import annotations
+import species
 
 
-class rTag():
+class Tag():
+    def __init__(self):
+        self.epc = None
+        self.antenna = None
+        self.rssi = None
+        self.phase = None
+        self.read_count = None
+
+    def serial(self):
+        """Return tag serial number portion of EPC code."""
+        return self.epc[0:12]
+
+    def species_num(self):
+        """Return species/animal portion of EPC code bytes or string."""
+        return self.epc[12:16]
+
+    def species_string(self):
+        return species.species_str(self.species_num()).lower()
+
+    def epc_bytes(self):
+        """Convert EPC string to bytes object."""
+        return bytes(self.epc, encoding="UTF8")
+
+    def __repr__(self):
+        return str(self.epc)
+
+
+class rTag(Tag):
     def __init__(self, tag):
         self.epc = str(tag.epc)
         self.phase = tag.phase
@@ -11,33 +39,10 @@ class rTag():
 # TODO add methods below to rTag class
 
 
-class fTag():
+class fTag(Tag):
     def __init__(self, epc, antenna, rssi, phase, read_count):
         self.epc = epc
         self.antenna = antenna
         self.rssi = rssi
         self.phase = phase
         self.read_count = read_count
-
-    def __repr__(self):
-        return str(self.epc)
-
-
-def epc_serial(epc):
-    """Return tag serial number portion of EPC code."""
-    return epc[0:12]
-
-
-def epc_to_string(bepc):
-    """Accept bytes epc or tag object, return string."""
-    return str(bepc)[2:26]
-
-
-def epc_species_num(epc):
-    """Return species/animal portion of EPC code bytes or string."""
-    return epc[12:16]
-
-
-def epc_to_bytes(sepc):
-    """Convert EPC string to bytes object."""
-    return bytes(sepc, encoding="UTF8")
