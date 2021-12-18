@@ -9,13 +9,21 @@ from datetime import datetime
 class ScannerWindow(pyglet.window.Window):
     def __init__(self, *args, window_number, antennas, **kwargs):
         super().__init__(*args, **kwargs)
+        self.background_graphics = []
         self.graphics = []
         self.graphics_batch = pyglet.graphics.Batch()
+        self.background_graphics_batch = pyglet.graphics.Batch()
         # TODO call self.idle() here instead of doing own label?
         self.window_number = window_number
         self.media_dir = 'xray'
         self.media_type = 'img'
         self.species = None
+        bdr = 10
+        rectangle = pyglet.shapes.Rectangle(
+            bdr, bdr, self.width - (bdr*2), self.height - (bdr*2),
+            color=(255, 22, 20), batch=self.background_graphics_batch)
+        rectangle.opacity = 128
+        self.background_graphics.append(rectangle)
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
                                        font_size=24, font_name='Gilroy',
@@ -26,7 +34,7 @@ class ScannerWindow(pyglet.window.Window):
         self.station_label = pyglet.text.Label(f"Station #{str(self.window_number)}",
                                                color=(255, 255, 255, 255),
                                                font_size=24, font_name='Gilroy',
-                                               x=5, y=self.height - 5,
+                                               x=15, y=self.height - 15,
                                                anchor_x='left', anchor_y='top',
                                                batch=self.graphics_batch)
         # self.graphics.append(self.station_label)
@@ -45,9 +53,9 @@ class ScannerWindow(pyglet.window.Window):
             for graphic in self.graphics:
                 graphic.delete()
             species_label = pyglet.text.Label(text=f'Species detected: {spec.capitalize()}',
-                                              color=(255, 0, 0, 255),
+                                              color=(255, 255, 255, 255),
                                               font_size=32, font_name='Gilroy',
-                                              x=self.width - 5, y=5,
+                                              x=self.width - 15, y=15,
                                               anchor_x='right', anchor_y='bottom',
                                               batch=self.graphics_batch)
             self.graphics.append(species_label)
@@ -55,9 +63,9 @@ class ScannerWindow(pyglet.window.Window):
                 tag.last_seen, "%B %d, %Y at %H:%M:%S")
             last_seen_label = pyglet.text.Label(text=f'Patient last seen: {last_seen_string}',
                                                      color=(
-                                                         255, 0, 0, 255),
+                                                         255, 255, 255, 255),
                                                      font_size=18, font_name='Gilroy',
-                                                     x=self.width - 5, y=self.height - 5,
+                                                     x=self.width - 15, y=self.height - 15,
                                                      anchor_x='right', anchor_y='top',
                                                      batch=self.graphics_batch)
             self.graphics.append(last_seen_label)
@@ -93,6 +101,7 @@ class ScannerWindow(pyglet.window.Window):
         # pic.anchor_x = pic.width // 2
         # pic.anchor_y = pic.height // 2
         # pic.blit(x, y, z)
+        self.background_graphics_batch.draw()
         if self.image:
             self.image.anchor_x = self.image.width // 2
             self.image.anchor_y = self.image.height // 2
