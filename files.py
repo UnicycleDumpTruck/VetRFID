@@ -36,4 +36,11 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     # animal_species="monkey", media_directory="xray"
     p = "media/" + animal_species + "/" + media_directory + "/"
     f = file_types[media_type](p + random.choice(os.listdir(p)))
+
+    # may not work for images larger than 1280 x 720...
+    if media_type == 'img':
+        scale_factor = f.height / 720
+        f.height = 720
+        f.width = f.width / scale_factor
+
     return f

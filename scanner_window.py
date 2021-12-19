@@ -24,34 +24,39 @@ class ScannerWindow(pyglet.window.Window):
         # rectangle.opacity = 255
         # self.background_graphics.append(rectangle)
 
-        self.bg = pyglet.resource.image('graphics/bg_lines.png')
+        self.bg = pyglet.resource.image('graphics/background.png')
         # self.background_graphics.append(self.bg)
         self.bg.anchor_x = self.bg.width // 2
         self.bg.anchor_y = self.bg.height // 2
 
-        self.label = pyglet.text.Label('Please place the patient in the scanning area.',
-                                       color=(255, 255, 255, 255),
-                                       font_size=24, font_name='Gilroy',
-                                       x=self.width // 2, y=self.height // 2,
-                                       anchor_x='center', anchor_y='center',
-                                       batch=self.graphics_batch)
+        self.label = pyglet.text.Label(
+            'Please place the patient in the scanning area.',
+            color=(255, 255, 255, 255),
+            font_size=24, font_name='Lucida Console',
+            x=self.width // 2, y=self.height // 2,
+            anchor_x='center', anchor_y='center',
+            batch=self.graphics_batch)
         self.graphics.append(self.label)
-        self.station_label = pyglet.text.Label(f"X-Ray Station #{str(self.window_number)}",
-                                               color=(255, 255, 255, 255),
-                                               font_size=32, font_name='Lucida Console',
-                                               x=15, y=self.height - 60,
-                                               anchor_x='left', anchor_y='center',
-                                               batch=self.graphics_batch)
+        self.station_label_1 = pyglet.text.Label(
+            f"Station #{str(self.window_number)}",
+            color=(255, 255, 255, 255),
+            font_size=36, font_name='Lucida Console',
+            x=125, y=self.height - 60,
+            anchor_x='center', anchor_y='center',
+            batch=self.graphics_batch)
+        self.station_label_2 = pyglet.text.Label(
+            "X-Ray",
+            color=(255, 255, 255, 255),
+            font_size=36, font_name='Lucida Console',
+            x=125, y=60,
+            anchor_x='center', anchor_y='center',
+            batch=self.graphics_batch)
         # self.graphics.append(self.station_label) # keep out of batch to keep from delete
         self.image = None
         self.clock = pyglet.clock.get_default()
         self.heartrate = pyglet.media.load(
             "media/inspiration/hrmpeg4.m4v")
         self.heartrate_player = pyglet.media.Player()
-        # self.heartrate_player.width = 200
-        # self.heartrate_player.height = 200
-        # self.heartrate.video_format.height = 200
-        # self.heartrate.video_format.width = 200
         self.heartrate.size = (200, 200)
         self.heartrate_player.size = (200, 200)
         self.heartrate_player.queue(self.heartrate)
@@ -67,23 +72,52 @@ class ScannerWindow(pyglet.window.Window):
                 spec, self.media_dir, self.media_type)
             for graphic in self.graphics:
                 graphic.delete()
-            species_label = pyglet.text.Label(text=f'Species detected: {spec.capitalize()}',
-                                              color=(255, 255, 255, 255),
-                                              font_size=32, font_name='Gilroy',
-                                              x=self.width - 15, y=15,
-                                              anchor_x='right', anchor_y='bottom',
-                                              batch=self.graphics_batch)
-            self.graphics.append(species_label)
-            last_seen_string = datetime.strftime(
-                tag.last_seen, "%B %d, %Y at %H:%M:%S")
-            last_seen_label = pyglet.text.Label(text=f'Patient last seen: {last_seen_string}',
-                                                     color=(
-                                                         255, 255, 255, 255),
-                                                     font_size=18, font_name='Gilroy',
-                                                     x=self.width - 15, y=self.height - 15,
-                                                     anchor_x='right', anchor_y='top',
-                                                     batch=self.graphics_batch)
-            self.graphics.append(last_seen_label)
+            species_label_1 = pyglet.text.Label(
+                text="Species detected:",
+                color=(255, 255, 255, 255),
+                font_size=18, font_name='Lucida Console',
+                x=self.width - 125, y=65,
+                anchor_x='center', anchor_y='bottom',
+                batch=self.graphics_batch)
+
+            species_label_2 = pyglet.text.Label(
+                text=spec.capitalize(),
+                color=(255, 255, 255, 255),
+                font_size=32, font_name='Lucida Console',
+                x=self.width - 125, y=65,
+                anchor_x='center', anchor_y='top',
+                batch=self.graphics_batch)
+            self.graphics.append(species_label_1)
+            self.graphics.append(species_label_2)
+            last_seen_date = datetime.strftime(
+                tag.last_seen, "%m/%d/%Y")
+            last_seen_time = datetime.strftime(
+                tag.last_seen, "%H:%M:%S")
+            last_seen_label_2 = pyglet.text.Label(
+                text=last_seen_date,
+                color=(255, 255, 255, 255),
+                font_size=18, font_name='Lucida Console',
+                x=self.width - 125, y=self.height - 60,
+                anchor_x='center', anchor_y='center',
+                batch=self.graphics_batch)
+            last_seen_label_1 = pyglet.text.Label(
+                text='Patient last seen:',
+                color=(255, 255, 255, 255),
+                font_size=16, font_name='Lucida Console',
+                x=self.width - 125,
+                y=self.height - 40,
+                anchor_x='center', anchor_y='bottom',
+                batch=self.graphics_batch)
+            last_seen_label_3 = pyglet.text.Label(
+                text=last_seen_time,
+                color=(255, 255, 255, 255),
+                font_size=18, font_name='Lucida Console',
+                x=self.width - 125, y=self.height - 80,
+                anchor_x='center', anchor_y='top',
+                batch=self.graphics_batch)
+            self.graphics.append(last_seen_label_1)
+            self.graphics.append(last_seen_label_2)
+            self.graphics.append(last_seen_label_3)
             self.graphics_batch.draw()
             # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
@@ -91,21 +125,19 @@ class ScannerWindow(pyglet.window.Window):
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):
-        # self.clear()
-        # self.flip()
         pyglet.app.exit()
 
     def idle(self, dt):
         self.clock.unschedule(self.idle)
         print("Going idle, ", dt, " seconds since scan.")
-        self.clear()  # why was this commented out?
+        self.clear()
         self.image = None
         self.species = None
         for graphic in self.graphics:
             graphic.delete()
         label = pyglet.text.Label('Please place the patient in the scanning area.',
                                   color=(255, 255, 255, 255),
-                                  font_size=24, font_name='Gilroy',
+                                  font_size=24, font_name='Lucida Console',
                                   x=self.width // 2, y=self.height // 2,
                                   anchor_x='center', anchor_y='center',
                                   batch=self.graphics_batch)
@@ -114,19 +146,21 @@ class ScannerWindow(pyglet.window.Window):
 
     def on_draw(self):
         self.clear()
-
-        # pic.anchor_x = pic.width // 2
-        # pic.anchor_y = pic.height // 2
-        # pic.blit(x, y, z)
-        self.bg.blit(self.width // 2, self.height // 2)
-        self.background_graphics_batch.draw()
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         if self.image:
             self.image.anchor_x = self.image.width // 2
             self.image.anchor_y = self.image.height // 2
+            pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
+                                  pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
+                              pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+        self.bg.blit(self.width // 2, self.height // 2)
+        self.background_graphics_batch.draw()
+
         self.graphics_batch.draw()
-        self.station_label.draw()
-        # if self.heartrate_player.source and self.heartrate_player.source.video_format:
+        self.station_label_1.draw()
+        self.station_label_2.draw()
 
         # if self.heartrate_player.texture:
         #     self.heartrate_player.texture.blit(0, 0)
