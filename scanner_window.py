@@ -114,6 +114,7 @@ class ScannerWindow(pyglet.window.Window):
 
     def on_draw(self):
         self.clear()
+
         # pic.anchor_x = pic.width // 2
         # pic.anchor_y = pic.height // 2
         # pic.blit(x, y, z)
