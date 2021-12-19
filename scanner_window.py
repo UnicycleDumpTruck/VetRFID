@@ -17,12 +17,18 @@ class ScannerWindow(pyglet.window.Window):
         self.media_dir = 'xray'
         self.media_type = 'img'
         self.species = None
-        bdr = 10
-        rectangle = pyglet.shapes.Rectangle(
-            bdr, bdr, self.width - (bdr * 2), self.height - (bdr * 2),
-            color=(255, 22, 20), batch=self.background_graphics_batch)
-        rectangle.opacity = 255
-        self.background_graphics.append(rectangle)
+        # bdr = 10
+        # rectangle = pyglet.shapes.Rectangle(
+        #     bdr, bdr, self.width - (bdr * 2), self.height - (bdr * 2),
+        #     color=(255, 22, 20), batch=self.background_graphics_batch)
+        # rectangle.opacity = 255
+        # self.background_graphics.append(rectangle)
+
+        self.bg = pyglet.resource.image('graphics/bg_lines.png')
+        # self.background_graphics.append(self.bg)
+        self.bg.anchor_x = self.bg.width // 2
+        self.bg.anchor_y = self.bg.height // 2
+
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
                                        font_size=24, font_name='Gilroy',
@@ -30,11 +36,11 @@ class ScannerWindow(pyglet.window.Window):
                                        anchor_x='center', anchor_y='center',
                                        batch=self.graphics_batch)
         self.graphics.append(self.label)
-        self.station_label = pyglet.text.Label(f"Station #{str(self.window_number)}",
+        self.station_label = pyglet.text.Label(f"X-Ray Station #{str(self.window_number)}",
                                                color=(255, 255, 255, 255),
-                                               font_size=24, font_name='Gilroy',
-                                               x=15, y=self.height - 15,
-                                               anchor_x='left', anchor_y='top',
+                                               font_size=32, font_name='Lucida Console',
+                                               x=15, y=self.height - 60,
+                                               anchor_x='left', anchor_y='center',
                                                batch=self.graphics_batch)
         # self.graphics.append(self.station_label) # keep out of batch to keep from delete
         self.image = None
@@ -111,6 +117,7 @@ class ScannerWindow(pyglet.window.Window):
         # pic.anchor_x = pic.width // 2
         # pic.anchor_y = pic.height // 2
         # pic.blit(x, y, z)
+        self.bg.blit(self.width // 2, self.height // 2)
         self.background_graphics_batch.draw()
         if self.image:
             self.image.anchor_x = self.image.width // 2
