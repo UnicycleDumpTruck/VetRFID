@@ -21,7 +21,7 @@ class ScannerWindow(pyglet.window.Window):
         rectangle = pyglet.shapes.Rectangle(
             bdr, bdr, self.width - (bdr * 2), self.height - (bdr * 2),
             color=(255, 22, 20), batch=self.background_graphics_batch)
-        rectangle.opacity = 128
+        rectangle.opacity = 255
         self.background_graphics.append(rectangle)
         self.label = pyglet.text.Label('Please place the patient in the scanning area.',
                                        color=(255, 255, 255, 255),
@@ -79,7 +79,7 @@ class ScannerWindow(pyglet.window.Window):
                                                      batch=self.graphics_batch)
             self.graphics.append(last_seen_label)
             self.graphics_batch.draw()
-            self.heartrate_player.play()
+            # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
             self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
@@ -119,8 +119,9 @@ class ScannerWindow(pyglet.window.Window):
         self.graphics_batch.draw()
         self.station_label.draw()
         # if self.heartrate_player.source and self.heartrate_player.source.video_format:
-        if self.heartrate_player.texture:
-            self.heartrate_player.texture.blit(0, 0)
+
+        # if self.heartrate_player.texture:
+        #     self.heartrate_player.texture.blit(0, 0)
 
     def get_video_size(width, height, sample_aspect):
         if sample_aspect > 1.:

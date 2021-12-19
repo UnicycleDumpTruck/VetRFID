@@ -14,12 +14,14 @@ display = pyglet.canvas.get_display()
 screens = display.get_screens()
 for screen in screens:
     print(screen)
-# window1 = scanner_window.ScannerWindow(900, 800, "Pet U 2", True, fullscreen=True, screen=screens[1], window_number=2, antennas=[2])
-# window2 = scanner_window.ScannerWindow(900, 800, "Pet U 1", True, fullscreen=True, screen=screens[0], window_number=1, antennas=[1])
-window1 = scanner_window.ScannerWindow(
-    1280, 720, "Pet U 1", True, window_number=1, antennas=[1])
 window2 = scanner_window.ScannerWindow(
-    1280, 720, "Pet U 2", True, window_number=2, antennas=[2])
+    1280, 720, "Pet U 2", True, fullscreen=True, screen=screens[0], window_number=2, antennas=[2])
+window1 = scanner_window.ScannerWindow(
+    1280, 720, "Pet U 1", True, fullscreen=True, screen=screens[1], window_number=1, antennas=[1])
+# window1 = scanner_window.ScannerWindow(
+#     1280, 720, "Pet U 1", True, window_number=1, antennas=[1])
+# window2 = scanner_window.ScannerWindow(
+#     1280, 720, "Pet U 2", True, window_number=2, antennas=[2])
 
 
 # event_logger = pyglet.window.event.WindowEventLogger()
