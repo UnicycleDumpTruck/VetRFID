@@ -39,6 +39,16 @@ class ScannerWindow(pyglet.window.Window):
         # self.graphics.append(self.station_label) # keep out of batch to keep from delete
         self.image = None
         self.clock = pyglet.clock.get_default()
+        self.heartrate = pyglet.media.load(
+            "media/inspiration/hrmpeg4.m4v")
+        self.heartrate_player = pyglet.media.Player()
+        # self.heartrate_player.width = 200
+        # self.heartrate_player.height = 200
+        # self.heartrate.video_format.height = 200
+        # self.heartrate.video_format.width = 200
+        self.heartrate.size = (200, 200)
+        self.heartrate_player.size = (200, 200)
+        self.heartrate_player.queue(self.heartrate)
 
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
         self.clock.unschedule(self.idle)
@@ -69,6 +79,7 @@ class ScannerWindow(pyglet.window.Window):
                                                      batch=self.graphics_batch)
             self.graphics.append(last_seen_label)
             self.graphics_batch.draw()
+            self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
             self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
@@ -107,9 +118,17 @@ class ScannerWindow(pyglet.window.Window):
             self.image.blit(self.width // 2, self.height // 2)
         self.graphics_batch.draw()
         self.station_label.draw()
-        # self.label_batch.draw()
-        # print("on draw label text: ", self.label.text)
-        # self.flip()
+        # if self.heartrate_player.source and self.heartrate_player.source.video_format:
+        if self.heartrate_player.texture:
+            self.heartrate_player.texture.blit(0, 0)
+
+    def get_video_size(width, height, sample_aspect):
+        if sample_aspect > 1.:
+            return width * sample_aspect, height
+        elif sample_aspect < 1.:
+            return width, height / sample_aspect
+        else:
+            return width, height
 
 
 ScannerWindow.register_event_type('on_tag_read')
