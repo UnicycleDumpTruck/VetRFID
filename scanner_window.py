@@ -64,8 +64,9 @@ class ScannerWindow(pyglet.window.Window):
 
 
     def _idle(self, dt):
-        
-        self.clock.unschedule(self.idles[self.window_number])
+        func = self.idles[self.window_number]
+        print("_idle entered, unscheduling: ", func)
+        self.clock.unschedule(func)
         print("Going idle, ", dt, " seconds since scan.")
         self.clear()
         self.image = None
@@ -83,8 +84,10 @@ class ScannerWindow(pyglet.window.Window):
 
 
     def idle1(self,dt):
+        print(self, "Self idle1 111111111111111111111111111111111111111111111111111111")
         self._idle(dt)
     def idle2(self,dt):
+        print(self, "Self idle2 222222222222222222222222222222222222222222222222222222")
         self._idle(dt)
     def idle3(self,dt):
         self._idle(dt)
@@ -94,10 +97,13 @@ class ScannerWindow(pyglet.window.Window):
 
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
         #idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
-        self.clock.unschedule(self.idles[self.window_number])
         spec = tag.species_string().lower()
 
         if spec != self.species:
+            func = self.idles[self.window_number]
+            print("New species Tag read, Un-idling ", func)
+            self.clock.unschedule(func)
+
             self.clear()
             self.species = spec
             self.image = files.random_species_dir_type(
@@ -153,7 +159,9 @@ class ScannerWindow(pyglet.window.Window):
             self.graphics_batch.draw()
             # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
-            self.clock.schedule_once(self.idles[self.window_number], 3)
+            func = self.idles[self.window_number]
+            print("Scheduling idle: ", func)
+            self.clock.schedule_once(func, 3)
         return pyglet.event.EVENT_HANDLED
 
 
@@ -190,5 +198,7 @@ class ScannerWindow(pyglet.window.Window):
         else:
             return width, height
 
+    def __repr__(self):
+        return f'ScannerWindow #{self.window_number}'
 
 ScannerWindow.register_event_type('on_tag_read')
