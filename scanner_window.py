@@ -8,7 +8,6 @@ from datetime import datetime
 class ScannerWindow(pyglet.window.Window):
     def __init__(self, *args, window_number, antennas, **kwargs):
         super().__init__(*args, **kwargs)
-        self.idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
         self.background_graphics = []
         self.graphics = []
         self.graphics_batch = pyglet.graphics.Batch()
@@ -63,10 +62,8 @@ class ScannerWindow(pyglet.window.Window):
         # self.heartrate_player.queue(self.heartrate)
 
 
-    def _idle(self, dt):
-        func = self.idles[self.window_number]
-        print("_idle entered, unscheduling: ", func)
-        self.clock.unschedule(func)
+    def idle(self, dt):
+        self.clock.unschedule(self.idle)
         print("Going idle, ", dt, " seconds since scan.")
         self.clear()
         self.image = None
@@ -83,26 +80,11 @@ class ScannerWindow(pyglet.window.Window):
         self.graphics_batch.draw()
 
 
-    def idle1(self,dt):
-        print(self, "Self idle1 111111111111111111111111111111111111111111111111111111")
-        self._idle(dt)
-    def idle2(self,dt):
-        print(self, "Self idle2 222222222222222222222222222222222222222222222222222222")
-        self._idle(dt)
-    def idle3(self,dt):
-        self._idle(dt)
-    def idle4(self,dt):
-        self._idle(dt)
-
-
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
-        #idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
         spec = tag.species_string().lower()
 
         if spec != self.species:
-            func = self.idles[self.window_number]
-            print("New species Tag read, Un-idling ", func)
-            self.clock.unschedule(func)
+            self.clock.unschedule(self.idle)
 
             self.clear()
             self.species = spec
@@ -159,9 +141,7 @@ class ScannerWindow(pyglet.window.Window):
             self.graphics_batch.draw()
             # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
-            func = self.idles[self.window_number]
-            print("Scheduling idle: ", func)
-            self.clock.schedule_once(func, 3)
+            self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
 
 
