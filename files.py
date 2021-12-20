@@ -1,6 +1,5 @@
 import json
-import species
-import pyglet
+import pyglet  # type: ignore
 import os
 import random
 
@@ -16,7 +15,7 @@ def json_import(filename):
 def json_export(filename, ldict):
     """Write dictionary to filename as json."""
     with open(filename, 'w') as f:
-        jstr = json.dumps(ldict)
+        jstr = json.dumps(ldict, indent=4, sort_keys=True)
         f.write(jstr)
 
 
@@ -37,4 +36,11 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     # animal_species="monkey", media_directory="xray"
     p = "media/" + animal_species + "/" + media_directory + "/"
     f = file_types[media_type](p + random.choice(os.listdir(p)))
+
+    # may not work for images larger than 1280 x 720...
+    if media_type == 'img':
+        scale_factor = f.height / 720
+        f.height = 720
+        f.width = f.width / scale_factor
+
     return f

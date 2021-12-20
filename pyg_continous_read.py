@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import print_function
-import time
-from datetime import datetime
-import mercury
-import log
-import pyglet
-import os
-from pyglet.event import EVENT_HANDLED, EventDispatcher
+# import time
+# from datetime import datetime
+import mercury  # type: ignore
+# import log
+import pyglet  # type: ignore
+# import os
+from pyglet.event import EVENT_HANDLED, EventDispatcher  # type: ignore
 import epc
 
 
@@ -39,7 +39,7 @@ class MyWindow(pyglet.window.Window):
                                        batch=self.label_batch,
                                        color=(255, 0, 0, 255),
                                        font_size=12,
-                                       x=self.width//2, y=self.height//3,
+                                       x=self.width // 2, y=self.height // 3,
                                        anchor_x='center', anchor_y='center')
         self.image = dog
 
@@ -47,7 +47,7 @@ class MyWindow(pyglet.window.Window):
         self.clear()
         self.image = cat
         print("Window Class rx epc: ", epc)
-        new_text = "Rx from new_text"
+        # new_text = "Rx from new_text"
 
         self.flip()  # Required to cause window refresh
         # called in 5 seconds
@@ -55,13 +55,13 @@ class MyWindow(pyglet.window.Window):
         pyglet.clock.schedule_once(self.label_change, 0, "Silly")
         # self.label_change(0, "not really") # Does not work
 
-        # return EVENT_HANDLED
+        return EVENT_HANDLED
 
     def label_change(self, dt, label_text):
         self.label = pyglet.text.Label(text=label_text,
                                        color=(255, 0, 0, 255),
                                        font_size=12,
-                                       x=self.width//2, y=self.height//3,
+                                       x=self.width // 2, y=self.height // 3,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
 
@@ -84,7 +84,7 @@ class MyWindow(pyglet.window.Window):
         self.label = pyglet.text.Label("idle, idle, idle!",
                                        color=(255, 0, 0, 255),
                                        font_size=12,
-                                       x=self.width//2, y=self.height//3,
+                                       x=self.width // 2, y=self.height // 3,
                                        anchor_x='center', anchor_y='center')
         self.label.draw()
 

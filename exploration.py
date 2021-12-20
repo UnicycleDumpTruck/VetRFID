@@ -2,7 +2,7 @@
 from __future__ import print_function
 import time
 from datetime import datetime
-import mercury
+import mercury  # type: ignore
 
 
 def exeception_handle(e):
@@ -28,7 +28,7 @@ reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 # reader.enable_exception_handler(exeception_handle)
 
 print("Reader Model: ", reader.get_model())
-#print("Software Version: ", reader.get_sofware_version())
+# print("Software Version: ", reader.get_sofware_version())
 print("Serial: ", reader.get_serial())
 print("Available Antennas: ", reader.get_antennas())
 print("Connected Antenna Ports: ", reader.get_connected_ports())

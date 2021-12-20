@@ -1,0 +1,3 @@
+ate unsusual item, list of items
+injury, list of body parts
+sick, list of symptoms
