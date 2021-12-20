@@ -8,6 +8,7 @@ from datetime import datetime
 class ScannerWindow(pyglet.window.Window):
     def __init__(self, *args, window_number, antennas, **kwargs):
         super().__init__(*args, **kwargs)
+        self.idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
         self.background_graphics = []
         self.graphics = []
         self.graphics_batch = pyglet.graphics.Batch()
@@ -63,8 +64,8 @@ class ScannerWindow(pyglet.window.Window):
 
 
     def _idle(self, dt):
-        idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
-        self.clock.unschedule(idles[self.window_number])
+        
+        self.clock.unschedule(self.idles[self.window_number])
         print("Going idle, ", dt, " seconds since scan.")
         self.clear()
         self.image = None
@@ -82,21 +83,17 @@ class ScannerWindow(pyglet.window.Window):
 
 
     def idle1(self,dt):
-        if self.window_number == 1:
-            self._idle(dt)
+        self._idle(dt)
     def idle2(self,dt):
-        if self.window_number == 2:
-            self._idle(dt)
+        self._idle(dt)
     def idle3(self,dt):
-        if self.window_number == 3:
-            self._idle(dt)
+        self._idle(dt)
     def idle4(self,dt):
-        if self.window_number == 4:
-            self._idle(dt)
+        self._idle(dt)
 
 
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
-        idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
+        #idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
         self.clock.unschedule(self.idles[self.window_number])
         spec = tag.species_string().lower()
 
@@ -156,7 +153,7 @@ class ScannerWindow(pyglet.window.Window):
             self.graphics_batch.draw()
             # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
-            self.clock.schedule_once(idles[self.window_number], 3)
+            self.clock.schedule_once(self.idles[self.window_number], 3)
         return pyglet.event.EVENT_HANDLED
 
 
