@@ -61,8 +61,43 @@ class ScannerWindow(pyglet.window.Window):
         # self.heartrate_player.size = (200, 200)
         # self.heartrate_player.queue(self.heartrate)
 
+
+    def _idle(self, dt):
+        idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
+        self.clock.unschedule(idles[self.window_number])
+        print("Going idle, ", dt, " seconds since scan.")
+        self.clear()
+        self.image = None
+        self.species = None
+        for graphic in self.graphics:
+            graphic.delete()
+        label = pyglet.text.Label('Please place the patient in the scanning area.',
+                                  color=(255, 255, 255, 255),
+                                  font_size=24, font_name='Lucida Console',
+                                  x=self.width // 2, y=self.height // 2,
+                                  anchor_x='center', anchor_y='center',
+                                  batch=self.graphics_batch)
+        self.graphics.append(label)
+        self.graphics_batch.draw()
+
+
+    def idle1(self,dt):
+        if self.window_number == 1:
+            self._idle(dt)
+    def idle2(self,dt):
+        if self.window_number == 2:
+            self._idle(dt)
+    def idle3(self,dt):
+        if self.window_number == 3:
+            self._idle(dt)
+    def idle4(self,dt):
+        if self.window_number == 4:
+            self._idle(dt)
+
+
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
-        self.clock.unschedule(self.idle)
+        idles = {1:self.idle1, 2:self.idle2, 3:self.idle3, 4:self.idle4}
+        self.clock.unschedule(self.idles[self.window_number])
         spec = tag.species_string().lower()
 
         if spec != self.species:
@@ -121,28 +156,13 @@ class ScannerWindow(pyglet.window.Window):
             self.graphics_batch.draw()
             # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
-            self.clock.schedule_once(self.idle, 3)
+            self.clock.schedule_once(idles[self.window_number], 3)
         return pyglet.event.EVENT_HANDLED
+
 
     def on_key_press(self, symbol, modifiers):
         pyglet.app.exit()
 
-    def idle(self, dt):
-        self.clock.unschedule(self.idle)
-        print("Going idle, ", dt, " seconds since scan.")
-        self.clear()
-        self.image = None
-        self.species = None
-        for graphic in self.graphics:
-            graphic.delete()
-        label = pyglet.text.Label('Please place the patient in the scanning area.',
-                                  color=(255, 255, 255, 255),
-                                  font_size=24, font_name='Lucida Console',
-                                  x=self.width // 2, y=self.height // 2,
-                                  anchor_x='center', anchor_y='center',
-                                  batch=self.graphics_batch)
-        self.graphics.append(label)
-        self.graphics_batch.draw()
 
     def on_draw(self):
         self.clear()

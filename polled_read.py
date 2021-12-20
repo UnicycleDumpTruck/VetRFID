@@ -27,7 +27,7 @@ window2 = scanner_window.ScannerWindow(
 # event_logger = pyglet.window.event.WindowEventLogger()
 # window.push_handlers(event_logger)
 windows = {window1: [1], window2: [2]}
-antennas = {'1': window1, '2': window2}
+antennas = {'1': window1, '2': window2, '3': window1, '4': window2}
 td = tag_dispatcher.TagDispatcher(reader, windows, antennas)
 
 clock = pyglet.clock.get_default()
