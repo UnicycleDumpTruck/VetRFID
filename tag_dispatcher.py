@@ -21,17 +21,18 @@ class TagDispatcher(pyglet.event.EventDispatcher):
         if tag_list:
             for tag in tag_list:
                 print("Read EPC: ", tag, ", RSSI: ", tag.rssi)
-                win = self.antennas[tag.antenna]
+                win = self.antennas[str(tag.antenna)]
                 sorted_tags[win].append(tag)
             for window in sorted_tags:
-                sorted_tags[window].sort(key=lambda tag: tag.rssi)
-                best_tag = sorted_tags[window][0]
-                best_tag.last_seen = log.log_tag(best_tag)
-                print("Highest signal from read: ", best_tag.epc,
-                      " on antenna: ", best_tag.antenna)
-                window.dispatch_event('on_tag_read', best_tag)
-                print("Dispacted tag: ", best_tag)
-                # TODO send tag to correct monitors
+                if sorted_tags[window]:
+                    print("Sorted tags: ", sorted_tags[window])
+                    sorted_tags[window].sort(key=lambda tag: tag.rssi)
+                    best_tag = sorted_tags[window][0]
+                    best_tag.last_seen = log.log_tag(best_tag)
+                    print("Highest signal from read: ", best_tag.epc,
+                        " on antenna: ", best_tag.antenna)
+                    window.dispatch_event('on_tag_read', best_tag)
+                    print("Dispacted tag: ", best_tag)
 
     def tag_read(self, tag: epc.rTag | epc.fTag):
         raise NotImplementedError

@@ -35,7 +35,7 @@ class rTag(Tag):
     """Class for tags from reader hardware."""
 
     def __init__(self, tag):
-        self.epc = str(tag.epc)
+        self.epc = str(tag.epc)[2:26]
         self.phase = tag.phase
         self.antenna = tag.antenna
         self.read_count = tag.read_count

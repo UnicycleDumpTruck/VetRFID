@@ -54,12 +54,12 @@ class ScannerWindow(pyglet.window.Window):
         # self.graphics.append(self.station_label) # keep out of batch to keep from delete
         self.image = None
         self.clock = pyglet.clock.get_default()
-        self.heartrate = pyglet.media.load(
-            "media/inspiration/hrmpeg4.m4v")
-        self.heartrate_player = pyglet.media.Player()
-        self.heartrate.size = (200, 200)
-        self.heartrate_player.size = (200, 200)
-        self.heartrate_player.queue(self.heartrate)
+        # self.heartrate = pyglet.media.load(
+        #     "media/inspiration/hrmpeg4.m4v")
+        # self.heartrate_player = pyglet.media.Player()
+        # self.heartrate.size = (200, 200)
+        # self.heartrate_player.size = (200, 200)
+        # self.heartrate_player.queue(self.heartrate)
 
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
         self.clock.unschedule(self.idle)

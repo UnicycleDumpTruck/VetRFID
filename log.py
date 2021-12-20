@@ -20,6 +20,7 @@ def log_tag(tag: epc.rTag | epc.fTag) -> datetime:  # string input
     """Log epc string to jlog.json file."""
     log_dict = files.json_import('jlog.json')
     last_seen = None
+    last_seen_obj = None
     if log_dict.get(tag.epc):
         print(f"Logged: {tag.epc}")
         last_seen = log_dict[tag.epc]['last_seen']
@@ -36,6 +37,7 @@ def log_tag(tag: epc.rTag | epc.fTag) -> datetime:  # string input
                              'last_seen': str(datetime.now()),
                              'num_reads': '1',
                              }
+        last_seen_obj = datetime.now()
     files.json_export('jlog.json', log_dict)
     return last_seen_obj
 
