@@ -10,7 +10,7 @@ reader = mercury.Reader("llrp://izar-51e4c8.local", protocol="GEN2")
 
 print(reader.get_model())
 
-reader.set_read_plan([1, 2], "GEN2", read_power=1900)
+reader.set_read_plan([1], "GEN2", read_power=1900)
 
 serial_int = None
 with open("last_serial.txt", 'r') as f:
@@ -24,18 +24,20 @@ if tags_read:
     animal_species = None
     animal_string = None
     while True:
-        animal_species = input("Enter new animal number: ")
-        if animal_species.isdigit() and len(animal_species) > 5:
-            animal_string = species.species_str(animal_species)
+        animal_species = input("Enter new animal number: ").zfill(4)
+        print(f"Entered: {animal_species}")
+        if animal_species.isdigit():
+            animal_string = species.species_str(animal_species.zfill(4))
+            print(f"animal_string: {animal_string}")
             if animal_string:
                 print("Species: ", animal_string)
                 break
 
-    new_epc = str(serial_int + 1) + animal_string + \
-        datetime.now().strftime("%Y%m%d")
-    if len(new_epc) > 24:
+    new_epc = bytes((str((serial_int + 1)).zfill(12) + animal_species + \
+        datetime.now().strftime("%Y%m%d")), encoding='UTF8')
+    if len(new_epc) > 27:
         raise Exception("new_epc is too long: " + new_epc)
-    if reader.write(epc_code=new_epc, epc_target=target_tag):
-        print('Rewrote "{}" with "{}"'.format(target_tag, new_epc))
-    else:
-        print('No tag found')
+    #reader.write(epc_code=new_epc, epc_target=target_tag)
+    print('Rewrote "{}" with "{}"'.format(target_tag, new_epc))
+    #else:
+    #    print('No tag found')
