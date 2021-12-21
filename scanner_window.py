@@ -61,7 +61,6 @@ class ScannerWindow(pyglet.window.Window):
         # self.heartrate_player.size = (200, 200)
         # self.heartrate_player.queue(self.heartrate)
 
-
     def idle(self, dt):
         self.clock.unschedule(self.idle)
         print("Going idle, ", dt, " seconds since scan.")
@@ -78,7 +77,6 @@ class ScannerWindow(pyglet.window.Window):
                                   batch=self.graphics_batch)
         self.graphics.append(label)
         self.graphics_batch.draw()
-
 
     def on_tag_read(self, tag: epc.rTag | epc.fTag):
         spec = tag.species_string().lower()
@@ -144,10 +142,8 @@ class ScannerWindow(pyglet.window.Window):
             self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
 
-
     def on_key_press(self, symbol, modifiers):
         pyglet.app.exit()
-
 
     def on_draw(self):
         self.clear()
@@ -180,5 +176,6 @@ class ScannerWindow(pyglet.window.Window):
 
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
+
 
 ScannerWindow.register_event_type('on_tag_read')
