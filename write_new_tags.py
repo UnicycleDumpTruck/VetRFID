@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Read tag, set species and write new epc."""
 from __future__ import print_function
-from datetime import datetime
+# from datetime import datetime
 import mercury  # type: ignore
 # import log
-import species
 import izar
+import epc
 
 reader = izar.MockReader()
 
@@ -20,21 +20,17 @@ while input("Hit 'Return' to read & write a tag, 'n' to exit.") == "":
         # TODO set target to closest by RSSI
         target_tag = tags_read[0]
         print("Targeted tag is ", target_tag)
-        animal_species = None
-        animal_string = None
-        while True:
-            animal_species = input("Enter new animal number: ")
-            if animal_species.isdigit() and len(animal_species) > 5:
-                animal_string = species.species_str(animal_species)
-                if animal_string:
-                    print("Species: ", animal_string)
-                    break
-        # TODO increment serial and write back to file
-        new_epc = str(serial_int + 1) + animal_string + \
-            datetime.now().strftime("%Y%m%d")
-        if len(new_epc) > 24:
+        new_epc = epc.EpcCode("000000000000000000000000")
+        new_epc.species_num = input("Enter new animal number: ").strip()
+        print("Species: ", new_epc.species_string)
+        new_epc.serial = str(serial_int + 1)
+        new_epc.location = input("Tag location digits (max 4):").strip()
+        new_epc.date_now()
+        if len(new_epc.code) > 24:
             raise Exception(f"new_epc is too long: {new_epc}")
         if reader.write(epc_code=new_epc, epc_target=target_tag):
-            print(f'Rewrote "{target_tag}" with "{new_epc}"')
+            print(f'Rewrote "{target_tag}"\nwith    "{new_epc.code}"')
+            # print(f'Readable version: {readable_epc}')
         else:
             print('No tag found')
+        # TODO increment serial and write back to file

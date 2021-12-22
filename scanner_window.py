@@ -86,7 +86,7 @@ class ScannerWindow(pyglet.window.Window):
 
     def on_tag_read(self, tag: epc.RTag | epc.FTag):
         """New tag scanned, display imagery."""
-        spec = tag.species_string().lower()
+        spec = tag.epc.species_string
 
         if spec != self.species:
             self.clock.unschedule(self.idle)

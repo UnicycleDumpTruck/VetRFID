@@ -38,7 +38,7 @@ class MockReader():
     def read(self) -> list[epc.FTag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
-        if self.counter > 10:
+        if self.counter > 0:
             self.counter = 0
             return [
                 epc.FTag(
@@ -51,3 +51,4 @@ class MockReader():
     def write(self, epc_code, epc_target):
         """Mock write to allow testing."""
         print(f"MockReader pretended to write {epc_code} to {epc_target}.")
+        return True
