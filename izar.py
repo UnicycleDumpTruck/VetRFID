@@ -38,13 +38,13 @@ class MockReader():
     def read(self) -> list[epc.FTag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
-        if self.counter > 0:
+        if self.counter > 10:
             self.counter = 0
             return [
                 epc.FTag(
-                    '111111111111000120211216', '1', '-99', '0', '1'),
-                # epc.fTag(
-                #     '111111111112000220211216', '2', '-88', '0', '1'),
+                    '000211111100000120211216', '1', '-99', '0', '1'),
+                epc.FTag(
+                    '000111111100000220211216', '2', '-88', '0', '1'),
             ]
         return []
 

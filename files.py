@@ -35,7 +35,7 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         [pyglet.resource....]: [resource type determined by media_type]
     """
     # animal_species="monkey", media_directory="xray"
-    dir_path = "media/" + animal_species + "/" + media_directory + "/"
+    dir_path = "media/" + animal_species.lower() + "/" + media_directory + "/"
     img_resource = file_types[media_type](
         dir_path + random.choice(os.listdir(dir_path)))
 
