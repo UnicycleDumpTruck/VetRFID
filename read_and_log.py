@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Continuous read, logging each tag detected."""
 from __future__ import print_function
 import time
 # from datetime import datetime

@@ -1,22 +1,23 @@
+"""Load dict from json file. Make random pyglet imag from directory."""
 import json
-import pyglet  # type: ignore
 import os
 import random
+import pyglet  # type: ignore
 
 
 def json_import(filename):
     """Read json from 'filename', return dictionary."""
-    with open(filename, 'r') as f:
-        data = f.read()
+    with open(filename, 'r', encoding="UTF8") as json_file:
+        data = json_file.read()
     js = json.loads(data)
     return js
 
 
 def json_export(filename, ldict):
     """Write dictionary to filename as json."""
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding="UTF8") as json_file:
         jstr = json.dumps(ldict, indent=4, sort_keys=True)
-        f.write(jstr)
+        json_file.write(jstr)
 
 
 file_types = {'img': pyglet.resource.image, }
@@ -34,13 +35,14 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         [pyglet.resource....]: [resource type determined by media_type]
     """
     # animal_species="monkey", media_directory="xray"
-    p = "media/" + animal_species + "/" + media_directory + "/"
-    f = file_types[media_type](p + random.choice(os.listdir(p)))
+    dir_path = "media/" + animal_species + "/" + media_directory + "/"
+    img_resource = file_types[media_type](
+        dir_path + random.choice(os.listdir(dir_path)))
 
     # may not work for images larger than 1280 x 720...
     if media_type == 'img':
-        scale_factor = f.height / 720
-        f.height = 720
-        f.width = f.width / scale_factor
+        scale_factor = img_resource.height / 720
+        img_resource.height = 720
+        img_resource.width = img_resource.width / scale_factor
 
-    return f
+    return img_resource

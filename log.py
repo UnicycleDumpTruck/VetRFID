@@ -1,12 +1,22 @@
+"""Log tags to file for popularity tracking."""
 from __future__ import annotations
 from datetime import datetime
 import files
 import epc
 
 log_format = {
-    "100000000000000000000000": {'species': 'horse', 'first_seen': str(datetime.now()), 'last_seen': str(datetime.now()), 'num_reads': '0'},
-    "100000000000000000000001": {'species': 'horse', 'first_seen': str(datetime.now()), 'last_seen': str(datetime.now()), 'num_reads': '0'},
-    "100000000000000000000002": {'species': 'horse', 'first_seen': str(datetime.now()), 'last_seen': str(datetime.now()), 'num_reads': '0'},
+    "100000000000000000000000": {'species': 'horse',
+                                 'first_seen': str(datetime.now()),
+                                 'last_seen': str(datetime.now()),
+                                 'num_reads': '0'},
+    "100000000000000000000001": {'species': 'horse',
+                                 'first_seen': str(datetime.now()),
+                                 'last_seen': str(datetime.now()),
+                                 'num_reads': '0'},
+    "100000000000000000000002": {'species': 'horse',
+                                 'first_seen': str(datetime.now()),
+                                 'last_seen': str(datetime.now()),
+                                 'num_reads': '0'},
 }
 
 
@@ -16,7 +26,7 @@ def print_log_dict(ldict):
         print(itm[0], itm[1].values())
 
 
-def log_tag(tag: epc.rTag | epc.fTag) -> datetime:  # string input
+def log_tag(tag: epc.RTag | epc.FTag) -> datetime:  # string input
     """Log epc string to jlog.json file."""
     log_dict = files.json_import('jlog.json')
     last_seen = None

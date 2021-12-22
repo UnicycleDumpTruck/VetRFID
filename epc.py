@@ -1,3 +1,4 @@
+"""Classes to hold tags, mock/fake or scanned."""
 from __future__ import annotations
 import species
 
@@ -7,8 +8,10 @@ DATE_FORMAT = "%Y%m%d"
 
 
 class Tag():
+    """Base class for rTag and fTag."""
+
     def __init__(self):
-        self.epc = None
+        self.epc: str = None
         self.antenna = None
         self.rssi = None
         self.phase = None
@@ -52,7 +55,7 @@ class Tag():
         return str(self.epc)
 
 
-class rTag(Tag):
+class RTag(Tag):
     """Class for tags from reader hardware."""
 
     def __init__(self, tag):
@@ -64,7 +67,7 @@ class rTag(Tag):
         self.last_seen = None
 
 
-class fTag(Tag):
+class FTag(Tag):
     """Class for fake/mock tags for testing w/o hardware."""
 
     def __init__(self, epc, antenna, rssi, phase, read_count):

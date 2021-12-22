@@ -1,15 +1,15 @@
-# Functions to load dictionary of species numbers and names
-# from json file, and function to return name for a species number
+"""Functions to load dictionary of species numbers and names
+from json file, and function to return name for a species number."""
 from __future__ import annotations
 import json
 
 
 def json_import(filename: str) -> dict[str, str]:
     """Load species from filename, return dictionary."""
-    with open(filename, 'r') as f:
-        data = f.read()
-    js = json.loads(data)
-    return js
+    with open(filename, 'r', encoding="UTF8") as json_file:
+        data = json_file.read()
+    json_dict = json.loads(data)
+    return json_dict
 
 
 def species_str(species_num: str) -> str | None:

@@ -1,9 +1,10 @@
+"""Classes for real and mock/fake hardward reader."""
 from __future__ import annotations
 import mercury  # type: ignore
 import epc
 
 
-class izarReader(mercury.Reader):
+class IzarReader(mercury.Reader):
     """Communicates with IZAR RFID Reader."""
 
     def __init__(self, *args, **kwargs):
@@ -20,29 +21,33 @@ class izarReader(mercury.Reader):
         self.set_read_plan([1, 2], "GEN2", read_power=1500)
         # return self ?
 
-    def read(self) -> list[epc.rTag]:
+    def read(self) -> list[epc.RTag]:
+        """Return list of tags visible to reader."""
         raw_tags = super().read()
-        rtag_list = [epc.rTag(tag) for tag in raw_tags]
+        rtag_list = [epc.RTag(tag) for tag in raw_tags]
         return rtag_list
 
 
-class mockReader():
+class MockReader():
     """Returns fake epc list on every 10th reader.read()."""
 
     def __init__(self, *args, **kwargs):
         """Initialize counter at zero."""
         self.counter = 0
 
-    def read(self) -> list[epc.fTag]:
+    def read(self) -> list[epc.FTag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
         if self.counter > 10:
             self.counter = 0
             return [
-                epc.fTag(
+                epc.FTag(
                     '111111111111000120211216', '1', '-99', '0', '1'),
                 # epc.fTag(
                 #     '111111111112000220211216', '2', '-88', '0', '1'),
             ]
-        else:
-            return []
+        return []
+
+    def write(self, epc_code, epc_target):
+        """Mock write to allow testing."""
+        print(f"MockReader pretended to write {epc_code} to {epc_target}.")
