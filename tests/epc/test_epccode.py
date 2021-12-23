@@ -1,3 +1,4 @@
+"""Tests for methods of EpcCode class."""
 from datetime import datetime
 import pytest
 from epc import LOCATION_DIGITS, SERIAL_DIGITS, SPECIES_DIGITS, EpcCode
@@ -5,11 +6,13 @@ from epc import LOCATION_DIGITS, SERIAL_DIGITS, SPECIES_DIGITS, EpcCode
 
 @pytest.fixture
 def new_epc():
+    """Setup fixture with blank code."""
     new_epc = EpcCode('000000000000000000000000')
     yield new_epc
 
 
 def test_init(new_epc):
+    """Check that the fixture is as expected."""
     assert new_epc.code == '000000000000000000000000'
 
 
