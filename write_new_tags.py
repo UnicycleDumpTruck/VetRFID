@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Read tag, set species and write new epc."""
 from __future__ import print_function
-# from datetime import datetime
-import mercury  # type: ignore
 # import log
 import izar
 import epc
