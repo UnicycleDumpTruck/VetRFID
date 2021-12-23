@@ -22,6 +22,7 @@ class ScannerWindow(pyglet.window.Window):
         self.media_dir = 'xray'
         self.media_type = 'img'
         self.species = None
+        self.serial = None
         # bdr = 10
         # rectangle = pyglet.shapes.Rectangle(
         #     bdr, bdr, self.width - (bdr * 2), self.height - (bdr * 2),
@@ -87,8 +88,10 @@ class ScannerWindow(pyglet.window.Window):
     def on_tag_read(self, tag: epc.RTag | epc.FTag):
         """New tag scanned, display imagery."""
         spec = tag.epc.species_string
+        serial = tag.epc.serial
         # TODO change below line to animal/item serial
-        if spec != self.species:
+        if serial != self.serial:
+        #if spec != self.species:
             self.clock.unschedule(self.idle)
             # TODO investigate idle after serial todo
             self.clear()
