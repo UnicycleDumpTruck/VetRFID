@@ -1,12 +1,17 @@
+#!/usr/bin/env python3
+"""Subclassing pyglet Window to add behavior."""
 from __future__ import annotations
+from datetime import datetime
 import pyglet  # type: ignore
 import files
 import epc
-from datetime import datetime
 
 
 class ScannerWindow(pyglet.window.Window):
+    """Subclassing pyglet Window to add logic and display."""
+
     def __init__(self, *args, window_number, antennas, **kwargs):
+        """Set up backgroud and periphery labels."""
         super().__init__(*args, **kwargs)
         self.background_graphics = []
         self.graphics = []
@@ -62,6 +67,7 @@ class ScannerWindow(pyglet.window.Window):
         # self.heartrate_player.queue(self.heartrate)
 
     def idle(self, dt):
+        """Clear medical imagery, return to idle screen."""
         self.clock.unschedule(self.idle)
         print("Going idle, ", dt, " seconds since scan.")
         self.clear()
@@ -78,8 +84,9 @@ class ScannerWindow(pyglet.window.Window):
         self.graphics.append(label)
         self.graphics_batch.draw()
 
-    def on_tag_read(self, tag: epc.rTag | epc.fTag):
-        spec = tag.species_string().lower()
+    def on_tag_read(self, tag: epc.RTag | epc.FTag):
+        """New tag scanned, display imagery."""
+        spec = tag.epc.species_string
 
         if spec != self.species:
             self.clock.unschedule(self.idle)
@@ -143,9 +150,11 @@ class ScannerWindow(pyglet.window.Window):
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):
+        """Pressing any key exits app."""
         pyglet.app.exit()
 
     def on_draw(self):
+        """Draw what should be on the screen, set by other methods."""
         self.clear()
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         if self.image:
@@ -166,13 +175,13 @@ class ScannerWindow(pyglet.window.Window):
         # if self.heartrate_player.texture:
         #     self.heartrate_player.texture.blit(0, 0)
 
-    def get_video_size(width, height, sample_aspect):
+    def get_video_size(self, width, height, sample_aspect):
+        """Calculate new size based on current size and scale factor."""
         if sample_aspect > 1.:
             return width * sample_aspect, height
-        elif sample_aspect < 1.:
+        if sample_aspect < 1.:
             return width, height / sample_aspect
-        else:
-            return width, height
+        return width, height
 
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'

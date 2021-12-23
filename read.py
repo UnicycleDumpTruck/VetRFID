@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Read once and display list of tags detected."""
 from __future__ import print_function
 import mercury  # type: ignore
 

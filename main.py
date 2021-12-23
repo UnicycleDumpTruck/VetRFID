@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Application main code to run reader and display images."""
 from __future__ import print_function
 import pyglet  # type: ignore
 import scanner_window
@@ -6,8 +7,8 @@ import tag_dispatcher
 import izar
 
 
-# reader = izar.mockReader()
-reader = izar.izarReader('llrp://izar-51e4c8.local', protocol="GEN2")
+reader = izar.MockReader()
+# reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
 clock = pyglet.clock.get_default()
 
 display = pyglet.canvas.get_display()
