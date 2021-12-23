@@ -2,7 +2,7 @@
 from __future__ import annotations
 import pyglet  # type: ignore
 import epc
-import log
+# import log
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
@@ -18,7 +18,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
     def read_tags(self, delta_time):
         """Poll reader for new tags, send strongest read to assigned window."""
-        read_tags = self.reader.read(timeout=250)  # TODO set timeout
+        read_tags = self.reader.read(timeout=500)  # TODO set timeout
         if read_tags:
             # window_tags is dict of window:[tags]
             window_tags = {k: [] for k in self.windows.keys()}
@@ -34,7 +34,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
                 if window_tags[window]:
                     window_tags[window].sort(key=lambda tag: tag.rssi)
                     best_tag: epc.RTag | epc.FTag = window_tags[window][0]
-                    best_tag.last_seen = log.log_tag(best_tag)
+                    # best_tag.last_seen = log.log_tag(best_tag)
                     window.dispatch_event('on_tag_read', best_tag)
                     print("Dispacted tag: ", best_tag)
         else:
