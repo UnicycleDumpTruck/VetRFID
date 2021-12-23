@@ -8,11 +8,11 @@ print(reader.get_model())
 print(reader.get_supported_regions())
 
 # Adding bank= causes segmentation fault, maybe tags don't support
-reader.set_read_plan([1, 2], "GEN2", read_power=1900)
+reader.set_read_plan([1], "GEN2")
 # print(reader.read())
 
-old_epc = b'000000000005000520211212'
-new_epc = b'000000000005000420211212'
+old_epc = b'000100000800000320211223'
+new_epc = b'000100000700000320211223'
 
 if reader.write(epc_code=new_epc, epc_target=old_epc):
     print(f"Rewrote {str(old_epc)} with {str(new_epc)}")

@@ -21,7 +21,7 @@ class IzarReader(mercury.Reader):
         self.set_read_plan([1, 2], "GEN2", read_power=1500)
         # return self ?
 
-    def read(self) -> list[epc.RTag]:
+    def read(self, timeout=500) -> list[epc.RTag]:
         """Return list of tags visible to reader."""
         raw_tags = super().read()
         rtag_list = [epc.RTag(tag) for tag in raw_tags]
@@ -35,7 +35,7 @@ class MockReader():
         """Initialize counter at zero."""
         self.counter = 0
 
-    def read(self) -> list[epc.FTag]:
+    def read(self, timeout=500) -> list[epc.FTag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
         if self.counter > 10:
