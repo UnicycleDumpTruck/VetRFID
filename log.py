@@ -4,20 +4,8 @@ from datetime import datetime
 import files
 import epc
 
-log_format = {
-    "100000000000000000000000": {'species': 'horse',
-                                 'first_seen': str(datetime.now()),
-                                 'last_seen': str(datetime.now()),
-                                 'num_reads': '0'},
-    "100000000000000000000001": {'species': 'horse',
-                                 'first_seen': str(datetime.now()),
-                                 'last_seen': str(datetime.now()),
-                                 'num_reads': '0'},
-    "100000000000000000000002": {'species': 'horse',
-                                 'first_seen': str(datetime.now()),
-                                 'last_seen': str(datetime.now()),
-                                 'num_reads': '0'},
-}
+# If the jlog.json file gets wiped, put an empty pair
+# of {} in it to allow a new file to be created.
 
 
 def print_log_dict(ldict):
@@ -32,11 +20,10 @@ def log_tag(tag: epc.RTag | epc.FTag) -> datetime:  # string input
     last_seen = None
     last_seen_obj = None
     if log_dict.get(tag.epc.code):
-        print(f"Logged: {tag.epc.code}")
         last_seen = log_dict[tag.epc.code]['last_seen']
         last_seen_obj = datetime.strptime(last_seen, "%Y-%m-%d %H:%M:%S.%f")
         last_seen_str = datetime.strftime(last_seen_obj, "%m/%d/%Y, %H:%M:%S")
-        print(f"Tag last seen {last_seen_str}")
+        print(f"Logged {tag.epc.code}. Last seen {last_seen_str}")
         log_dict[tag.epc.code]['last_seen'] = str(datetime.now())
         log_dict[tag.epc.code]['num_reads'] = str(
             int(log_dict[tag.epc.code]['num_reads']) + 1)
@@ -50,12 +37,3 @@ def log_tag(tag: epc.RTag | epc.FTag) -> datetime:  # string input
         last_seen_obj = datetime.now()
     files.json_export('jlog.json', log_dict)
     return last_seen_obj
-
-
-# def log_tag(tag):
-#     """Get string of epc from tag and send it to log_epc function for jlog.json."""
-#     string_epc = epc.epc_to_string(tag.epc)
-#     log_epc(string_epc)
-#     print("Logged: ", string_epc)
-
-# files.json_export('jlog.json', log_format)

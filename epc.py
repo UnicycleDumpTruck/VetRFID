@@ -72,7 +72,7 @@ class EpcCode():
     def species_num(self, num_str: str) -> str:
         """Set species number portion of epc. Leading zeros will be added.
         Returns new EPC code."""
-        if num_str.isdigit and len(num_str) < SPECIES_DIGITS:
+        if num_str.isdigit and len(num_str) < (SPECIES_DIGITS + 1):
             self.code = "".join([self.code[:SERIAL_END],
                                 num_str.zfill(SPECIES_DIGITS),
                                 self.code[SPECIES_END:]])
@@ -89,19 +89,19 @@ class EpcCode():
         raise ValueError("Species not found in species.json file.")
 
     @property
-    def date_str(self) -> str:
+    def date_string(self) -> str:
         """Return date as 'YYYYMMDD'."""
         return self.code[SPECIES_END:]
 
-    @date_str.setter
-    def date_str(self, d_str: str):
+    @date_string.setter
+    def date_string(self, d_str: str):
         """Set date with str formated YYYYMMDD"""
         self.code = "".join([self.code[0:SPECIES_END], d_str])
         return self.code
 
     def date_now(self):
         """Set the date as today's date."""
-        self.date_str = datetime.now().strftime("%Y%m%d")
+        self.date_string = datetime.now().strftime("%Y%m%d")
 
     @property
     def epc_bytes(self):
@@ -122,42 +122,6 @@ class Tag():
         self.phase = None
         self.read_count = None
         self.last_seen = None
-
-    # @property
-    # def location(self) -> str:
-    #     """Return location data string."""
-    #     return self.epc.location
-
-    # @property
-    # def serial(self) -> str:
-    #     """Return tag serial number portion of EPC code."""
-    #     return self.epc.serial
-
-    # @serial.setter
-    # def serial(self, num_str: str):
-    #     """Set serial number portion of epc. Leading zeros will be added."""
-    #     self.epc.serial = num_str
-    #     return self.epc
-
-    # @property
-    # def species_num(self) -> str:
-    #     """Return species/animal portion of EPC code bytes or string."""
-    #     return self.epc.species_num
-
-    # @species_num.setter
-    # def species_num(self, num_str: str):
-    #     """Set species number portion of epc. Leading zeros will be added."""
-    #     self.epc.code = num_str
-
-    # @property
-    # def species_string(self):
-    #     """Return species name as a string, like 'horse'."""
-    #     return self.epc.species_string
-
-    # @property
-    # def epc_bytes(self):
-    #     """Return epc as a bytes object."""
-    #     return bytes(self.epc, encoding="UTF8")
 
     def __repr__(self):
         """Represent EPC Code."""
