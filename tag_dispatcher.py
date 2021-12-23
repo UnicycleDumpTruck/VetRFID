@@ -18,7 +18,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
     def read_tags(self, delta_time):
         """Poll reader for new tags, send strongest read to assigned window."""
-        read_tags = self.reader.read()  # TODO set timeout
+        read_tags = self.reader.read(timeout=250)  # TODO set timeout
         if read_tags:
             # window_tags is dict of window:[tags]
             window_tags = {k: [] for k in self.windows.keys()}
@@ -37,6 +37,8 @@ class TagDispatcher(pyglet.event.EventDispatcher):
                     best_tag.last_seen = log.log_tag(best_tag)
                     window.dispatch_event('on_tag_read', best_tag)
                     print("Dispacted tag: ", best_tag)
+        else:
+            print("No tags detected.")
 
 
 TagDispatcher.register_event_type('on_tag_read')

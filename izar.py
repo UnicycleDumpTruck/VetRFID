@@ -18,7 +18,7 @@ class IzarReader(mercury.Reader):
         print("Supported Power Range in centidBm",
               self.get_power_range())
 
-        self.set_read_plan([1, 2], "GEN2", read_power=1500)
+        self.set_read_plan([1, 2], "GEN2", read_power=1900)
         # return self ?
 
     def read(self, timeout=500) -> list[epc.RTag]:

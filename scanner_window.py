@@ -87,10 +87,10 @@ class ScannerWindow(pyglet.window.Window):
     def on_tag_read(self, tag: epc.RTag | epc.FTag):
         """New tag scanned, display imagery."""
         spec = tag.epc.species_string
-
+        # TODO change below line to animal/item serial
         if spec != self.species:
             self.clock.unschedule(self.idle)
-
+            # TODO investigate idle after serial todo
             self.clear()
             self.species = spec
             self.image = files.random_species_dir_type(
@@ -146,7 +146,7 @@ class ScannerWindow(pyglet.window.Window):
             self.graphics_batch.draw()
             # self.heartrate_player.play()
             self.flip()  # Required to cause window refresh
-            self.clock.schedule_once(self.idle, 3)
+            self.clock.schedule_once(self.idle, 5)
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):
