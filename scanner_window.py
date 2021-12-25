@@ -58,7 +58,7 @@ class ScannerWindow(pyglet.window.Window):
             x=125, y=60,
             anchor_x='center', anchor_y='center',
             batch=self.graphics_batch)
-        # self.graphics.append(self.station_label) # keep out of batch to keep from delete
+        # self.graphics.append(self.station_label) # keep out of batch
         self.image = None
         self.clock = pyglet.clock.get_default()
         # self.heartrate = pyglet.media.load(
@@ -68,22 +68,23 @@ class ScannerWindow(pyglet.window.Window):
         # self.heartrate_player.size = (200, 200)
         # self.heartrate_player.queue(self.heartrate)
 
-    def idle(self, dt):
+    def idle(self, delta_time):
         """Clear medical imagery, return to idle screen."""
         self.clock.unschedule(self.idle)
-        print("Going idle, ", dt, " seconds since scan.")
+        print("Going idle, ", delta_time, " seconds since scan.")
         self.clear()
         self.image = None
         self.species = None
         self.serial = None
         for graphic in self.graphics:
             graphic.delete()
-        label = pyglet.text.Label('Please place the patient in the scanning area.',
-                                  color=(255, 255, 255, 255),
-                                  font_size=24, font_name='Lucida Console',
-                                  x=self.width // 2, y=self.height // 2,
-                                  anchor_x='center', anchor_y='center',
-                                  batch=self.graphics_batch)
+        label = pyglet.text.Label(
+            'Please place the patient in the scanning area.',
+            color=(255, 255, 255, 255),
+            font_size=24, font_name='Lucida Console',
+            x=self.width // 2, y=self.height // 2,
+            anchor_x='center', anchor_y='center',
+            batch=self.graphics_batch)
         self.graphics.append(label)
         self.graphics_batch.draw()
 
@@ -94,7 +95,7 @@ class ScannerWindow(pyglet.window.Window):
         serial = tag.epc.serial
         # TODO change below line to animal/item serial
         if serial != self.serial:
-        #if spec != self.species:
+            # if spec != self.species:
             print("Tag serial: ", serial)
             print("self.serial", self.serial)
             # self.clock.unschedule(self.idle)
@@ -185,16 +186,17 @@ class ScannerWindow(pyglet.window.Window):
         # if self.heartrate_player.texture:
         #     self.heartrate_player.texture.blit(0, 0)
 
-    def get_video_size(self, width, height, sample_aspect):
-        """Calculate new size based on current size and scale factor."""
-        if sample_aspect > 1.:
-            return width * sample_aspect, height
-        if sample_aspect < 1.:
-            return width, height / sample_aspect
-        return width, height
-
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
 
 
 ScannerWindow.register_event_type('on_tag_read')
+
+
+def get_video_size(width, height, sample_aspect):
+    """Calculate new size based on current size and scale factor."""
+    if sample_aspect > 1.:
+        return width * sample_aspect, height
+    if sample_aspect < 1.:
+        return width, height / sample_aspect
+    return width, height

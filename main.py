@@ -16,13 +16,15 @@ screens = display.get_screens()
 for screen in screens:
     print(screen)
 # window2 = scanner_window.ScannerWindow(
-#     1280, 720, "Pet U 2", True, fullscreen=True, screen=screens[0], window_number=2, antennas=[2])
+#       1280, 720, "Pet U 2", True, fullscreen=True,
+#       screen=screens[0], window_number=2, antennas=[2])
 # window1 = scanner_window.ScannerWindow(
-#     1280, 720, "Pet U 1", True, fullscreen=True, screen=screens[1], window_number=1, antennas=[1])
+#       1280, 720, "Pet U 1", True, fullscreen=True,
+#       screen=screens[1], window_number=1, antennas=[1])
 window1 = scanner_window.ScannerWindow(
-    1280, 720, "Pet U 1", True, window_number=1, antennas=[1,2])
+    1280, 720, "Pet U 1", True, window_number=1, antennas=[1, 2])
 window2 = scanner_window.ScannerWindow(
-    1280, 720, "Pet U 2", True, window_number=2, antennas=[3,4])
+    1280, 720, "Pet U 2", True, window_number=2, antennas=[3, 4])
 
 
 # event_logger1 = pyglet.window.event.WindowEventLogger()

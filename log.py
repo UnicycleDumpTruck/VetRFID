@@ -14,6 +14,8 @@ def print_log_dict(ldict):
         print(itm[0], itm[1].values())
 
 # TODO Log tags by Serial and date, with dict for num_reads by position with total
+
+
 def log_tag(tag: epc.RTag | epc.FTag) -> datetime:  # string input
     """Log epc string to jlog.json file."""
     log_dict = files.json_import('jlog.json')
