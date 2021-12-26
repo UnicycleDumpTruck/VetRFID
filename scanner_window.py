@@ -71,7 +71,9 @@ class ScannerWindow(pyglet.window.Window):
             self.label_controller.make_tag_labels(tag).draw()
             # self.graphics_batch.draw()
             # self.heartrate_player.play()
-            self.flip()  # Required to cause window refresh
+
+            # Seemed required to cause window refresh, but caused flicker
+            # self.flip() # Removed, seems to work now.
         self.clock.schedule_once(self.idle, 5)
         return pyglet.event.EVENT_HANDLED
 
@@ -123,7 +125,6 @@ class LabelController():
 
     def __init__(self, window: ScannerWindow):
         """Initialize and make idle labels."""
-        self.tag_labels: List[pyglet.text.Label] = []
         self.tag_graphics: List[Any] = []
         self.idle_graphics: List[Any] = []
         self.always_graphics: List[Any] = []
@@ -132,6 +133,7 @@ class LabelController():
         self.always_labels = pyglet.graphics.Batch()
         self.window = window
         self.make_idle_labels()
+        self.make_always_labels()
 
     def idle_label_batch(self):
         """Return self.idle_label_batch"""
@@ -212,7 +214,7 @@ class LabelController():
             font_size=36, font_name='Lucida Console',
             x=125, y=self.window.height - 60,
             anchor_x='center', anchor_y='center',
-            batch=self.idle_labels)
+            batch=self.always_labels)
         self.always_graphics.append(station_label_1)
         station_label_2 = pyglet.text.Label(
             "X-Ray",
@@ -220,6 +222,6 @@ class LabelController():
             font_size=36, font_name='Lucida Console',
             x=125, y=60,
             anchor_x='center', anchor_y='center',
-            batch=self.idle_labels)
+            batch=self.always_labels)
         self.always_graphics.append(station_label_2)
         return self.idle_labels
