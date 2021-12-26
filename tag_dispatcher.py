@@ -2,16 +2,18 @@
 from __future__ import annotations
 import pyglet  # type: ignore
 import epc
+import izar  # new __init__.py messing up imports?
 # import log
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
     """Poll reader for new tags, send strongest read to assigned window."""
 
-    def __init__(self, reader, windows, antennas, *args, **kwargs):
+    def __init__(self, reader: izar.MockReader | izar.IzarReader,
+                 windows, antennas, *args, **kwargs):
         """Initialize self variables."""
         super().__init__(*args, **kwargs)
-        self.reader = reader
+        self.reader: izar.MockReader | izar.IzarReader = reader
         self.clock = pyglet.clock.get_default()
         self.windows = windows
         self.antennas = antennas
