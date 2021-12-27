@@ -33,7 +33,7 @@ class ScannerWindow(pyglet.window.Window):
         self.serial = None
         self.label_controller = LabelController(self)
 
-        self.bg = pyglet.resource.image('graphics/background.png')
+        self.bg = pyglet.resource.image('graphics/background1080.png')
         # self.background_graphics.append(self.bg)
         self.bg.anchor_x = self.bg.width // 2
         self.bg.anchor_y = self.bg.height // 2
@@ -120,6 +120,8 @@ def get_video_size(width, height, sample_aspect):
         return width, height / sample_aspect
     return width, height
 
+X_LABEL_OFFSET = 185
+Y_LABEL_OFFSET = 95
 
 class LabelController():
     """Manage labels for a ScannerWindow"""
@@ -150,8 +152,8 @@ class LabelController():
         species_label_1 = pyglet.text.Label(
             text="Species detected:",
             color=(255, 255, 255, 255),
-            font_size=18, font_name='Lucida Console',
-            x=self.window.width - 125, y=65,
+            font_size=28, font_name='Lucida Console',
+            x=self.window.width - X_LABEL_OFFSET, y=Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='bottom',
             batch=self.tag_labels)
         self.tag_graphics.append(species_label_1)
@@ -159,8 +161,8 @@ class LabelController():
         species_label_2 = pyglet.text.Label(
             text=tag.epc.species_string.capitalize(),
             color=(255, 255, 255, 255),
-            font_size=32, font_name='Lucida Console',
-            x=self.window.width - 125, y=65,
+            font_size=48, font_name='Lucida Console',
+            x=self.window.width - X_LABEL_OFFSET, y=Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='top',
             batch=self.tag_labels)
         self.tag_graphics.append(species_label_2)
@@ -172,23 +174,23 @@ class LabelController():
         last_seen_label_2 = pyglet.text.Label(
             text=last_seen_date,
             color=(255, 255, 255, 255),
-            font_size=18, font_name='Lucida Console',
-            x=self.window.width - 125, y=self.window.height - 60,
+            font_size=28, font_name='Lucida Console',
+            x=self.window.width - X_LABEL_OFFSET, y=self.window.height - Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='center',
             batch=self.tag_labels)
         last_seen_label_1 = pyglet.text.Label(
             text='Patient last seen:',
             color=(255, 255, 255, 255),
-            font_size=16, font_name='Lucida Console',
-            x=self.window.width - 125,
-            y=self.window.height - 40,
+            font_size=28, font_name='Lucida Console',
+            x=self.window.width - X_LABEL_OFFSET,
+            y=self.window.height - Y_LABEL_OFFSET + 28,
             anchor_x='center', anchor_y='bottom',
             batch=self.tag_labels)
         last_seen_label_3 = pyglet.text.Label(
             text=last_seen_time,
             color=(255, 255, 255, 255),
-            font_size=18, font_name='Lucida Console',
-            x=self.window.width - 125, y=self.window.height - 80,
+            font_size=28, font_name='Lucida Console',
+            x=self.window.width - X_LABEL_OFFSET, y=self.window.height - Y_LABEL_OFFSET - 28,
             anchor_x='center', anchor_y='top',
             batch=self.tag_labels)
         self.tag_graphics.append(last_seen_label_1)
@@ -202,7 +204,7 @@ class LabelController():
         label = pyglet.text.Label(
             'Please place the patient in the scanning area.',
             color=(255, 255, 255, 255),
-            font_size=24, font_name='Lucida Console',
+            font_size=36, font_name='Lucida Console',
             x=self.window.width // 2, y=self.window.height // 2,
             anchor_x='center', anchor_y='center',
             batch=self.idle_labels)
@@ -213,16 +215,16 @@ class LabelController():
         station_label_1 = pyglet.text.Label(
             f"Station #{str(self.window.window_number)}",
             color=(255, 255, 255, 255),
-            font_size=36, font_name='Lucida Console',
-            x=125, y=self.window.height - 60,
+            font_size=48, font_name='Lucida Console',
+            x=X_LABEL_OFFSET, y=self.window.height - Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='center',
             batch=self.always_labels)
         self.always_graphics.append(station_label_1)
         station_label_2 = pyglet.text.Label(
             "X-Ray",
             color=(255, 255, 255, 255),
-            font_size=36, font_name='Lucida Console',
-            x=125, y=60,
+            font_size=48, font_name='Lucida Console',
+            x=X_LABEL_OFFSET, y=Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='center',
             batch=self.always_labels)
         self.always_graphics.append(station_label_2)

@@ -39,10 +39,10 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     img_resource = file_types[media_type](
         dir_path + random.choice(os.listdir(dir_path)))
 
-    # may not work for images larger than 1280 x 720...
+    # may not work for images larger than 1920 x 1080...
     if media_type == 'img':
-        scale_factor = img_resource.height / 720
-        img_resource.height = 720
+        scale_factor = img_resource.height / 1080
+        img_resource.height = 1080
         img_resource.width = img_resource.width / scale_factor
 
     return img_resource

@@ -18,23 +18,30 @@ screens = display.get_screens()
 for screen in screens:
     print(screen)
 # window2 = scanner_window.ScannerWindow(
-#       1280, 720, "Pet U 2", True, fullscreen=True,
+#       1920, 1080, "Pet U 2", True, fullscreen=True,
 #       screen=screens[0], window_number=2, antennas=[2])
-# window1 = scanner_window.ScannerWindow(
-#       1280, 720, "Pet U 1", True, fullscreen=True,
-#       screen=screens[1], window_number=1, antennas=[1])
 window1 = scanner_window.ScannerWindow(
-    1280, 720, "Pet U 1", True, window_number=1, antennas=[1, 2])
-window2 = scanner_window.ScannerWindow(
-    1280, 720, "Pet U 2", True, window_number=2, antennas=[3, 4])
+      1920, 1080, "Pet U 1", True, fullscreen=True,
+      screen=screens[1], window_number=1, antennas=[1,2])
+# window1 = scanner_window.ScannerWindow(
+#     1280, 720, "Pet U 1", True, window_number=1, antennas=[1, 2])
+# window2 = scanner_window.ScannerWindow(
+#     1280, 720, "Pet U 2", True, window_number=2, antennas=[3, 4])
 
 
 # event_logger1 = pyglet.window.event.WindowEventLogger()
 # window1.push_handlers(event_logger1)
 # event_logger2 = pyglet.window.event.WindowEventLogger()
 # window2.push_handlers(event_logger2)
-windows = {window1: [1], window2: [2]}
-antennas = {'1': window1, '2': window1, '3': window2, '4': window2}
+windows = { 
+    window1: [1,2], 
+    # window2: [2]
+            }
+antennas = {'1': window1, 
+            '2': window1, 
+            # '3': window2, 
+            # '4': window2
+            }
 td = tag_dispatcher.TagDispatcher(reader, windows, antennas)
 
 clock = pyglet.clock.get_default()
