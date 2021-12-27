@@ -7,8 +7,10 @@ import tag_dispatcher
 import izar
 
 
-reader = izar.MockReader()
-# reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
+# reader = izar.MockReader()
+reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
+reader.set_read_plan([1, 2], "GEN2", read_power=1000)
+
 clock = pyglet.clock.get_default()
 
 display = pyglet.canvas.get_display()
