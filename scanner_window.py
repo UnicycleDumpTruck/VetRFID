@@ -11,6 +11,7 @@ import log
 
 
 class State(Enum):
+    """Window state, whether a tag is being displayed."""
     TAG_SHOWING = auto()
     IDLE = auto()
 
@@ -57,7 +58,7 @@ class ScannerWindow(pyglet.window.Window):
         self.serial = None
         self.label_controller.idle_labels.draw()
 
-    def on_tag_read(self, tag: epc.RTag | epc.FTag):
+    def on_tag_read(self, tag):
         """New tag scanned, display imagery."""
         self.clock.unschedule(self.idle)
         self.state = State.TAG_SHOWING
@@ -139,7 +140,7 @@ class LabelController():
         """Return self.idle_label_batch"""
         return self.idle_label_batch
 
-    def make_tag_labels(self, tag: epc.RTag | epc.FTag):
+    def make_tag_labels(self, tag):
         """Delete old labels, generate new ones."""
         for item in self.tag_graphics:
             item.delete()
@@ -208,6 +209,7 @@ class LabelController():
         self.idle_graphics.append(label)
 
     def make_always_labels(self):
+        """Create labels that will remain on screen always."""
         station_label_1 = pyglet.text.Label(
             f"Station #{str(self.window.window_number)}",
             color=(255, 255, 255, 255),

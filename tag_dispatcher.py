@@ -9,11 +9,11 @@ import izar  # new __init__.py messing up imports?
 class TagDispatcher(pyglet.event.EventDispatcher):
     """Poll reader for new tags, send strongest read to assigned window."""
 
-    def __init__(self, reader: izar.MockReader | izar.IzarReader,
+    def __init__(self, reader: izar.IzarReader,
                  windows, antennas, *args, **kwargs):
         """Initialize self variables."""
         super().__init__(*args, **kwargs)
-        self.reader: izar.MockReader | izar.IzarReader = reader
+        self.reader: izar.IzarReader = reader
         self.clock = pyglet.clock.get_default()
         self.windows = windows
         self.antennas = antennas

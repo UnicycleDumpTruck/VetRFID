@@ -1,0 +1,71 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'State', 'x':53, 'y':89, 'width':76, 'height':64, 'attrs': 'IDLE|TAG_SHOWING', 'meths': ''}
+{'type':'umlshape', 'id':'ScannerWindow', 'x':287, 'y':256, 'width':119, 'height':204, 'attrs': 'bg|clock|image|label_controller|media_dir|media_type|serial|state|window_number', 'meths': '__init__|__repr__|idle|on_draw|on_key_press|on_tag_read'}
+{'type':'umlshape', 'id':'LabelController', 'x':456, 'y':187, 'width':136, 'height':174, 'attrs': 'always_graphics|always_labels|idle_graphics|idle_labels|tag_graphics|tag_labels|window', 'meths': '__init__|idle_label_batch|make_always_labels|make_idle_labels|make_tag_labels'}
+{'type':'umlshape', 'id':'scanner_window.py', 'x':349, 'y':79, 'width':153, 'height':54, 'attrs': '', 'meths': 'get_video_size'}
+{'type':'umlshape', 'id':'pyglet.window.Window', 'x':73, 'y':337, 'width':178, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Enum', 'x':295, 'y':17, 'width':44, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'files.random_species_dir_type', 'x':320, 'y':510, 'width':254, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'main.py', 'x':642, 'y':72, 'width':69, 'height':134, 'attrs': 'antennas|clock|display|reader|screens|td|window1|window2|windows', 'meths': ''}
+{'type':'umlshape', 'id':'izar.MockReader', 'x':464, 'y':10, 'width':136, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'scanner_window.ScannerWindow', 'x':642, 'y':256, 'width':245, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'tag_dispatcher.TagDispatcher', 'x':648, 'y':24, 'width':245, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'TagDispatcher', 'x':959, 'y':143, 'width':119, 'height':114, 'attrs': 'antennas|clock|reader|windows', 'meths': '__init__|read_tags'}
+{'type':'umlshape', 'id':'tag_dispatcher.py', 'x':1013, 'y':24, 'width':153, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'pyglet.event.EventDispatcher', 'x':788, 'y':78, 'width':245, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'log.py', 'x':119, 'y':510, 'width':94, 'height':64, 'attrs': '', 'meths': 'log_tag|print_log_dict'}
+{'type':'umlshape', 'id':'IzarReader', 'x':409, 'y':556, 'width':94, 'height':64, 'attrs': '', 'meths': '__init__|read'}
+{'type':'umlshape', 'id':'MockReader', 'x':410, 'y':654, 'width':94, 'height':94, 'attrs': 'counter', 'meths': '__init__|read|write'}
+{'type':'umlshape', 'id':'izar.py', 'x':279, 'y':630, 'width':69, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'mercury.Reader', 'x':252, 'y':584, 'width':128, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'EpcCode', 'x':638, 'y':314, 'width':94, 'height':154, 'attrs': 'code|date_string|epc_bytes|location|serial|species_num|species_string', 'meths': '__init__|__repr__|date_now'}
+{'type':'umlshape', 'id':'Tag', 'x':800, 'y':299, 'width':70, 'height':134, 'attrs': 'antenna|epc|last_seen|phase|read_count|rssi', 'meths': '__init__|__repr__'}
+{'type':'umlshape', 'id':'RTag', 'x':780, 'y':514, 'width':70, 'height':124, 'attrs': 'antenna|epc|last_seen|phase|read_count|rssi', 'meths': '__init__'}
+{'type':'umlshape', 'id':'FTag', 'x':901, 'y':466, 'width':70, 'height':124, 'attrs': 'antenna|epc|last_seen|phase|read_count|rssi', 'meths': '__init__'}
+{'type':'umlshape', 'id':'epc.py', 'x':606, 'y':584, 'width':100, 'height':124, 'attrs': 'LOCATION_DIGITS|SERIAL_DIGITS|SERIAL_END|SPECIES_DIGITS|SPECIES_END|species_names', 'meths': 'json_import'}
+{'type':'umlshape', 'id':'str', 'x':580, 'y':471, 'width':35, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'json.loads', 'x':782, 'y':645, 'width':94, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'files.py', 'x':959, 'y':641, 'width':148, 'height':94, 'attrs': 'file_types', 'meths': 'json_export|json_import|random_species_dir_type'}
+{'type':'umlshape', 'id':'json.dumps', 'x':809, 'y':705, 'width':94, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'izar.IzarReader', 'x':761, 'y':139, 'width':136, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'epc.RTag', 'x':192, 'y':425, 'width':77, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'files.json_import', 'x':27, 'y':267, 'width':153, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'datetime.strptime', 'x':-2, 'y':373, 'width':153, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'datetime.strftime', 'x':-35, 'y':434, 'width':153, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'datetime.now', 'x':179, 'y':154, 'width':111, 'height':24, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'ScannerWindow_to_pyglet.window.Window', 'source':'ScannerWindow', 'target':'pyglet.window.Window', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'State_to_Enum', 'source':'State', 'target':'Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ScannerWindow_to_LabelController', 'source':'ScannerWindow', 'target':'LabelController', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'LabelController_to_ScannerWindow', 'source':'LabelController', 'target':'ScannerWindow', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'files.random_species_dir_type_to_ScannerWindow', 'source':'files.random_species_dir_type', 'target':'ScannerWindow', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'State_to_scanner_window.py', 'source':'State', 'target':'scanner_window.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'ScannerWindow_to_scanner_window.py', 'source':'ScannerWindow', 'target':'scanner_window.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'LabelController_to_scanner_window.py', 'source':'LabelController', 'target':'scanner_window.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'izar.MockReader_to_main.py', 'source':'izar.MockReader', 'target':'main.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'scanner_window.ScannerWindow_to_main.py', 'source':'scanner_window.ScannerWindow', 'target':'main.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'tag_dispatcher.TagDispatcher_to_main.py', 'source':'tag_dispatcher.TagDispatcher', 'target':'main.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'TagDispatcher_to_pyglet.event.EventDispatcher', 'source':'TagDispatcher', 'target':'pyglet.event.EventDispatcher', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'TagDispatcher_to_tag_dispatcher.py', 'source':'TagDispatcher', 'target':'tag_dispatcher.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'IzarReader_to_mercury.Reader', 'source':'IzarReader', 'target':'mercury.Reader', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MockReader_to_izar.py', 'source':'MockReader', 'target':'izar.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'IzarReader_to_izar.py', 'source':'IzarReader', 'target':'izar.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'RTag_to_Tag', 'source':'RTag', 'target':'Tag', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'FTag_to_Tag', 'source':'FTag', 'target':'Tag', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'EpcCode_to_FTag', 'source':'EpcCode', 'target':'FTag', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'EpcCode_to_RTag', 'source':'EpcCode', 'target':'RTag', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'str_to_epc.py', 'source':'str', 'target':'epc.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'json.loads_to_epc.py', 'source':'json.loads', 'target':'epc.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'EpcCode_to_Tag', 'source':'EpcCode', 'target':'Tag', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'EpcCode_to_epc.py', 'source':'EpcCode', 'target':'epc.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'FTag_to_epc.py', 'source':'FTag', 'target':'epc.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'Tag_to_epc.py', 'source':'Tag', 'target':'epc.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'RTag_to_epc.py', 'source':'RTag', 'target':'epc.py', 'uml_edge_type': 'association'}
+{'type':'edge', 'id':'json.loads_to_files.py', 'source':'json.loads', 'target':'files.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'json.dumps_to_files.py', 'source':'json.dumps', 'target':'files.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'izar.IzarReader_to_TagDispatcher', 'source':'izar.IzarReader', 'target':'TagDispatcher', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'datetime.now_to_log.py', 'source':'datetime.now', 'target':'log.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'files.json_import_to_log.py', 'source':'files.json_import', 'target':'log.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'datetime.strptime_to_log.py', 'source':'datetime.strptime', 'target':'log.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'epc.RTag_to_log.py', 'source':'epc.RTag', 'target':'log.py', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'datetime.strftime_to_log.py', 'source':'datetime.strftime', 'target':'log.py', 'uml_edge_type': 'composition'}
