@@ -8,6 +8,9 @@ import scanner_window
 import tag_dispatcher
 import izar
 
+# TODO Use argparse to set reader, reader power, window config, idle
+# TODO Maybe have config file for defaults? idle, scanfreq, etc
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "-m":
