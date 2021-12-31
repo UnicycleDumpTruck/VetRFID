@@ -18,7 +18,6 @@ class IzarReader(mercury.Reader):
         print("Supported Power Range in centidBm",
               self.get_power_range())
 
-        
         # return self ?
 
     def read(self, timeout=500) -> list[epc.RTag]:
@@ -38,13 +37,18 @@ class MockReader():
     def read(self, timeout=500) -> list[epc.FTag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
-        if self.counter > 10:
-            self.counter = 0
+        # if (self.counter % 10) == 0:
+        #     # self.counter = 0
+        #     return [
+        #         epc.FTag(
+        #             '000211111100000120211216', '1', '-99', '0', '1'),
+        #         epc.FTag(
+        #             '000111111100000220211216', '2', '-88', '0', '1'),
+        #     ]
+        if (self.counter % 25) == 0:
             return [
                 epc.FTag(
-                    '000211111100000120211216', '1', '-99', '0', '1'),
-                epc.FTag(
-                    '000111111100000220211216', '2', '-88', '0', '1'),
+                    '000111111100000620211216', '1', '-88', '0', '1'),
             ]
         return []
 

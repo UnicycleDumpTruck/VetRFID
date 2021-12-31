@@ -2,6 +2,7 @@
 import json
 import os
 import random
+import pprint
 import pyglet  # type: ignore
 
 
@@ -20,7 +21,7 @@ def json_export(filename, ldict):
         json_file.write(jstr)
 
 
-file_types = {'img': pyglet.resource.image, }
+file_types = {'img': pyglet.resource.image, 'vid': pyglet.media.load, }
 
 
 def random_species_dir_type(animal_species, media_directory, media_type):
@@ -36,13 +37,24 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     """
     # animal_species="monkey", media_directory="xray"
     dir_path = "media/" + animal_species.lower() + "/" + media_directory + "/"
-    img_resource = file_types[media_type](
-        dir_path + random.choice(os.listdir(dir_path)))
+    all_files = os.listdir(dir_path)
+    valid_files = []
+    for file in all_files:
+        if file[0] != ".":
+            valid_files.append(file)
+    print(valid_files)
+    img_path = dir_path + random.choice(valid_files)
+    print(img_path)
+    img_resource = file_types[media_type](img_path)
 
     # may not work for images larger than 1920 x 1080...
     if media_type == 'img':
         scale_factor = img_resource.height / 1080
         img_resource.height = 1080
         img_resource.width = img_resource.width / scale_factor
+    # elif media_type == 'vid':
+    #     scale_factor = img_resource.height / 1080
+    #     img_resource.height = 1080
+    #     img_resource.width = img_resource.width / scale_factor
 
     return img_resource

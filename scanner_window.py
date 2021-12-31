@@ -32,13 +32,14 @@ class ScannerWindow(pyglet.window.Window):
         self.media_type = 'img'
         self.serial = None
         self.label_controller = LabelController(self)
-
+        self.video_player = pyglet.media.Player()
         self.bg = pyglet.resource.image('graphics/background1080.png')
         # self.background_graphics.append(self.bg)
         self.bg.anchor_x = self.bg.width // 2
         self.bg.anchor_y = self.bg.height // 2
 
         self.image = None
+        self.video = None
         self.clock = pyglet.clock.get_default()
         # self.heartrate = pyglet.media.load(
         #     "media/inspiration/hrmpeg4.m4v")
@@ -55,6 +56,8 @@ class ScannerWindow(pyglet.window.Window):
         print("Going idle, ", delta_time, " seconds since scan.")
         self.clear()
         self.image = None
+        self.video = None
+        self.video_player.next_source()
         self.serial = None
         self.label_controller.idle_labels.draw()
 
@@ -67,15 +70,23 @@ class ScannerWindow(pyglet.window.Window):
             tag.last_seen = log.log_tag(tag)
             self.clear()
             self.serial = serial
-            self.image = files.random_species_dir_type(
-                tag.epc.species_string, self.media_dir, self.media_type)
-            self.label_controller.make_tag_labels(tag).draw()
+            print("Seeking imagery for ", tag.epc.species_string)
+            if tag.epc.species_string == 'Pig':
+                self.video = files.random_species_dir_type(
+                    'generic', 'composite', 'vid'
+                )
+                self.video_player.queue(self.video)
+                self.video_player.play()
+            else:
+                self.image = files.random_species_dir_type(
+                    tag.epc.species_string, self.media_dir, self.media_type)
+                self.label_controller.make_tag_labels(tag).draw()
             # self.graphics_batch.draw()
             # self.heartrate_player.play()
 
             # Seemed required to cause window refresh, but caused flicker
             # self.flip() # Removed, seems to work now.
-        self.clock.schedule_once(self.idle, 5)
+        self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):
@@ -92,6 +103,12 @@ class ScannerWindow(pyglet.window.Window):
             pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                                   pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
+        if self.video:
+            self.video_player.texture.anchor_x = self.video_player.texture.width // 2
+            self.video_player.texture.anchor_y = self.video_player.texture.height // 2
+
+            self.video_player.texture.blit(self.width // 2, self.height // 2)
+
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         self.bg.blit(self.width // 2, self.height // 2)
@@ -120,8 +137,10 @@ def get_video_size(width, height, sample_aspect):
         return width, height / sample_aspect
     return width, height
 
+
 X_LABEL_OFFSET = 185
 Y_LABEL_OFFSET = 95
+
 
 class LabelController():
     """Manage labels for a ScannerWindow"""
