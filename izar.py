@@ -38,7 +38,7 @@ class MockReader():
     def read(self, timeout=500) -> list[epc.Tag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
-        if (self.counter % 10) == 0:
+        if (self.counter % 25) == 0:
             # self.counter = 0
             return [
                 epc.Tag().from_parameters(
@@ -46,7 +46,7 @@ class MockReader():
                 epc.Tag().from_parameters(
                     '000111111200000220211216', '2', '-88', '0', '1'),
             ]
-        if (self.counter % 25) == 0:
+        if (self.counter % 10) == 0:
             return [
                 epc.Tag().from_parameters(
                     '000111111300000620211216', '1', '-88', '0', '1'),

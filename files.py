@@ -53,8 +53,8 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         img_resource.height = 1080
         img_resource.width = img_resource.width / scale_factor
     # elif media_type == 'vid':
-    #     scale_factor = img_resource.height / 1080
-    #     img_resource.height = 1080
-    #     img_resource.width = img_resource.width / scale_factor
+    #     scale_factor = img_resource.size.height / 1080
+    #     img_resource.size.height = 1080
+    #     img_resource.size.width = img_resource.size.width / scale_factor
 
     return img_resource

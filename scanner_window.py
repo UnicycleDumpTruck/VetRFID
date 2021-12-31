@@ -12,7 +12,8 @@ import log
 
 class State(Enum):
     """Window state, whether a tag is being displayed."""
-    TAG_SHOWING = auto()
+    IMG_SHOWING = auto()
+    VID_SHOWING = auto()
     IDLE = auto()
 
 
@@ -41,13 +42,7 @@ class ScannerWindow(pyglet.window.Window):
         self.image = None
         self.video = None
         self.clock = pyglet.clock.get_default()
-        # self.heartrate = pyglet.media.load(
-        #     "media/inspiration/hrmpeg4.m4v")
-        # self.heartrate_player = pyglet.media.Player()
-        # self.heartrate.size = (200, 200)
-        # self.heartrate_player.size = (200, 200)
-        # self.heartrate_player.queue(self.heartrate)
-        self.idle(0)
+        self.idle(0)  # idle needs delta_time argument
 
     def idle(self, delta_time):
         """Clear medical imagery, return to idle screen."""
@@ -64,7 +59,6 @@ class ScannerWindow(pyglet.window.Window):
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
         self.clock.unschedule(self.idle)
-        self.state = State.TAG_SHOWING
         serial = tag.epc.serial
         if serial != self.serial:
             tag.last_seen = log.log_tag(tag)
@@ -72,13 +66,16 @@ class ScannerWindow(pyglet.window.Window):
             self.serial = serial
             print("Seeking imagery for ", tag.epc.species_string)
             if tag.epc.species_string == 'Pig':
+                self.state = State.VID_SHOWING
                 self.image = None
-                self.video = files.random_species_dir_type(
-                    'generic', 'composite', 'vid'
-                )
+                # self.video = files.random_species_dir_type(
+                #     'generic', 'composite', 'vid'
+                # )
+                self.video = pyglet.media.load("../BigFiles/brain.m4v")
                 self.video_player.queue(self.video)
                 self.video_player.play()
             else:
+                self.state = State.IMG_SHOWING
                 self.video = None
                 self.video_player.next_source()
                 self.image = files.random_species_dir_type(
@@ -91,6 +88,8 @@ class ScannerWindow(pyglet.window.Window):
             # self.flip() # Removed, seems to work now.
         self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
+
+    # TODO on_key_press send self tags of specified animals
 
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
@@ -114,12 +113,14 @@ class ScannerWindow(pyglet.window.Window):
 
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.bg.blit(self.width // 2, self.height // 2)
-        if self.state == State.TAG_SHOWING:
+        if self.state != State.VID_SHOWING:
+            self.bg.blit(self.width // 2, self.height // 2)
+        if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
         elif self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
-        self.label_controller.always_labels.draw()
+        if self.state != State.VID_SHOWING:
+            self.label_controller.always_labels.draw()
         # self.graphics_batch.draw()
 
         # if self.heartrate_player.texture:
