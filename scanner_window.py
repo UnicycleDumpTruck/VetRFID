@@ -20,7 +20,7 @@ class State(Enum):
 class ScannerWindow(pyglet.window.Window):
     """Subclassing pyglet Window to add logic and display."""
 
-    def __init__(self, *args, window_number, antennas, **kwargs):
+    def __init__(self, *args, window_number, antennas, idle_seconds, ** kwargs):
         """Set up backgroud and periphery labels."""
         super().__init__(*args, **kwargs)
         self.state = State.IDLE
@@ -29,6 +29,7 @@ class ScannerWindow(pyglet.window.Window):
         # self.graphics_batch = pyglet.graphics.Batch()
         # self.background_graphics_batch = pyglet.graphics.Batch()
         self.window_number = window_number
+        self.idle_seconds = idle_seconds
         self.media_dir = 'xray'
         self.media_type = 'img'
         self.serial = None
@@ -86,7 +87,7 @@ class ScannerWindow(pyglet.window.Window):
 
             # Seemed required to cause window refresh, but caused flicker
             # self.flip() # Removed, seems to work now.
-        self.clock.schedule_once(self.idle, 3)
+        self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):

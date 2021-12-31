@@ -6,10 +6,10 @@ import epc
 
 class IzarReader(mercury.Reader):
     """Communicates with IZAR RFID Reader."""
-    # TODO Should I pass args and kwargs?
 
     def __init__(self, *args, **kwargs):
         """Encapsulate super init, read plan setup, print attributes."""
+        # TODO Should I pass args and kwargs?
         super().__init__()
 
         print(self.get_model())
