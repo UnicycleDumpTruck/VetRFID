@@ -8,23 +8,21 @@ import scanner_window
 import tag_dispatcher
 import izar
 
-# TODO Use argparse to set reader, reader power, window config, idle
-# TODO Maybe have config file for defaults? idle, scanfreq, etc
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-m", "--mockReader",
-        help="Run without hardware reader, keys p and d send tags.",
+        "-mock",
+        help="Run with mock reader, keys p and d send tags.",
         action="store_true"
     )
     parser.add_argument(
-        "-i", "--idle",
+        "-idle",
         type=int,
         help="Number of seconds before window idles."
     )
     parser.add_argument(
-        "-p", "--power",
+        "-power",
         type=int,
         help="Power level of RFID tag reader."
         # TODO Specify power range, limit with choice(range(0,3000))
@@ -72,7 +70,7 @@ if __name__ == "__main__":
     # window2.push_handlers(event_logger2)
     windows = {
         window1: [1, 2],
-        # window2: [2]
+        # window2: [3, 4]
     }
     antennas = {'1': window1,
                 '2': window1,
