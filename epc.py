@@ -2,6 +2,7 @@
 from __future__ import annotations
 from datetime import datetime
 import json
+from random import randint
 
 # Number of digits for each field.
 LOCATION_DIGITS = 4  # First four digits, location on animal
@@ -146,3 +147,17 @@ class Tag():
     def __repr__(self):
         """Represent EPC Code."""
         return str(self.epc)
+
+
+def random_dog():
+    """Return a dog species tag with random serial for testing."""
+    return Tag().from_parameters(
+        '0001' + str(randint(1, 999999)) + '00000220211216',
+        '1', '-88', '0', '1')
+
+
+def random_pig():
+    """Return a pig species tag with random serial for testing."""
+    return Tag().from_parameters(
+        '0001' + str(randint(1, 999999)) + '00000620211216',
+        '1', '-88', '0', '1')

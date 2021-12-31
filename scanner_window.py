@@ -34,10 +34,10 @@ class ScannerWindow(pyglet.window.Window):
         self.serial = None
         self.label_controller = LabelController(self)
         self.video_player = pyglet.media.Player()
-        self.bg = pyglet.resource.image('graphics/background1080.png')
+        self.label_bg = pyglet.resource.image('graphics/background1080.png')
         # self.background_graphics.append(self.bg)
-        self.bg.anchor_x = self.bg.width // 2
-        self.bg.anchor_y = self.bg.height // 2
+        self.label_bg.anchor_x = self.label_bg.width // 2
+        self.label_bg.anchor_y = self.label_bg.height // 2
 
         self.image = None
         self.video = None
@@ -89,11 +89,16 @@ class ScannerWindow(pyglet.window.Window):
         self.clock.schedule_once(self.idle, 3)
         return pyglet.event.EVENT_HANDLED
 
-    # TODO on_key_press send self tags of specified animals
-
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
-        pyglet.app.exit()
+        if symbol == pyglet.window.key.P:
+            print("Sending self random pig tag.")
+            self.on_tag_read(epc.random_pig())
+        elif symbol == pyglet.window.key.D:
+            print("Sending self random dog tag.")
+            self.on_tag_read(epc.random_dog())
+        else:
+            pyglet.app.exit()
 
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
@@ -114,7 +119,7 @@ class ScannerWindow(pyglet.window.Window):
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         if self.state != State.VID_SHOWING:
-            self.bg.blit(self.width // 2, self.height // 2)
+            self.label_bg.blit(self.width // 2, self.height // 2)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
         elif self.state == State.IDLE:
