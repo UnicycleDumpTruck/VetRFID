@@ -113,7 +113,7 @@ class EpcCode():
 
 
 class Tag():
-    """Base class for rTag and fTag."""
+    """Tag holds epc and info on the read, such as antenna and rssi."""
 
     def __init__(self):
         self.epc: EpcCode = None
@@ -123,32 +123,26 @@ class Tag():
         self.read_count = None
         self.last_seen = None
 
-    def __repr__(self):
-        """Represent EPC Code."""
-        return str(self.epc)
-
-
-class RTag(Tag):
-    """Class for tags from reader hardware."""
-
-    def __init__(self, tag):
-        """Initialize."""
-        self.epc = EpcCode(str(tag.epc)[2:26])
-        self.phase = tag.phase
-        self.antenna = tag.antenna
-        self.read_count = tag.read_count
-        self.rssi = tag.rssi
-        self.last_seen = None
-
-
-class FTag(Tag):
-    """Class for fake/mock tags for testing w/o hardware."""
-
-    def __init__(self, epc, antenna, rssi, phase, read_count):
-        """Initialize."""
+    def from_parameters(self, epc, antenna, rssi, phase, read_count):
+        """Initialize fake/mock tag from parameters."""
         self.epc = EpcCode(epc)
         self.antenna = antenna
         self.rssi = rssi
         self.phase = phase
         self.read_count = read_count
         self.last_seen = None
+        return self
+
+    def from_tag(self, tag):
+        """Initialize from hardware issued tag."""
+        self.epc = EpcCode(str(tag.epc)[2:26])
+        self.phase = tag.phase
+        self.antenna = tag.antenna
+        self.read_count = tag.read_count
+        self.rssi = tag.rssi
+        self.last_seen = None
+        return self
+
+    def __repr__(self):
+        """Represent EPC Code."""
+        return str(self.epc)

@@ -6,6 +6,7 @@ import epc
 
 class IzarReader(mercury.Reader):
     """Communicates with IZAR RFID Reader."""
+    # TODO Should I pass args and kwargs?
 
     def __init__(self, *args, **kwargs):
         """Encapsulate super init, read plan setup, print attributes."""
@@ -20,10 +21,10 @@ class IzarReader(mercury.Reader):
 
         # return self ?
 
-    def read(self, timeout=500) -> list[epc.RTag]:
+    def read(self, timeout=500) -> list[epc.Tag]:
         """Return list of tags visible to reader."""
         raw_tags = super().read()
-        rtag_list = [epc.RTag(tag) for tag in raw_tags]
+        rtag_list = [epc.Tag().from_tag(tag) for tag in raw_tags]
         return rtag_list
 
 
@@ -34,21 +35,21 @@ class MockReader():
         """Initialize counter at zero."""
         self.counter = 0
 
-    def read(self, timeout=500) -> list[epc.FTag]:
+    def read(self, timeout=500) -> list[epc.Tag]:
         """Every 10th read returns fake scans, others return empty list."""
         self.counter += 1
-        # if (self.counter % 10) == 0:
-        #     # self.counter = 0
-        #     return [
-        #         epc.FTag(
-        #             '000211111100000120211216', '1', '-99', '0', '1'),
-        #         epc.FTag(
-        #             '000111111100000220211216', '2', '-88', '0', '1'),
-        #     ]
+        if (self.counter % 10) == 0:
+            # self.counter = 0
+            return [
+                epc.Tag().from_parameters(
+                    '000211111100000120211216', '1', '-99', '0', '1'),
+                epc.Tag().from_parameters(
+                    '000111111200000220211216', '2', '-88', '0', '1'),
+            ]
         if (self.counter % 25) == 0:
             return [
-                epc.FTag(
-                    '000111111100000620211216', '1', '-88', '0', '1'),
+                epc.Tag().from_parameters(
+                    '000111111300000620211216', '1', '-88', '0', '1'),
             ]
         return []
 

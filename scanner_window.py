@@ -61,7 +61,7 @@ class ScannerWindow(pyglet.window.Window):
         self.serial = None
         self.label_controller.idle_labels.draw()
 
-    def on_tag_read(self, tag):
+    def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
         self.clock.unschedule(self.idle)
         self.state = State.TAG_SHOWING
@@ -72,12 +72,15 @@ class ScannerWindow(pyglet.window.Window):
             self.serial = serial
             print("Seeking imagery for ", tag.epc.species_string)
             if tag.epc.species_string == 'Pig':
+                self.image = None
                 self.video = files.random_species_dir_type(
                     'generic', 'composite', 'vid'
                 )
                 self.video_player.queue(self.video)
                 self.video_player.play()
             else:
+                self.video = None
+                self.video_player.next_source()
                 self.image = files.random_species_dir_type(
                     tag.epc.species_string, self.media_dir, self.media_type)
                 self.label_controller.make_tag_labels(tag).draw()
