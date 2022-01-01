@@ -70,7 +70,7 @@ class ScannerWindow(pyglet.window.Window):
                 self.state = State.VID_SHOWING
                 self.image = None
                 # self.video = files.random_species_dir_type(
-                #     'generic', 'composite', 'vid'
+                #     'generic', 'vid', 'vid'
                 # )
                 self.video = pyglet.media.load("../BigFiles/brain.m4v")
                 self.video_player.queue(self.video)
