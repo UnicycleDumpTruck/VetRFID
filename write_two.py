@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Read and write tags in sets of two per item/animal number."""
 from __future__ import print_function
-# import log
+from time import sleep
 import izar
 import epc
-from time import sleep
 
 
 # reader = izar.MockReader()
@@ -14,22 +13,24 @@ reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
 reader.set_read_plan([1], "GEN2")
 
 NUM_TAGS_PER_SERIAL = 2
-location = 1
 
-serial_int = None
-with open("last_serial.txt", 'r', encoding="UTF8") as serial_file:
-    serial_int = int(serial_file.readline().strip())
+serial_int: int
+with open("last_serial.txt", 'r', encoding="UTF8") as serial_file_in:
+    serial_int = int(serial_file_in.readline().strip())
+
 
 def increment_serial(s_int):
+    """Given an integer, write it to file tracking last serial number used."""
     if s_int is None:
         raise ValueError("Serial number can't be None.")
     s_int += 1
-    with open('last_serial.txt', 'w', encoding='UTF8') as serial_file:
-        serial_file.write(str(s_int))
+    with open('last_serial.txt', 'w', encoding='UTF8') as serial_file_out:
+        serial_file_out.write(str(s_int))
     return s_int
 
 
-while True: # input("Hit 'Return' to continue, 'n' then 'Return' to exit.") == "":
+# input("Hit 'Return' to continue, 'n' then 'Return' to exit.") == "":
+while True:
     # Set species for session
     species = input("Enter new animal number: ").strip()
     location = 1

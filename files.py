@@ -2,7 +2,6 @@
 import json
 import os
 import random
-import pprint
 import pyglet  # type: ignore
 
 
