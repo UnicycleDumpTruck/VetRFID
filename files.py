@@ -27,9 +27,9 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     """Given species, directory, media type, return random pyglet.resource.
 
     Args:
-        animal_species ([string]): ["monkey"]
-        media_directory ([string]): ["xray"]
-        media_type ([string]): ["img"]
+        animal_species ([string]): "monkey", "dog", or "pig"
+        media_directory ([string]): "xray"
+        media_type ([string]): "img" or "vid"
 
     Returns:
         [pyglet.resource....]: [resource type determined by media_type]
