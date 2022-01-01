@@ -1,9 +1,9 @@
 """Test loading of files."""
 import os
-import pytest
+# import pytest
 import pyglet  # type: ignore
 
-#working_dir = os.path.dirname(os.path.realpath(__file__))
+# working_dir = os.path.dirname(os.path.realpath(__file__))
 MEDIA_DIR = os.path.join('media')
 all_species_dirs = [os.path.join(MEDIA_DIR, dirname, "xray/")
                     for dirname in os.listdir(MEDIA_DIR)
@@ -11,8 +11,8 @@ all_species_dirs = [os.path.join(MEDIA_DIR, dirname, "xray/")
 print(all_species_dirs)
 
 
-pyglet.resource.path = []
-pyglet.resource.reindex()
+# pyglet.resource.path = []
+# pyglet.resource.reindex()
 
 
 def test_load_every_xray():
