@@ -24,6 +24,8 @@ def json_import(filename: str) -> dict[str, str]:
 
 species_names = json_import('species.json')
 
+def species_name_from_int(species_num: int):
+    return species_names.get(str(species_num).zfill(SPECIES_DIGITS))
 
 class EpcCode():
     """24-digit number written to Tag, containing different fields."""

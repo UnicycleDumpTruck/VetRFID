@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.mockReader:
+    if args.mock:
         print("Starting with mock reader...")
         sleep(1)
         reader = izar.MockReader()
