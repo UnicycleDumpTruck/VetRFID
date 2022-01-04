@@ -174,3 +174,10 @@ def same_pig():
     return Tag().from_parameters(
         '0001' + '999999' + '00000620211216',
         '1', '-88', '0', '1')
+
+
+def same_goat():
+    """Return a pig species tag with the same serial for testing."""
+    return Tag().from_parameters(
+        '0001' + '999999' + '00000720211216',
+        '1', '-88', '0', '1')

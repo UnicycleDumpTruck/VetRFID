@@ -69,10 +69,19 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             if tag.epc.species_string == 'Pig':
                 self.state = State.VID_SHOWING
                 self.image = None
-                # self.video = files.random_species_dir_type(
-                #     'generic', 'vid', 'vid'
-                # )
-                self.video = pyglet.media.load("media/pig/vid/brain.m4v")
+                self.video = files.random_species_dir_type(
+                    'pig', 'vid', 'vid'
+                )
+                # self.video = pyglet.media.load("media/pig/vid/brain.m4v")
+                self.video_player.queue(self.video)
+                self.video_player.play()
+            elif tag.epc.species_string == 'Goat':
+                self.state = State.VID_SHOWING
+                self.image = None
+                self.video = files.random_species_dir_type(
+                    'goat', 'vid', 'vid'
+                )
+                # self.video = pyglet.media.load("media/pig/vid/brain.m4v")
                 self.video_player.queue(self.video)
                 self.video_player.play()
             else:
@@ -96,11 +105,14 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
         if symbol == pyglet.window.key.P:
-            print("Sending self random pig tag.")
+            print("Sending self same pig tag.")
             self.on_tag_read(epc.same_pig())
         elif symbol == pyglet.window.key.D:
             print("Sending self random dog tag.")
             self.on_tag_read(epc.random_dog())
+        elif symbol == pyglet.window.key.G:
+            print("Sending self same goat.")
+            self.on_tag_read(epc.same_goat())
         else:
             pyglet.app.exit()
 
