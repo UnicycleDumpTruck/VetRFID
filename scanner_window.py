@@ -35,6 +35,14 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.serial = None
         self.label_controller = LabelController(self)
         self.video_player = pyglet.media.Player()
+        source = pyglet.media.StreamingSource()
+        self.video_player.window = self
+
+        @self.video_player.event
+        def on_eos():
+            print("Video player telling window to idle!")
+            self.idle(0)
+
         self.label_bg = pyglet.resource.image('graphics/background1080.png')
         # self.background_graphics.append(self.bg)
         self.label_bg.anchor_x = self.label_bg.width // 2
@@ -56,7 +64,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.video_player.next_source()
         self.serial = None
         self.label_controller.idle_labels.draw()
-
+    def on_player_eos(self):
+        print("Player EOS received by ScannerWindow!")
+    def on_eos(self):
+        print("EOS received by ScannerWindow")
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
         self.clock.unschedule(self.idle)
@@ -73,6 +84,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                     'pig', 'vid', 'vid'
                 )
                 # self.video = pyglet.media.load("media/pig/vid/brain.m4v")
+                self.video_player.next_source()
+                self.video_player.delete()
                 self.video_player.queue(self.video)
                 self.video_player.play()
             elif tag.epc.species_string == 'Goat':
@@ -82,12 +95,15 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                     'goat', 'vid', 'vid'
                 )
                 # self.video = pyglet.media.load("media/pig/vid/brain.m4v")
+                self.video_player.next_source()
+                self.video_player.delete()
                 self.video_player.queue(self.video)
                 self.video_player.play()
             else:
                 self.state = State.IMG_SHOWING
                 self.video = None
                 self.video_player.next_source()
+                self.video_player.delete()
                 self.image = files.random_species_dir_type(
                     tag.epc.species_string, self.media_dir, self.media_type)
                 self.label_controller.make_tag_labels(tag).draw()
@@ -127,11 +143,16 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                                   pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
         if self.video:
-            if self.video_player.texture:
-                self.video_player.texture.anchor_x = self.video_player.texture.width // 2
-                self.video_player.texture.anchor_y = self.video_player.texture.height // 2
-                self.video_player.texture.blit(
-                    self.width // 2, self.height // 2)
+            if self.video_player.source and self.video_player.source.video_format:
+                # self.video_player.texture.anchor_x = self.video_player.texture.width // 2
+                # self.video_player.texture.anchor_y = self.video_player.texture.height // 2
+                # self.video_player.texture.blit(
+                #     self.width // 2, self.height // 2)
+                try:
+                    self.video_player.texture.blit(0,0)
+                except Exception as ex:
+                    print(ex)
+                    self.idle(0)
             else:
                 self.idle(0)  # TODO Figure out other return method
                 # This will idle at the video end even if the animal remains.
@@ -153,6 +174,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
 
 ScannerWindow.register_event_type('on_tag_read')
+ScannerWindow.register_event_type('on_player_eos')
+ScannerWindow.register_event_type('on_eos')
+pyglet.media.Player.register_event_type('on_eos')
 
 
 def get_video_size(width, height, sample_aspect):

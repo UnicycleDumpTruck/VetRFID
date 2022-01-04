@@ -2,6 +2,7 @@
 """Application main code to run reader and display images."""
 from __future__ import print_function
 from time import sleep
+from os import environ
 import argparse
 import pyglet  # type: ignore
 import scanner_window
@@ -48,6 +49,8 @@ if __name__ == "__main__":
     if args.idle:
         idle_seconds = args.idle
 
+    environ["LD_LIBRARY_PATH"] = "/usr/bin/ffmpeg"
+    
     clock = pyglet.clock.get_default()
 
     display = pyglet.canvas.get_display()
@@ -57,11 +60,11 @@ if __name__ == "__main__":
     # window2 = scanner_window.ScannerWindow(
     #       1920, 1080, "Pet U 2", True, fullscreen=True,
     #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    window1 = scanner_window.ScannerWindow(
-        1920, 1080, "Pet U 1", True, fullscreen=True,
-        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
     # window1 = scanner_window.ScannerWindow(
-    #     1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
+    #     1920, 1080, "Pet U 1", True, fullscreen=True,
+    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    window1 = scanner_window.ScannerWindow(
+        1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
