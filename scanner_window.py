@@ -144,8 +144,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.label_controller.tag_labels.draw()
         elif self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
-        if self.state != State.VID_SHOWING:
-            self.label_controller.always_labels.draw()
+        # if self.state != State.VID_SHOWING:
+        #     self.label_controller.always_labels.draw()
+        # Commented out for now, as one station will show many imagery types
 
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
@@ -272,4 +273,4 @@ class LabelController():
             anchor_x='center', anchor_y='center',
             batch=self.always_labels)
         self.always_graphics.append(station_label_2)
-        return self.idle_labels
+        return self.always_labels
