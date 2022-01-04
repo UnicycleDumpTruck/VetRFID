@@ -132,6 +132,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         else:
             pyglet.app.exit()
 
+    def update(self, dt):
+        self.on_draw()
+
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
         self.clear()

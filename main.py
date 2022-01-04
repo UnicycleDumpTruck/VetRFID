@@ -86,5 +86,5 @@ if __name__ == "__main__":
 
     clock = pyglet.clock.get_default()
     clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
-
+    clock.schedule_interval(window1.update, 1/30.0)
     pyglet.app.run()
