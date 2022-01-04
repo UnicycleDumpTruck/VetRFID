@@ -28,17 +28,14 @@ def increment_serial(s_int):
         serial_file_out.write(str(s_int))
     return s_int
 
-def write_next_species_at_loc(species_num: str, location: int):
-    pass
-
 
 # input("Hit 'Return' to continue, 'n' then 'Return' to exit.") == "":
 while True:
     # Set species for session
     species = input("Enter new animal number: ").strip()
-    location = 1
+    tag_position: int = 1  # pylint: disable=invalid-name
 
-    while input(f"'Return' to write {epc.species_name_from_int(int(species))} {location}") == "":
+    while input(f"'Return' to write {epc.species_name_from_int(int(species))} {tag_position}") == "":
         tags_read = reader.read(timeout=100)
         sleep(0.5)
         print("Tags read: ", tags_read)
@@ -49,7 +46,7 @@ while True:
             new_epc = epc.EpcCode("000000000000000000000000")
             new_epc.species_num = species
             new_epc.serial = str(serial_int + 1)
-            new_epc.location = str(location)
+            new_epc.location = str(tag_position)
             new_epc.date_now()
             if len(new_epc.code) > 24:
                 raise ValueError(f"new_epc is too long: {new_epc}")
@@ -58,14 +55,14 @@ while True:
             if reader.write(epc_code=new, epc_target=old):
                 print(f'Rewrote {old}\nwith    {new}')
                 print("Label your tag:", new_epc.species_string, end=", ")
-                print("Head" if location == 1 else "Tail", end=", ")
+                print("Head" if tag_position == 1 else "Tail", end=", ")
                 print(serial_int + 1)
 
                 # Increment counters after successful write
-                location += 1
-                if location > 2:
-                    serial_int = increment_serial(serial_int) 
-                    location = 1
+                tag_position += 1
+                if tag_position > 2:
+                    serial_int = increment_serial(serial_int)
+                    tag_position = 1  # pylint: disable=invalid-name
 
             else:
                 print('No tag found')
