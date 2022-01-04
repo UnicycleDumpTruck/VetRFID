@@ -24,8 +24,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "-power",
         type=int,
-        help="Power level of RFID tag reader."
-        # TODO Specify power range, limit with choice(range(0,3000))
+        choices=range(0, 3150),
+        metavar="[0-3150]",
+        help="Power level of RFID tag reader in centidBm, 0-3150"
     )
 
     args = parser.parse_args()
@@ -43,7 +44,7 @@ if __name__ == "__main__":
         else:
             reader.set_read_plan([1, 2], "GEN2", read_power=1000)
 
-    idle_seconds = 3
+    idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
         idle_seconds = args.idle
 
@@ -55,14 +56,14 @@ if __name__ == "__main__":
         print(f"Screen #{i}: {screen}")
     # window2 = scanner_window.ScannerWindow(
     #       1920, 1080, "Pet U 2", True, fullscreen=True,
-    #       screen=screens[1], window_number=2, antennas=[3, 4], idle_seconds=idle_seconds)
+    #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
     window1 = scanner_window.ScannerWindow(
         1920, 1080, "Pet U 1", True, fullscreen=True,
-        screen=screens[0], window_number=1, antennas=[1, 2], idle_seconds=idle_seconds)
+        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
     # window1 = scanner_window.ScannerWindow(
-    #     1280, 720, "Pet U 1", True, window_number=1, antennas=[1, 2], idle_seconds=idle_seconds)
+    #     1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
-    #     1280, 720, "Pet U 2", True, window_number=2, antennas=[3, 4], idle_seconds=idle_seconds)
+    #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
     # event_logger1 = pyglet.window.event.WindowEventLogger()
     # window1.push_handlers(event_logger1)
@@ -77,7 +78,8 @@ if __name__ == "__main__":
                 # '3': window2,
                 # '4': window2
                 }
-    td = tag_dispatcher.TagDispatcher(reader, windows, antennas)
+    td = tag_dispatcher.TagDispatcher(
+        reader, windows, antennas)  # type: ignore
 
     clock = pyglet.clock.get_default()
     clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds

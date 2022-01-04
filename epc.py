@@ -24,8 +24,11 @@ def json_import(filename: str) -> dict[str, str]:
 
 species_names = json_import('species.json')
 
+
 def species_name_from_int(species_num: int):
+    """Looks up int in species dict."""
     return species_names.get(str(species_num).zfill(SPECIES_DIGITS))
+
 
 class EpcCode():
     """24-digit number written to Tag, containing different fields."""
@@ -55,6 +58,7 @@ class EpcCode():
 
     @property
     def serial(self) -> str:
+        """Return string digits of serial number, left zero padding included."""
         return self.code[LOCATION_DIGITS:(SERIAL_END)]
 
     @serial.setter
@@ -162,4 +166,11 @@ def random_pig():
     """Return a pig species tag with random serial for testing."""
     return Tag().from_parameters(
         '0001' + str(randint(1, 999999)) + '00000620211216',
+        '1', '-88', '0', '1')
+
+
+def same_pig():
+    """Return a pig species tag with the same serial for testing."""
+    return Tag().from_parameters(
+        '0001' + '999999' + '00000620211216',
         '1', '-88', '0', '1')

@@ -5,12 +5,12 @@ import random
 import pyglet  # type: ignore
 
 
-def json_import(filename):
+def json_import(filename) -> dict:
     """Read json from 'filename', return dictionary."""
     with open(filename, 'r', encoding="UTF8") as json_file:
         data = json_file.read()
-    js = json.loads(data)
-    return js
+    js_dict = json.loads(data)
+    return js_dict
 
 
 def json_export(filename, ldict):

@@ -17,10 +17,10 @@ class State(Enum):
     IDLE = auto()
 
 
-class ScannerWindow(pyglet.window.Window):
+class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
     """Subclassing pyglet Window to add logic and display."""
 
-    def __init__(self, *args, window_number, antennas, idle_seconds, ** kwargs):
+    def __init__(self, *args, window_number, idle_seconds, ** kwargs):
         """Set up backgroud and periphery labels."""
         super().__init__(*args, **kwargs)
         self.state = State.IDLE
@@ -87,6 +87,9 @@ class ScannerWindow(pyglet.window.Window):
 
             # Seemed required to cause window refresh, but caused flicker
             # self.flip() # Removed, seems to work now.
+        # else:
+        #     if self.state == State.VID_SHOWING:
+        #         self.video_player.loop = True
         self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
@@ -94,7 +97,7 @@ class ScannerWindow(pyglet.window.Window):
         """Pressing any key exits app."""
         if symbol == pyglet.window.key.P:
             print("Sending self random pig tag.")
-            self.on_tag_read(epc.random_pig())
+            self.on_tag_read(epc.same_pig())
         elif symbol == pyglet.window.key.D:
             print("Sending self random dog tag.")
             self.on_tag_read(epc.random_dog())
@@ -112,10 +115,14 @@ class ScannerWindow(pyglet.window.Window):
                                   pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
         if self.video:
-            self.video_player.texture.anchor_x = self.video_player.texture.width // 2
-            self.video_player.texture.anchor_y = self.video_player.texture.height // 2
-
-            self.video_player.texture.blit(self.width // 2, self.height // 2)
+            if self.video_player.texture:
+                self.video_player.texture.anchor_x = self.video_player.texture.width // 2
+                self.video_player.texture.anchor_y = self.video_player.texture.height // 2
+                self.video_player.texture.blit(
+                    self.width // 2, self.height // 2)
+            else:
+                self.idle(0)  # TODO Figure out other return method
+                # This will idle at the video end even if the animal remains.
 
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -127,10 +134,6 @@ class ScannerWindow(pyglet.window.Window):
             self.label_controller.idle_labels.draw()
         if self.state != State.VID_SHOWING:
             self.label_controller.always_labels.draw()
-        # self.graphics_batch.draw()
-
-        # if self.heartrate_player.texture:
-        #     self.heartrate_player.texture.blit(0, 0)
 
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
