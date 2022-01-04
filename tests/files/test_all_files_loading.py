@@ -15,8 +15,15 @@ print(all_species_dirs)
 # pyglet.resource.path = []
 # pyglet.resource.reindex()
 
+# def test_load_local_file():
+#     """Test load a file in the test directory."""
+#     img = pyglet.image.load('001.jpg')
+#     assert isinstance(img, pyglet.image.ImageData)
+
+
 def test_load_one_xray():
-    img = pyglet.image.load((
+    """Test load a known file."""
+    img = pyglet.image.load(path.abspath(
         path.join(MEDIA_DIR, 'cat/xray/001.jpg')))
     assert isinstance(img, pyglet.image.ImageData)
 
