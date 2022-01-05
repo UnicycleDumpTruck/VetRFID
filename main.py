@@ -13,6 +13,16 @@ import izar
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "-background",
+        help="Continuous read in backgroud process by Mercury API.",
+        action="store_true"
+    )
+    parser.add_argument(
+        "-poll",
+        help="Poll read at intervals. Interferes with video playback.",
+        action="store_true"
+    )
+    parser.add_argument(
         "-mock",
         help="Run with mock reader, keys p and d send tags.",
         action="store_true"
@@ -50,7 +60,7 @@ if __name__ == "__main__":
         idle_seconds = args.idle
 
     environ["LD_LIBRARY_PATH"] = "/usr/bin/ffmpeg"
-    
+
     clock = pyglet.clock.get_default()
 
     display = pyglet.canvas.get_display()
@@ -85,6 +95,12 @@ if __name__ == "__main__":
         reader, windows, antennas)  # type: ignore
 
     clock = pyglet.clock.get_default()
-    clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
-    clock.schedule_interval(window1.update, 1/30.0)
-    pyglet.app.run()
+    if args.background:
+        reader.start_reading(td.tags_read)
+        # clock.schedule_interval(window1.update, 1 / 30)
+        pyglet.app.run()
+        reader.stop_reading()
+    else:  # TODO elif args.poll:
+        print("WARNING: Polled reading may interfere with video playback!")
+        clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
+        pyglet.app.run()
