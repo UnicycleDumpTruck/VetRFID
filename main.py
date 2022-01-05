@@ -22,13 +22,6 @@ pyglet.options['debug_trace_args'] = True
 pyglet.options['debug_trace_depth'] = 4
 pyglet.options['debug_trace_flush'] = True
 
-tag_queue = Queue()
-
-def tag_to_queue(tag):
-    tag_queue.put(tag)
-
-def read_queue():
-    return tag_queue.get()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -113,6 +106,18 @@ if __name__ == "__main__":
                 }
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
+
+    tag_queue = Queue()
+
+    def tag_to_queue(tag):
+        if not tag_queue.full():
+            tag_queue.put(tag, timeout=1)
+            #reader.stop_reading()
+
+    def read_queue():
+        if not tag_queue.empty():
+            return tag_queue.get(timeout=1)
+
 
     def send_tag_to_td(dt):
         tag = read_queue()

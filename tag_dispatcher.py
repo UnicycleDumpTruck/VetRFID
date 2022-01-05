@@ -56,7 +56,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
                 best_tag: epc.Tag = window_tags[window][0]
                 # best_tag.last_seen = log.log_tag(best_tag)
                 window.dispatch_event('on_tag_read', best_tag)
-                print("Dispacted tag: ", best_tag)
+                print("Dispatched tag: ", best_tag)
 
 
 TagDispatcher.register_event_type('on_tag_read')
