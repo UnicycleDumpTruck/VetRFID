@@ -4,6 +4,7 @@ from __future__ import print_function
 from time import sleep
 from os import environ
 import argparse
+from queue import Queue
 import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
@@ -21,6 +22,13 @@ pyglet.options['debug_trace_args'] = True
 pyglet.options['debug_trace_depth'] = 4
 pyglet.options['debug_trace_flush'] = True
 
+tag_queue = Queue()
+
+def tag_to_queue(tag):
+    tag_queue.put(tag)
+
+def read_queue():
+    return tag_queue.get()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -106,10 +114,17 @@ if __name__ == "__main__":
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
 
+    def send_tag_to_td(dt):
+        tag = read_queue()
+        if tag:
+            print("Read tag:", tag)
+            td.tags_read(tag)
+
     clock = pyglet.clock.get_default()
     if args.background:
-        reader.start_reading(td.tags_read)
-        clock.schedule_interval(window1.update, 1 / 30)
+        # reader.start_reading(td.tags_read)
+        reader.start_reading(tag_to_queue)
+        clock.schedule_interval(send_tag_to_td, 1)
         pyglet.app.run()
         reader.stop_reading()
     else:  # TODO elif args.poll:
