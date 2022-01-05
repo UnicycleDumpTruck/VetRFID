@@ -33,7 +33,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
         """Called by continous read function in main.py. Processes tags if any."""
         print("Tags received from continous read: ", read_tags)
         if read_tags:
-            self.process_tags(read_tags)
+            self.process_tags([epc.Tag().from_tag(read_tags)])
         else:
             raise ValueError("Empty tag list dispatched.")
 

@@ -77,6 +77,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
+        print("Tag received by on_tag_read in ScannerWindow")
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:

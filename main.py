@@ -9,6 +9,18 @@ import scanner_window
 import tag_dispatcher
 import izar
 
+pyglet.options['debug_gl'] = True
+pyglet.options['debug_gl_trace'] = True
+pyglet.options['debug_gl_trace_args'] = True
+pyglet.options['debug_graphics_batch'] = False
+pyglet.options['debug_lib'] = True
+pyglet.options['debug_media'] = False
+pyglet.options['debug_texture'] = True
+pyglet.options['debug_trace'] = True
+pyglet.options['debug_trace_args'] = True
+pyglet.options['debug_trace_depth'] = 4
+pyglet.options['debug_trace_flush'] = True
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -97,7 +109,7 @@ if __name__ == "__main__":
     clock = pyglet.clock.get_default()
     if args.background:
         reader.start_reading(td.tags_read)
-        # clock.schedule_interval(window1.update, 1 / 30)
+        clock.schedule_interval(window1.update, 1 / 30)
         pyglet.app.run()
         reader.stop_reading()
     else:  # TODO elif args.poll:
