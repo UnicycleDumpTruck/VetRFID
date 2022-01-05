@@ -35,11 +35,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.serial = None
         self.label_controller = LabelController(self)
         self.video_player = pyglet.media.Player()
-        source = pyglet.media.StreamingSource()
+        source = pyglet.media.StreamingSource()  # TODO In pyglet examples, but unused?
         self.video_player.window = self
 
-        @self.video_player.event
-        def on_eos():
+        @self.video_player.event  # TODO reassess after video fix
+        def on_eos():  # Attempting to stop error on video end
             print("Video player telling window to idle!")
             self.idle(0)
 
@@ -64,10 +64,17 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.video_player.next_source()
         self.serial = None
         self.label_controller.idle_labels.draw()
-    def on_player_eos(self):
+
+    def on_player_eos(self):  # TODO reassess after video fix
+        """When video player runs out of queued files."""
         print("Player EOS received by ScannerWindow!")
-    def on_eos(self):
+        self.idle(0)
+
+    def on_eos(self):  # TODO reassess after video fix
+        """When current video file ends."""
         print("EOS received by ScannerWindow")
+        self.idle(0)
+
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
         self.clock.unschedule(self.idle)
@@ -83,7 +90,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.video = files.random_species_dir_type(
                     'pig', 'vid', 'vid'
                 )
-                # self.video = pyglet.media.load("media/pig/vid/brain.m4v")
                 self.video_player.next_source()
                 self.video_player.delete()
                 self.video_player.queue(self.video)
@@ -94,7 +100,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.video = files.random_species_dir_type(
                     'goat', 'vid', 'vid'
                 )
-                # self.video = pyglet.media.load("media/pig/vid/brain.m4v")
                 self.video_player.next_source()
                 self.video_player.delete()
                 self.video_player.queue(self.video)
@@ -132,7 +137,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         else:
             pyglet.app.exit()
 
-    def update(self, dt):
+    def update(self, dt):  # TODO remove if doesn't fix video
         self.on_draw()
 
     def on_draw(self):
@@ -147,15 +152,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.image.blit(self.width // 2, self.height // 2)
         if self.video:
             if self.video_player.source and self.video_player.source.video_format:
-                # self.video_player.texture.anchor_x = self.video_player.texture.width // 2
-                # self.video_player.texture.anchor_y = self.video_player.texture.height // 2
-                # self.video_player.texture.blit(
-                #     self.width // 2, self.height // 2)
-                try:
-                    self.video_player.texture.blit(0,0)
-                except Exception as ex:
-                    print(ex)
-                    self.idle(0)
+                self.video_player.texture.anchor_x = self.video_player.texture.width // 2
+                self.video_player.texture.anchor_y = self.video_player.texture.height // 2
+                self.video_player.texture.blit(
+                    self.width // 2, self.height // 2)
             else:
                 self.idle(0)  # TODO Figure out other return method
                 # This will idle at the video end even if the animal remains.
