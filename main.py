@@ -10,17 +10,15 @@ import scanner_window
 import tag_dispatcher
 import izar
 
-pyglet.options['debug_gl'] = True
-pyglet.options['debug_gl_trace'] = True
-pyglet.options['debug_gl_trace_args'] = True
-pyglet.options['debug_graphics_batch'] = False
-pyglet.options['debug_lib'] = True
+pyglet.options['debug_gl'] = False
+pyglet.options['debug_gl_trace'] = False
+pyglet.options['debug_gl_trace_args'] = False
+pyglet.options['debug_lib'] = False
 pyglet.options['debug_media'] = False
-pyglet.options['debug_texture'] = True
-pyglet.options['debug_trace'] = True
-pyglet.options['debug_trace_args'] = True
+pyglet.options['debug_texture'] = False
+pyglet.options['debug_trace'] = False
+pyglet.options['debug_trace_args'] = False
 pyglet.options['debug_trace_depth'] = 4
-pyglet.options['debug_trace_flush'] = True
 
 
 if __name__ == "__main__":
@@ -83,11 +81,11 @@ if __name__ == "__main__":
     # window2 = scanner_window.ScannerWindow(
     #       1920, 1080, "Pet U 2", True, fullscreen=True,
     #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    # window1 = scanner_window.ScannerWindow(
-    #     1920, 1080, "Pet U 1", True, fullscreen=True,
-    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
     window1 = scanner_window.ScannerWindow(
-        1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
+        1920, 1080, "Pet U 1", True, fullscreen=True,
+        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    # window1 = scanner_window.ScannerWindow(
+    #     1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
@@ -141,13 +139,11 @@ if __name__ == "__main__":
     clock = pyglet.clock.get_default()
     if args.poll:
         print("WARNING: Polled reading interferes with video playback!")
+        sleep(3)
         clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
         pyglet.app.run()
     else:
-        # reader.start_reading(td.tags_read)
         reader.start_reading(tag_to_queue)
         clock.schedule_interval(send_tag_to_td, 1)
         pyglet.app.run()
         reader.stop_reading()
-
-    # TODO change defaults on main.py to easy demo in background read.
