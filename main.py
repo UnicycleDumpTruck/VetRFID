@@ -4,7 +4,7 @@ from __future__ import print_function
 from time import sleep
 from os import environ
 import argparse
-from queue import Queue
+from queue import Queue, Empty
 import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
@@ -107,32 +107,47 @@ if __name__ == "__main__":
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
 
-    tag_queue = Queue()
+    tag_queue = Queue()  # TODO assess if queue control class needed.
 
     def tag_to_queue(tag):
+        """Put tag into queue."""
         if not tag_queue.full():
-            tag_queue.put(tag, timeout=1)
-            #reader.stop_reading()
+            tag_queue.put(tag, timeout=0.5)
 
     def read_queue():
+        """Empty queue, return last item."""
         if not tag_queue.empty():
-            return tag_queue.get(timeout=1)
-
+            last_tag = None
+            while tag_queue.empty() is False:
+                try:
+                    tag = tag_queue.get(timeout=0.5)
+                except Empty as ex:
+                    print("read_queue exception:\n", ex)
+                    return None
+                if tag is not None:
+                    last_tag = tag
+                else:
+                    break
+            return last_tag
 
     def send_tag_to_td(dt):
         tag = read_queue()
         if tag:
             print("Read tag:", tag)
             td.tags_read(tag)
+        else:
+            print("Empty send_tag_to_td call!")
 
     clock = pyglet.clock.get_default()
-    if args.background:
+    if args.poll:
+        print("WARNING: Polled reading interferes with video playback!")
+        clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
+        pyglet.app.run()
+    else:
         # reader.start_reading(td.tags_read)
         reader.start_reading(tag_to_queue)
         clock.schedule_interval(send_tag_to_td, 1)
         pyglet.app.run()
         reader.stop_reading()
-    else:  # TODO elif args.poll:
-        print("WARNING: Polled reading may interfere with video playback!")
-        clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
-        pyglet.app.run()
+
+    # TODO change defaults on main.py to easy demo in background read.
