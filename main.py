@@ -74,6 +74,8 @@ if __name__ == "__main__":
 
     clock = pyglet.clock.get_default()
 
+    vet_paw = pyglet.image.load('media/icons/vet_u_paw.png')
+
     display = pyglet.canvas.get_display()
     screens = display.get_screens()
     for i, screen in enumerate(screens):
@@ -89,6 +91,9 @@ if __name__ == "__main__":
     # window2 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
+    window1.set_icon(vet_paw)
+    # window2.set_icon(vet_paw)
+    
     # event_logger1 = pyglet.window.event.WindowEventLogger()
     # window1.push_handlers(event_logger1)
     # event_logger2 = pyglet.window.event.WindowEventLogger()
