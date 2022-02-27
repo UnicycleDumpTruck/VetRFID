@@ -5,10 +5,13 @@ from time import sleep
 from os import environ
 import argparse
 from queue import Queue, Empty
+from rich.traceback import install
 import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
 import izar
+
+install(show_locals=True)
 
 pyglet.options['debug_gl'] = False
 pyglet.options['debug_gl_trace'] = False
@@ -93,7 +96,7 @@ if __name__ == "__main__":
 
     window1.set_icon(vet_paw)
     # window2.set_icon(vet_paw)
-    
+
     # event_logger1 = pyglet.window.event.WindowEventLogger()
     # window1.push_handlers(event_logger1)
     # event_logger2 = pyglet.window.event.WindowEventLogger()
