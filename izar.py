@@ -57,3 +57,14 @@ class MockReader():
         """Mock write to allow testing."""
         print(f"MockReader pretended to write {epc_code} to {epc_target}.")
         return True
+
+    def start_reading(self, callback):
+        """Not imp. Start generating random callbacks w tags in background."""
+        # TODO implement mock background reads
+        raise NotImplementedError(
+            "MockReader class not ready to run background reads.")
+
+    def stop_reading(self):
+        """Not imp. Cease background generation of random tags."""
+        raise NotImplementedError(
+            "MockReader class not ready to run background reads.")
