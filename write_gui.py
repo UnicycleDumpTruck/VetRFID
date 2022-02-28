@@ -6,7 +6,7 @@ import sys
 from time import sleep
 
 from loguru import logger
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot, QRunnable
 # Import QApplication and the required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QLineEdit, QMainWindow,
                              QPushButton, QComboBox, QVBoxLayout, QWidget)
@@ -99,9 +99,12 @@ class PyCalcUi(QMainWindow):
         """Clear the display."""
         self.set_display_text('')
 
+    def test_log(self):
+        logger.info("Made it test_log function.")
+
 
 # Create a controller class to connect the GUI and the model
-class PyCalcCtrl:
+class PyCalcCtrl(QObject):
     """PyCalc Controller class."""
 
     def __init__(self, model, view):
@@ -117,8 +120,9 @@ class PyCalcCtrl:
 
         self.next_tag = self._create_next_tag()
 
+    @pyqtSlot(name='_read_tag')
     def _read_tag(self):
-        logger.info("Reading")
+        logger.warning("Reading")
         tags_read = reader.read(timeout=100)
         logger.info(f"Tags read: {tags_read}")
         # self._view.read_display.setText(str(tags_read))
@@ -126,13 +130,14 @@ class PyCalcCtrl:
         self._view.read_display.setFocus()
         return tags_read
 
+    # @pyqtSlot(name='_create_next_tag')
     def _create_next_tag(self):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
         new_epc.species_num = str(
-            self._view.animal_selector.currentIndex())  # TODO remove str
+            self._view.animal_selector.currentIndex())  # TODO remove str?
         new_epc.serial = str(self.serial_int + 1)
-        new_epc.location = str(self._view.position_selector.currentIndex())
+        new_epc.location = str(self._view.position_selector.currentIndex() + 1)
         new_epc.date_now()
         if len(new_epc.code) != 24:
             raise ValueError(f"new_epc is wrong length: {new_epc}")
@@ -140,9 +145,10 @@ class PyCalcCtrl:
         self._view.serial_display.setFocus()
         return new_epc
 
+    # @pyqtSlot(name='_write_tag')
     def _write_tag(self):
         """Write tag with currently selected values."""
-        logger.info("Writing...")
+        logger.warning("Writing...")
         print("writing...")
         tags_read = self._read_tag()
         sleep(0.5)
@@ -182,28 +188,27 @@ class PyCalcCtrl:
             serial_file_out.write(str(s_int))
         return s_int
 
-    def _calculate_result(self):
-        """Evaluate expressions."""
-        result = self._evaluate(expression=self._view.displayText())
-        self._view.setDisplayText(result)
-
     def _connect_signals(self):
         """Connect signals and slots."""
         self._view.read_button.clicked.connect(self._read_tag)
-        self._view.serial_display.returnPressed.connect(self._calculate_result)
+        # self._view.read_button.clicked.connect(evaluate_expression)
+        # self._view.serial_display.returnPressed.connect(self._calculate_result)
         self._view.write_button.clicked.connect(self._write_tag)
+        # QObject.connect(self._view.write_button,
+        #                 pyqtSignal('clicked'), self._write_tag)
+
+        # self._view.write_button.clicked.connect(self._view.test_log)
+
+        self._view.animal_selector.currentIndexChanged.connect(
+            self._create_next_tag)
+        self._view.position_selector.currentIndexChanged.connect(
+            self._create_next_tag)
 
 
 # Create a Model to handle the calculator's operation
 def evaluate_expression(expression):
     """Evaluate an expression."""
-    try:
-        result = str(eval(expression, {}, {}))
-    except Exception as ex:
-        result = "ERROR_MSG"
-        logger.warning(ex)
-
-    return result
+    print("evaluatedddddddd!")
 
 
 def main():
@@ -213,13 +218,13 @@ def main():
 
     # Create an instance of QApplication
     pycalc = QApplication(sys.argv)
-    # Show the calculator's GUI
+    # Show the GUI
     view = PyCalcUi()
     view.show()
     # Create instances of the model and the controller
     model = evaluate_expression
     PyCalcCtrl(model=model, view=view)
-    # Execute the calculator's main loop
+    # Execute the main loop
     sys.exit(pycalc.exec())
 
 
