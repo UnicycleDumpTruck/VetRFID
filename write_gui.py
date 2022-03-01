@@ -6,7 +6,7 @@ import sys
 from time import sleep
 
 from loguru import logger
-from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot, QRunnable
+from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot
 # Import QApplication and the required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QLineEdit, QMainWindow,
                              QPushButton, QComboBox, QVBoxLayout, QWidget)
@@ -44,6 +44,7 @@ class PyCalcUi(QMainWindow):
         # Create the display and the buttons
         self._create_read_widget()
         self._create_write_widget()
+        self._create_log_widget()
 
     def _create_read_widget(self):
         """Create the display and button for reading a tag."""
@@ -86,6 +87,17 @@ class PyCalcUi(QMainWindow):
 
         self.general_layout.addLayout(self.write_layout)
 
+    def _create_log_widget(self):
+        """Create area for tag data just written."""
+        self.log_layout = QVBoxLayout()
+        self.log_display = QLineEdit()
+        self.log_display.setFixedHeight(70)
+        self.log_display.setAlignment(Qt.AlignCenter)
+        self.log_display.setReadOnly(True)
+        self.log_layout.addWidget(self.log_display)
+
+        self.general_layout.addLayout(self.log_layout)
+
     def set_display_text(self, text):
         """Set display's text."""
         self.display.setText(text)
@@ -99,16 +111,15 @@ class PyCalcUi(QMainWindow):
         """Clear the display."""
         self.set_display_text('')
 
-    def test_log(self):
-        logger.info("Made it test_log function.")
-
-
 # Create a controller class to connect the GUI and the model
+
+
 class PyCalcCtrl(QObject):
     """PyCalc Controller class."""
 
     def __init__(self, model, view):
         """Controller initializer."""
+        super().__init__()
         self._evaluate = model
         self._view = view
         # Connect signals and slots
@@ -120,9 +131,9 @@ class PyCalcCtrl(QObject):
 
         self.next_tag = self._create_next_tag()
 
-    @pyqtSlot(name='_read_tag')
+    # @pyqtSlot()
     def _read_tag(self):
-        logger.warning("Reading")
+        logger.debug("Reading")
         tags_read = reader.read(timeout=100)
         logger.info(f"Tags read: {tags_read}")
         # self._view.read_display.setText(str(tags_read))
@@ -135,7 +146,7 @@ class PyCalcCtrl(QObject):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
         new_epc.species_num = str(
-            self._view.animal_selector.currentIndex())  # TODO remove str?
+            self._view.animal_selector.currentIndex() + 1)  # TODO remove str?
         new_epc.serial = str(self.serial_int + 1)
         new_epc.location = str(self._view.position_selector.currentIndex() + 1)
         new_epc.date_now()
@@ -148,8 +159,6 @@ class PyCalcCtrl(QObject):
     # @pyqtSlot(name='_write_tag')
     def _write_tag(self):
         """Write tag with currently selected values."""
-        logger.warning("Writing...")
-        print("writing...")
         tags_read = self._read_tag()
         sleep(0.5)
         if tags_read:
@@ -162,11 +171,13 @@ class PyCalcCtrl(QObject):
             old = target_tag.epc.epc_bytes
             new = self.next_tag.epc_bytes
             if reader.write(epc_code=new, epc_target=old):
-                print(f'Rewrote {old}\nwith    {new}')
-                print("Label your tag:", self.next_tag.species_string, end=", ")
-                print("Head" if self._view.position_selector.currentIndex() ==
-                      1 else "Tail", end=", ")
-                print(self._view.next_serial)
+                logger.info(f'Rewrote {old} with {new}')
+                animal = self.next_tag.species_string
+                loc = self._view.position_selector.currentText()
+                ser = self._view.next_serial
+                log_str = f"Label your tag: {animal} {loc} {ser}"
+                self._view.log_display.setText(log_str)
+                logger.info(log_str)
 
                 # Increment counters after successful write
                 if self._view.position_selector.currentIndex() == 1:
@@ -191,13 +202,8 @@ class PyCalcCtrl(QObject):
     def _connect_signals(self):
         """Connect signals and slots."""
         self._view.read_button.clicked.connect(self._read_tag)
-        # self._view.read_button.clicked.connect(evaluate_expression)
         # self._view.serial_display.returnPressed.connect(self._calculate_result)
         self._view.write_button.clicked.connect(self._write_tag)
-        # QObject.connect(self._view.write_button,
-        #                 pyqtSignal('clicked'), self._write_tag)
-
-        # self._view.write_button.clicked.connect(self._view.test_log)
 
         self._view.animal_selector.currentIndexChanged.connect(
             self._create_next_tag)
@@ -213,9 +219,6 @@ def evaluate_expression(expression):
 
 def main():
     """Main function."""
-
-    # tag_position: int = 1  # pylint: disable=invalid-name
-
     # Create an instance of QApplication
     pycalc = QApplication(sys.argv)
     # Show the GUI
@@ -223,7 +226,10 @@ def main():
     view.show()
     # Create instances of the model and the controller
     model = evaluate_expression
-    PyCalcCtrl(model=model, view=view)
+
+    # assigning to ctrllr fixed signals, tho ctrllr not used
+    ctrllr = PyCalcCtrl(model=model, view=view)
+
     # Execute the main loop
     sys.exit(pycalc.exec())
 
