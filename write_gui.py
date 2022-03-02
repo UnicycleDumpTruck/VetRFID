@@ -6,10 +6,10 @@ import sys
 from time import sleep
 
 from loguru import logger
-from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QObject  # pylint: disable=no-name-in-module
 # Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QLineEdit, QMainWindow,
-                             QPushButton, QComboBox, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QApplication, QLineEdit, QMainWindow,   # pylint: disable=no-name-in-module
+                             QPushButton, QComboBox, QVBoxLayout, QWidget)   # pylint: disable=no-name-in-module
 from rich.traceback import install
 
 import epc
@@ -18,8 +18,8 @@ import izar
 install(show_locals=True)
 
 reader = izar.MockReader()
-#reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
-#reader.set_read_plan([1], "GEN2")
+# reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+# reader.set_read_plan([1], "GEN2")
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
 # reader.set_read_plan([1], "GEN2", read_power=1900)
@@ -166,7 +166,6 @@ class PyCalcCtrl(QObject):
             self._view.read_display.setFocus()
             # TODO set target to closest by RSSI
             target_tag = tags_read[0]
-            # print("Targeted tag", target_tag)
 
             old = target_tag.epc.epc_bytes
             new = self.next_tag.epc_bytes
@@ -211,10 +210,8 @@ class PyCalcCtrl(QObject):
             self._create_next_tag)
 
 
-# Create a Model to handle the calculator's operation
-def evaluate_expression(expression):
-    """Evaluate an expression."""
-    print("evaluatedddddddd!")
+def placeholder_model():
+    """Still working on the full MVC paradigm for this app."""
 
 
 def main():
@@ -225,7 +222,7 @@ def main():
     view = PyCalcUi()
     view.show()
     # Create instances of the model and the controller
-    model = evaluate_expression
+    model = placeholder_model
 
     # assigning to ctrllr fixed signals, tho ctrllr not used
     ctrllr = PyCalcCtrl(model=model, view=view)

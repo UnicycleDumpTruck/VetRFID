@@ -10,6 +10,7 @@ import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
 import izar
+from epc import Tag  # pylint: disable=unused-import
 
 install(show_locals=True)
 
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
 
-    tag_queue = Queue()  # TODO assess if queue control class needed.
+    tag_queue: "Queue[Tag]" = Queue()
 
     def tag_to_queue(tag):
         """Put tag into queue."""
@@ -136,7 +137,8 @@ if __name__ == "__main__":
                     break
             return last_tag
 
-    def send_tag_to_td(dt):
+    def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
+        """Send tag from the reader thread to the tag dispatcher."""
         tag = read_queue()
         if tag:
             print("Read tag:", tag)
