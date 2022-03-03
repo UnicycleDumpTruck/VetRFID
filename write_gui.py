@@ -8,8 +8,9 @@ from time import sleep
 from loguru import logger
 from PyQt5.QtCore import Qt, QObject  # pylint: disable=no-name-in-module
 # Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import (QApplication, QLineEdit, QMainWindow,   # pylint: disable=no-name-in-module
-                             QPushButton, QComboBox, QVBoxLayout, QWidget)   # pylint: disable=no-name-in-module
+from PyQt5.QtWidgets import (QApplication, QLineEdit, QMainWindow, QLabel, QFrame,  # pylint: disable=no-name-in-module
+                             QPushButton, QComboBox, QVBoxLayout, QWidget, QHBoxLayout)   # pylint: disable=no-name-in-module
+from PyQt5.QtGui import (QPixmap)
 from rich.traceback import install
 
 import epc
@@ -27,6 +28,15 @@ reader = izar.MockReader()
 NUM_TAGS_PER_SERIAL = 2
 
 
+class FramedWidget(QFrame):
+    """Widget with a frame around it."""
+
+    def __init__(self, *args):
+        super(FramedWidget, self).__init__(*args)
+        # self.setStyleSheet(
+        #     "background-color: rgb(255,255,255); margin:5px; border:2px solid rgb(0, 255, 0); ")
+
+
 class PyCalcUi(QMainWindow):
     """PyCalc's View (GUI)."""
 
@@ -35,22 +45,41 @@ class PyCalcUi(QMainWindow):
         super().__init__()
         # Set some main window's properties
         self.setWindowTitle('PyCalc')
-        self.setFixedSize(400, 400)
+        # self.setFixedSize(500, 500)
         # Set the central widget and the general layout
         self.general_layout = QVBoxLayout()
-        self._central_widget = QWidget(self)
+        self._central_widget = FramedWidget(self)
         self.setCentralWidget(self._central_widget)
         self._central_widget.setLayout(self.general_layout)
         # Create the display and the buttons
+        self._create_title_widget()
         self._create_read_widget()
         self._create_write_widget()
         self._create_log_widget()
 
+    def _create_title_widget(self):
+        self.title_widget = QWidget()
+        self.title_layout = QHBoxLayout(self.title_widget)
+        self.logo_widget = QLabel()
+        self.logo = QPixmap('media/icons/vet_u_paw.png').scaledToHeight(150)
+        self.logo_widget.setPixmap(self.logo)
+        self.title_layout.addWidget(self.logo_widget)
+        self.title_layout.addSpacing(20)
+        self.title_label = QLabel("Read Set Vet RFID", self.title_widget)
+        self.title_label.setAlignment(Qt.AlignVCenter)
+        self.title_layout.addWidget(self.title_label)
+        self.title_layout.addStretch()
+        self.general_layout.addWidget(self.title_widget)
+
     def _create_read_widget(self):
         """Create the display and button for reading a tag."""
-        self.read_layout = QVBoxLayout()
+        self.read_widget = QWidget()
+        self.read_layout = QVBoxLayout(self.read_widget)
+        self.read_label = QLabel("Tags read:", self.read_widget)
+        self.read_layout.addWidget(self.read_label)
         # Create the display widget
         self.read_display = QLineEdit()
+        self.read_label.setBuddy(self.read_display)
         # Set some display's properties
         self.read_display.setFixedHeight(35)
         self.read_display.setAlignment(Qt.AlignRight)
@@ -60,12 +89,16 @@ class PyCalcUi(QMainWindow):
         self.read_display.setText("No tags read yet.")
         self.read_button = QPushButton("Read Tags")
         self.read_layout.addWidget(self.read_button)
-
-        self.general_layout.addLayout(self.read_layout)
+        self.general_layout.addWidget(self.read_widget)
+        # self.general_layout.addLayout(self.read_layout)
 
     def _create_write_widget(self):
         """Create the display and buttons for writing tags."""
-        self.write_layout = QVBoxLayout()
+        self.write_widget = QWidget()
+        self.write_layout = QVBoxLayout(self.write_widget)
+        self.write_label = QLabel("Next tag to write:", self.write_widget)
+        self.write_layout.addWidget(self.write_label)
+        self.write_label.setMinimumSize(200, 50)
         self.serial_display = QLineEdit()
         self.serial_display.setFixedHeight(35)
         self.serial_display.setAlignment(Qt.AlignRight)
@@ -84,19 +117,22 @@ class PyCalcUi(QMainWindow):
         self.write_button = QPushButton("Write Tag")
         # write_button.setFixedSize(100,100)
         self.write_layout.addWidget(self.write_button)
-
-        self.general_layout.addLayout(self.write_layout)
+        self.general_layout.addWidget(self.write_widget)
+        # self.general_layout.addLayout(self.write_layout)
 
     def _create_log_widget(self):
         """Create area for tag data just written."""
-        self.log_layout = QVBoxLayout()
+        self.log_widget = QWidget()
+        self.log_layout = QVBoxLayout(self.log_widget)
+        self.log_label = QLabel("Log:", self.log_widget)
+        self.log_layout.addWidget(self.log_label)
         self.log_display = QLineEdit()
         self.log_display.setFixedHeight(70)
         self.log_display.setAlignment(Qt.AlignCenter)
         self.log_display.setReadOnly(True)
         self.log_layout.addWidget(self.log_display)
-
-        self.general_layout.addLayout(self.log_layout)
+        self.general_layout.addWidget(self.log_widget)
+        # self.general_layout.addLayout(self.log_layout)
 
     def set_display_text(self, text):
         """Set display's text."""
@@ -137,7 +173,12 @@ class PyCalcCtrl(QObject):
         tags_read = reader.read(timeout=100)
         logger.info(f"Tags read: {tags_read}")
         # self._view.read_display.setText(str(tags_read))
-        self._view.read_display.setText("test")
+        if tags_read:
+            self._view.read_display.setText(tags_read[0])
+            self._view.log_display.setText(f"Read: {str(tags_read)}")
+        else:
+            self._view.read_display.setText("Read: None")
+            self._view.log_display.setText(f"Read: None")
         self._view.read_display.setFocus()
         return tags_read
 
@@ -174,29 +215,30 @@ class PyCalcCtrl(QObject):
                 animal = self.next_tag.species_string
                 loc = self._view.position_selector.currentText()
                 ser = self._view.next_serial
-                log_str = f"Label your tag: {animal} {loc} {ser}"
+                log_str = f"Success: Label your tag: {animal} {loc} {ser}"
                 self._view.log_display.setText(log_str)
-                logger.info(log_str)
+                logger.debug(log_str)
 
                 # Increment counters after successful write
                 if self._view.position_selector.currentIndex() == 1:
-                    self._view.serial_int = self.increment_serial(
-                        self._view.serial_int)
+                    self._view.increment_serial()
                     self._view.position_selector.setIndex(1)
                 else:
                     self._view.position_selector.setIndex(1)
 
             else:
-                print('No tag found')
+                self._view.log_display.setText("Error: Write failed.")
+                logger.warning("Write failed.")
+        else:
+            self._view.log_display.setText(
+                "Error: Can't write, no tag detected.")
+            logger.warning("Can't write, no tag detected.")
 
-    def increment_serial(self, s_int):
+    def increment_serial(self):
         """Given an integer, write it to file tracking last serial number used."""
-        if s_int is None:
-            raise ValueError("Serial number can't be None.")
-        s_int += 1
+        self.serial_int += 1
         with open('last_serial.txt', 'w', encoding='UTF8') as serial_file_out:
-            serial_file_out.write(str(s_int))
-        return s_int
+            serial_file_out.write(str(self.serial_int))
 
     def _connect_signals(self):
         """Connect signals and slots."""
