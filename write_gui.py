@@ -28,16 +28,7 @@ reader = izar.MockReader()
 NUM_TAGS_PER_SERIAL = 2
 
 
-class FramedWidget(QFrame):
-    """Widget with a frame around it."""
-
-    def __init__(self, *args):
-        super(FramedWidget, self).__init__(*args)
-        # self.setStyleSheet(
-        #     "background-color: rgb(255,255,255); margin:5px; border:2px solid rgb(0, 255, 0); ")
-
-
-class PyCalcUi(QMainWindow):
+class WriterUI(QMainWindow):
     """PyCalc's View (GUI)."""
 
     def __init__(self):
@@ -48,7 +39,7 @@ class PyCalcUi(QMainWindow):
         # self.setFixedSize(500, 500)
         # Set the central widget and the general layout
         self.general_layout = QVBoxLayout()
-        self._central_widget = FramedWidget(self)
+        self._central_widget = QWidget(self)
         self.setCentralWidget(self._central_widget)
         self._central_widget.setLayout(self.general_layout)
         # Create the display and the buttons
@@ -134,23 +125,8 @@ class PyCalcUi(QMainWindow):
         self.general_layout.addWidget(self.log_widget)
         # self.general_layout.addLayout(self.log_layout)
 
-    def set_display_text(self, text):
-        """Set display's text."""
-        self.display.setText(text)
-        self.display.setFocus()
 
-    def display_text(self):
-        """Get display's text."""
-        return self.display.text()
-
-    def clear_display(self):
-        """Clear the display."""
-        self.set_display_text('')
-
-# Create a controller class to connect the GUI and the model
-
-
-class PyCalcCtrl(QObject):
+class WriterCtrl(QObject):
     """PyCalc Controller class."""
 
     def __init__(self, model, view):
@@ -167,7 +143,6 @@ class PyCalcCtrl(QObject):
 
         self.next_tag = self._create_next_tag()
 
-    # @pyqtSlot()
     def _read_tag(self):
         logger.debug("Reading")
         tags_read = reader.read(timeout=100)
@@ -178,11 +153,10 @@ class PyCalcCtrl(QObject):
             self._view.log_display.setText(f"Read: {str(tags_read)}")
         else:
             self._view.read_display.setText("Read: None")
-            self._view.log_display.setText(f"Read: None")
+            self._view.log_display.setText("Read: None")
         self._view.read_display.setFocus()
         return tags_read
 
-    # @pyqtSlot(name='_create_next_tag')
     def _create_next_tag(self):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
@@ -197,7 +171,6 @@ class PyCalcCtrl(QObject):
         self._view.serial_display.setFocus()
         return new_epc
 
-    # @pyqtSlot(name='_write_tag')
     def _write_tag(self):
         """Write tag with currently selected values."""
         tags_read = self._read_tag()
@@ -219,10 +192,10 @@ class PyCalcCtrl(QObject):
                 self._view.log_display.setText(log_str)
                 logger.debug(log_str)
 
-                # Increment counters after successful write
+                # Increment position, maybe serial after successful write
                 if self._view.position_selector.currentIndex() == 1:
                     self._view.increment_serial()
-                    self._view.position_selector.setIndex(1)
+                    self._view.position_selector.setIndex(0)
                 else:
                     self._view.position_selector.setIndex(1)
 
@@ -252,24 +225,24 @@ class PyCalcCtrl(QObject):
             self._create_next_tag)
 
 
-def placeholder_model():
+def WriterModel():  # pylint: disable=invalid-name
     """Still working on the full MVC paradigm for this app."""
+    # def read_tags() -> list:
+    #     """Poll the RFID reader for tags"""
+    #     logger.debug("Reading")
+    #     tags_read = reader.read(timeout=100)
+    #     logger.info(f"Tags read: {tags_read}")
+    #     return tags_read
 
 
 def main():
     """Main function."""
-    # Create an instance of QApplication
     pycalc = QApplication(sys.argv)
-    # Show the GUI
-    view = PyCalcUi()
+    view = WriterUI()
     view.show()
-    # Create instances of the model and the controller
-    model = placeholder_model
-
+    model = WriterModel
     # assigning to ctrllr fixed signals, tho ctrllr not used
-    ctrllr = PyCalcCtrl(model=model, view=view)
-
-    # Execute the main loop
+    ctrllr = WriterCtrl(model=model, view=view)
     sys.exit(pycalc.exec())
 
 
