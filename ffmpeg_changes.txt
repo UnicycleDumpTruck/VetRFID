@@ -1,0 +1,11 @@
+ffmpeg.py:982 has problems with the end of some videos, resulting in
+an exception because video_packet has no attribute "image"
+Make the following changes starting at line 982:
+
+            if hasattr(video_packet, "image"):
+                if video_packet.image == 0:
+                    self._decode_video_packet(video_packet)
+            else:
+                print("Whoops, video_packet has no attr image. ffmpeg.py:986")
+
+Adding the if hasattr() else print seems to fix it, for now :-)
