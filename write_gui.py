@@ -18,9 +18,9 @@ import izar
 
 install(show_locals=True)
 
-reader = izar.MockReader()
-# reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
-# reader.set_read_plan([1], "GEN2")
+#reader = izar.MockReader()
+reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+reader.set_read_plan([1], "GEN2", read_power=1500)
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
 # reader.set_read_plan([1], "GEN2", read_power=1900)
@@ -141,7 +141,8 @@ class WriterCtrl(QObject):
         with open("last_serial.txt", 'r', encoding="UTF8") as serial_file_in:
             self.serial_int = int(serial_file_in.readline().strip())
 
-        self.next_tag = self._create_next_tag()
+        self.next_tag = None
+        self._create_next_tag()
 
     def _read_tag(self):
         logger.debug("Reading")
@@ -149,7 +150,7 @@ class WriterCtrl(QObject):
         logger.info(f"Tags read: {tags_read}")
         # self._view.read_display.setText(str(tags_read))
         if tags_read:
-            self._view.read_display.setText(tags_read[0])
+            self._view.read_display.setText(str(tags_read[0]))
             self._view.log_display.setText(f"Read: {str(tags_read)}")
         else:
             self._view.read_display.setText("Read: None")
@@ -169,7 +170,8 @@ class WriterCtrl(QObject):
             raise ValueError(f"new_epc is wrong length: {new_epc}")
         self._view.serial_display.setText(new_epc.code)
         self._view.serial_display.setFocus()
-        return new_epc
+        logger.debug(new_epc.code)
+        self.next_tag = new_epc
 
     def _write_tag(self):
         """Write tag with currently selected values."""
@@ -187,17 +189,17 @@ class WriterCtrl(QObject):
                 logger.info(f'Rewrote {old} with {new}')
                 animal = self.next_tag.species_string
                 loc = self._view.position_selector.currentText()
-                ser = self._view.next_serial
+                ser = self.next_tag.serial
                 log_str = f"Success: Label your tag: {animal} {loc} {ser}"
                 self._view.log_display.setText(log_str)
                 logger.debug(log_str)
 
                 # Increment position, maybe serial after successful write
                 if self._view.position_selector.currentIndex() == 1:
-                    self._view.increment_serial()
-                    self._view.position_selector.setIndex(0)
+                    self.increment_serial()
+                    self._view.position_selector.setCurrentIndex(0)
                 else:
-                    self._view.position_selector.setIndex(1)
+                    self._view.position_selector.setCurrentIndex(1)
 
             else:
                 self._view.log_display.setText("Error: Write failed.")
