@@ -7,10 +7,19 @@ from time import sleep
 
 from loguru import logger
 from PyQt5.QtCore import Qt, QObject  # pylint: disable=no-name-in-module
-# Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import (QApplication, QLineEdit, QMainWindow, QLabel,  # pylint: disable=no-name-in-module
-                             QPushButton, QComboBox, QVBoxLayout, QWidget, QHBoxLayout)   # pylint: disable=no-name-in-module
-from PyQt5.QtGui import (QPixmap)
+# pylint: disable=no-name-in-module
+from PyQt5.QtWidgets import (
+    QApplication,
+    QLineEdit,
+    QMainWindow,
+    QLabel,
+    QPushButton,
+    QComboBox,
+    QVBoxLayout,
+    QWidget,
+    QHBoxLayout,
+)
+from PyQt5.QtGui import QPixmap
 from rich.traceback import install
 
 import epc
@@ -35,7 +44,7 @@ class WriterUI(QMainWindow):
         """View initializer."""
         super().__init__()
         # Set some main window's properties
-        self.setWindowTitle('PyCalc')
+        self.setWindowTitle("PyCalc")
         # self.setFixedSize(500, 500)
         # Set the central widget and the general layout
         self.general_layout = QVBoxLayout()
@@ -53,7 +62,7 @@ class WriterUI(QMainWindow):
         self.title_widget = QWidget()
         self.title_layout = QHBoxLayout(self.title_widget)
         self.logo_widget = QLabel()
-        self.logo = QPixmap('media/icons/vet_u_paw.png').scaledToHeight(150)
+        self.logo = QPixmap("media/icons/vet_u_paw.png").scaledToHeight(150)
         self.logo_widget.setPixmap(self.logo)
         self.title_layout.addWidget(self.logo_widget)
         self.title_layout.addSpacing(20)
@@ -139,7 +148,7 @@ class WriterCtrl(QObject):
         self._connect_signals()
 
         self.serial_int = None
-        with open("last_serial.txt", 'r', encoding="UTF8") as serial_file_in:
+        with open("last_serial.txt", "r", encoding="UTF8") as serial_file_in:
             self.serial_int = int(serial_file_in.readline().strip())
 
         self.next_tag = None
@@ -188,7 +197,7 @@ class WriterCtrl(QObject):
             old = target_tag.epc.epc_bytes
             new = self.next_tag.epc_bytes
             if reader.write(epc_code=new, epc_target=old):
-                logger.info(f'Rewrote {old} with {new}')
+                logger.info(f"Rewrote {old} with {new}")
                 animal = self.next_tag.species_string
                 loc = self._view.position_selector.currentText()
                 ser = self.next_tag.serial
@@ -214,7 +223,7 @@ class WriterCtrl(QObject):
     def increment_serial(self):
         """Given an integer, write it to file tracking last serial number used."""
         self.serial_int += 1
-        with open('last_serial.txt', 'w', encoding='UTF8') as serial_file_out:
+        with open("last_serial.txt", "w", encoding="UTF8") as serial_file_out:
             serial_file_out.write(str(self.serial_int))
 
     def _connect_signals(self):
@@ -251,5 +260,5 @@ def main():
     sys.exit(pycalc.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
