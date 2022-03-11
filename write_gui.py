@@ -8,7 +8,7 @@ from time import sleep
 from loguru import logger
 from PyQt5.QtCore import Qt, QObject  # pylint: disable=no-name-in-module
 # Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import (QApplication, QLineEdit, QMainWindow, QLabel, QFrame,  # pylint: disable=no-name-in-module
+from PyQt5.QtWidgets import (QApplication, QLineEdit, QMainWindow, QLabel,  # pylint: disable=no-name-in-module
                              QPushButton, QComboBox, QVBoxLayout, QWidget, QHBoxLayout)   # pylint: disable=no-name-in-module
 from PyQt5.QtGui import (QPixmap)
 from rich.traceback import install
@@ -18,7 +18,7 @@ import izar
 
 install(show_locals=True)
 
-#reader = izar.MockReader()
+# reader = izar.MockReader()
 reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
 reader.set_read_plan([1], "GEN2", read_power=1500)
 
@@ -49,6 +49,7 @@ class WriterUI(QMainWindow):
         self._create_log_widget()
 
     def _create_title_widget(self):
+        """Create widget for logo and title."""
         self.title_widget = QWidget()
         self.title_layout = QHBoxLayout(self.title_widget)
         self.logo_widget = QLabel()
@@ -144,7 +145,8 @@ class WriterCtrl(QObject):
         self.next_tag = None
         self._create_next_tag()
 
-    def _read_tag(self):
+    def read_tag(self):
+        """Read RFID tags with reader hardware."""
         logger.debug("Reading")
         tags_read = reader.read(timeout=100)
         logger.info(f"Tags read: {tags_read}")
@@ -162,7 +164,7 @@ class WriterCtrl(QObject):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
         new_epc.species_num = str(
-            self._view.animal_selector.currentIndex() + 1)  # TODO remove str?
+            self._view.animal_selector.currentIndex() + 1)
         new_epc.serial = str(self.serial_int + 1)
         new_epc.location = str(self._view.position_selector.currentIndex() + 1)
         new_epc.date_now()
@@ -173,14 +175,14 @@ class WriterCtrl(QObject):
         logger.debug(new_epc.code)
         self.next_tag = new_epc
 
-    def _write_tag(self):
+    def write_tag(self):
         """Write tag with currently selected values."""
-        tags_read = self._read_tag()
-        sleep(0.5)
+        tags_read = self.read_tag()  # TODO pass timeout
+        sleep(0.5)  # TODO use same time as above
         if tags_read:
+            tags_read = tags_read.sort(key=lambda tag: tag.rssi)
             self._view.read_display.setText(str(tags_read))
             self._view.read_display.setFocus()
-            # TODO set target to closest by RSSI
             target_tag = tags_read[0]
 
             old = target_tag.epc.epc_bytes
@@ -217,9 +219,9 @@ class WriterCtrl(QObject):
 
     def _connect_signals(self):
         """Connect signals and slots."""
-        self._view.read_button.clicked.connect(self._read_tag)
+        self._view.read_button.clicked.connect(self.read_tag)
         # self._view.serial_display.returnPressed.connect(self._calculate_result)
-        self._view.write_button.clicked.connect(self._write_tag)
+        self._view.write_button.clicked.connect(self.write_tag)
 
         self._view.animal_selector.currentIndexChanged.connect(
             self._create_next_tag)
@@ -245,6 +247,7 @@ def main():
     model = WriterModel
     # assigning to ctrllr fixed signals, tho ctrllr not used
     ctrllr = WriterCtrl(model=model, view=view)
+    logger.debug(f"{type(ctrllr)} assigned.")
     sys.exit(pycalc.exec())
 
 
