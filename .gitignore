@@ -1,6 +1,7 @@
 #*.mp4
 .DS_Store
 .vscode
+/vet
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
