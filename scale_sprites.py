@@ -11,16 +11,9 @@ install(show_locals=True)
 
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 # glScalef(1.0, 1.0, 1.0)
-# image = pyglet.image.load('media/cat/xray/cat_views.png')
-
-# scale_factor = image.height / 720
-# image.height = 720
-# image.width = image.width / scale_factor
-
 
 image = pyglet.resource.image('media/cat/xray/cat_views.png')
 orig_image = copy.copy(image)
-#orig_image = pyglet.resource.image('media/cat/xray/cat_views.png')
 logger.debug(f"image start w:{image.width} h:{image.height}")
 logger.debug(f"orig_image start w:{orig_image.width} h:{orig_image.height}")
 
@@ -28,15 +21,11 @@ height, width = 720, 1280  # Desired resolution
 
 scale_y = min(image.height, height) / max(image.height, height)
 scale_x = min(width, image.width) / max(width, image.width)
-# image.scale_x = scale_x
-# image.scale_y = scale_y
 image.scale = min(scale_x, scale_y)
+logger.debug(f"Scales x:{scale_x} y:{scale_y} min:{image.scale}")
 
-# Usually not needed, and should not be tampered with,
-# but for a various bugs when using sprite-inheritance on a user-defined
-# class, these values will need to be updated manually:
-image.width = width  # * scale_x
-image.height = height  # * scale_y
+image.width = image.width * image.scale
+image.height = image.height * image.scale
 # image.texture.width = width
 # image.texture.height = height
 logger.debug(f"image now w:{image.width} h:{image.height}")
@@ -51,62 +40,92 @@ for i, screen in enumerate(screens):
     print(f"Screen #{i}: {screen}")
 screen = screens[0]
 
+RET_SIDE = 200  # Length of side of reticle box
+RET_BOX_WT = 10  # Line weight of reticle box lines
+
 
 class MagWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mag_pos = [0, 0]
+        self.mag_x = 0
+        self.mag_y = 0
+        self.reticle_batch = pyglet.graphics.Batch()
+        self.ret_left = pyglet.shapes.Line(self.mag_x, self.mag_y, self.mag_x, self.mag_y + RET_SIDE, width=10,
+                                           color=(200, 20, 20), batch=self.reticle_batch)
+        self.ret_right = pyglet.shapes.Line(self.mag_x + RET_SIDE, self.mag_y, self.mag_x + RET_SIDE, self.mag_y + RET_SIDE, width=10,
+                                            color=(200, 20, 20), batch=self.reticle_batch)
+        self.ret_top = pyglet.shapes.Line(self.mag_x - RET_BOX_WT // 2, self.mag_y + RET_SIDE, self.mag_x + RET_SIDE + RET_BOX_WT // 2, self.mag_y + RET_SIDE, width=10,
+                                          color=(200, 20, 20), batch=self.reticle_batch)
+        self.ret_bot = pyglet.shapes.Line(self.mag_x - RET_BOX_WT // 2, self.mag_y, self.mag_x + RET_SIDE + RET_BOX_WT // 2, self.mag_y, width=10,
+                                          color=(200, 20, 20), batch=self.reticle_batch)
 
     def on_draw(self):
         window.clear()
         image.blit(0, 0, 0)
-        # y=24 fine, y=25 seg fault
         mag_image = orig_image.get_region(
-            x=self.mag_pos[0] // image.scale,
-            y=self.mag_pos[1] // image.scale,
-            width=100,
-            height=100)
-        # print(window.width, window.height)
-        # removing this removes segfault
-        # cat.draw()
-        label.draw()
-        mag_image.blit(self.mag_pos[0], self.mag_pos[1], 0)
+            # Subtract half of RET_SIDE to center magnified image on cursor
+            x=self.mag_x // image.scale,  # - RET_SIDE // 2,
+            y=self.mag_y // image.scale,  # - RET_SIDE // 2,
+            width=RET_SIDE,
+            height=RET_SIDE)
+        mag_image.blit(self.mag_x, self.mag_y, 0)
+        self.reticle_batch.draw()
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.mag_pos[0] = x
-        self.mag_pos[1] = y
-        logger.debug(f"Mouse press x:{x} y:{y}")
+    def on_mouse_motion(self, x, y, button, modifiers):
+        self.mag_x = x
+        self.mag_y = y
+        # logger.debug(f"Mouse press x:{x} y:{y}")
 
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
-        if symbol == pyglet.window.key.P:
-            print("p pressed")
+        if symbol == pyglet.window.key.D:
+            print("d pressed")
+            self.mag_x += 10
+        elif symbol == pyglet.window.key.A:
+            print("a pressed")
+            self.mag_x -= 10
+        elif symbol == pyglet.window.key.W:
+            print("w pressed")
+            self.mag_y += 10
+        elif symbol == pyglet.window.key.S:
+            print("s pressed")
+            self.mag_y -= 10
         else:
+            logger.info(f"Other key press, exiting: {symbol}")
             pyglet.app.exit()
+
+    def update(self, dt):
+        """Move position of magnifying image, and lines making rect."""
+        # Move position used to get magnified region of image.
+        # TODO: If randomly moving, keep within bounds of memory.
+        # self.mag_x += 50 * dt  # Move 50px per second
+        # self.mag_y += 50 * dt
+
+        # Move lines making up reticle rectangle
+        self.ret_left.x = self.mag_x
+        self.ret_left.y = self.mag_y
+        self.ret_left.x2 = self.mag_x
+        self.ret_left.y2 = self.mag_y + RET_SIDE
+        self.ret_right.x = self.mag_x + RET_SIDE
+        self.ret_right.y = self.mag_y
+        self.ret_right.x2 = self.mag_x + RET_SIDE
+        self.ret_right.y2 = self.mag_y + RET_SIDE
+        self.ret_top.x = self.mag_x - RET_BOX_WT // 2
+        self.ret_top.y = self.mag_y + RET_SIDE
+        self.ret_top.x2 = self.mag_x + RET_SIDE + RET_BOX_WT // 2
+        self.ret_top.y2 = self.mag_y + RET_SIDE
+        self.ret_bot.x = self.mag_x - RET_BOX_WT // 2
+        self.ret_bot.y = self.mag_y
+        self.ret_bot.x2 = self.mag_x + RET_SIDE + RET_BOX_WT // 2
+        self.ret_bot.y2 = self.mag_y
 
 
 style = pyglet.window.Window.WINDOW_STYLE_DEFAULT
 window = MagWindow(1280, 720, caption="Mag Test Window",
-                   screen=screen, style=style, fullscreen=False)
-# cursor = window.get_system_mouse_cursor(window.CURSOR_CROSSHAIR)
-# window.set_mouse_cursor(cursor)
-# window.set_visible(True)
-
-label = pyglet.text.Label('Hello, world',
-                          font_name='Times New Roman',
-                          font_size=36,
-                          x=window.width // 2, y=window.height // 2,
-                          anchor_x='center', anchor_y='center')
-
-
-def update(dt):
-    # Move 10 pixels per second
-    #cat.x += dt * 10
-    window.mag_pos[0] += 1
-    window.mag_pos[1] += 1
-
+                   screen=screen, style=style, fullscreen=True)
 
 # Call update 60 times a second
-pyglet.clock.schedule_interval(update, 1 / 60.)
+pyglet.clock.schedule_interval(window.update, 1 / 60.)
 
 pyglet.app.run()
