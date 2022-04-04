@@ -3,6 +3,8 @@ import json
 import os
 import random
 import pyglet  # type: ignore
+from rich.traceback import install
+install(show_locals=True)
 
 
 def json_import(filename) -> dict:
