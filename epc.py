@@ -76,9 +76,10 @@ class EpcCode():
         return self.code[SERIAL_END:SPECIES_END]
 
     @species_num.setter
-    def species_num(self, num_str: str) -> str:
+    def species_num(self, num_str: str | int) -> str:
         """Set species number portion of epc. Leading zeros will be added.
         Returns new EPC code."""
+        num_str = str(num_str)
         if num_str.isdigit and len(num_str) < (SPECIES_DIGITS + 1):
             self.code = "".join([self.code[:SERIAL_END],
                                 num_str.zfill(SPECIES_DIGITS),

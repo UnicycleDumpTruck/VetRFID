@@ -1,11 +1,14 @@
 """Poll reader for new tags, send strongest read to assigned window."""
 from __future__ import annotations
+
 from typing import Dict
-from scanner_window import ScannerWindow
+
 import pyglet  # type: ignore
+from loguru import logger
+
 import epc
 import izar  # new __init__.py messing up imports?
-# import log
+from scanner_window import ScannerWindow
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
@@ -22,8 +25,8 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
     def read_tags(self, delta_time):
         """Poll reader for new tags, send to self.process_tags()."""
-        read_tags = self.reader.read(
-            timeout=500)  # TODO set timeout, argparse from main.py?
+        logger.debug(f"{delta_time}")
+        read_tags = self.reader.read(timeout=500)
         if read_tags:
             self.process_tags(read_tags)
         else:

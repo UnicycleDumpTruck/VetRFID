@@ -5,10 +5,14 @@ from time import sleep
 from os import environ
 import argparse
 from queue import Queue, Empty
+from rich.traceback import install
 import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
 import izar
+from epc import Tag  # pylint: disable=unused-import
+
+install(show_locals=True)
 
 pyglet.options['debug_gl'] = False
 pyglet.options['debug_gl_trace'] = False
@@ -62,9 +66,9 @@ if __name__ == "__main__":
         sleep(1)
         reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
         if args.power:
-            reader.set_read_plan([1, 2], "GEN2", read_power=args.power)
+            reader.set_read_plan([1,2], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1, 2], "GEN2", read_power=1000)
+            reader.set_read_plan([1,2], "GEN2", read_power=1000)
 
     idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
@@ -93,7 +97,7 @@ if __name__ == "__main__":
 
     window1.set_icon(vet_paw)
     # window2.set_icon(vet_paw)
-    
+
     # event_logger1 = pyglet.window.event.WindowEventLogger()
     # window1.push_handlers(event_logger1)
     # event_logger2 = pyglet.window.event.WindowEventLogger()
@@ -110,7 +114,7 @@ if __name__ == "__main__":
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
 
-    tag_queue = Queue()  # TODO assess if queue control class needed.
+    tag_queue: "Queue[Tag]" = Queue()
 
     def tag_to_queue(tag):
         """Put tag into queue."""
@@ -133,7 +137,8 @@ if __name__ == "__main__":
                     break
             return last_tag
 
-    def send_tag_to_td(dt):
+    def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
+        """Send tag from the reader thread to the tag dispatcher."""
         tag = read_queue()
         if tag:
             print("Read tag:", tag)
