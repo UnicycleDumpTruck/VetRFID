@@ -17,7 +17,7 @@ orig_image = copy.copy(image)
 logger.debug(f"image start w:{image.width} h:{image.height}")
 logger.debug(f"orig_image start w:{orig_image.width} h:{orig_image.height}")
 
-height, width = 720, 1280  # Desired resolution
+height, width = 1080, 1920  # Desired resolution
 
 scale_y = min(image.height, height) / max(image.height, height)
 scale_x = min(width, image.width) / max(width, image.width)
@@ -122,7 +122,7 @@ class MagWindow(pyglet.window.Window):
 
 
 style = pyglet.window.Window.WINDOW_STYLE_DEFAULT
-window = MagWindow(1280, 720, caption="Mag Test Window",
+window = MagWindow(width, height, caption="Mag Test Window",
                    screen=screen, style=style, fullscreen=True)
 
 # Call update 60 times a second
