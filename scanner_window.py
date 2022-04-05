@@ -88,7 +88,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             if tag.epc.species_string == 'Pig':
                 self.state = State.VID_SHOWING
                 self.image = None
-                self.video = files.random_species_dir_type(
+                self.video, _ = files.random_species_dir_type(
                     'pig', 'vid', 'vid'
                 )
                 self.video_player.next_source()
@@ -98,7 +98,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             elif tag.epc.species_string == 'Goat':
                 self.state = State.VID_SHOWING
                 self.image = None
-                self.video = files.random_species_dir_type(
+                self.video, _ = files.random_species_dir_type(
                     'goat', 'vid', 'vid'
                 )
                 self.video_player.next_source()
