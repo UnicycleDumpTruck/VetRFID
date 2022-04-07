@@ -2,6 +2,8 @@
 .DS_Store
 .vscode
 /vet
+/new_media
+/dicom
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
