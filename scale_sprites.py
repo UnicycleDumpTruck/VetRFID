@@ -13,7 +13,7 @@ install(show_locals=True)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 # glScalef(1.0, 1.0, 1.0)
 
-image = pyglet.resource.image("media/cat/xray/cat_views.png")
+image = pyglet.resource.image("media/dog/xray/Prairie_dog_X-ray.jpg")
 orig_image = copy.copy(image)
 logger.debug(f"image start w:{image.width} h:{image.height}")
 logger.debug(f"orig_image start w:{orig_image.width} h:{orig_image.height}")
