@@ -9,6 +9,9 @@ import files
 import epc
 import log
 
+RET_SIDE = 200  # Length of side of reticle box
+RET_BOX_WT = 10  # Line weight of reticle box lines
+
 
 class State(Enum):
     """Window state, whether a tag is being displayed."""
@@ -49,9 +52,24 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.label_bg.anchor_y = self.label_bg.height // 2
 
         self.image = None
+        self.orig_image = None
         self.video = None
         self.clock = pyglet.clock.get_default()
         self.idle(0)  # idle needs delta_time argument
+
+        # Magnifier
+        self.mag_pos = [0, 0]
+        self.mag_x = 0
+        self.mag_y = 0
+        self.reticle_batch = pyglet.graphics.Batch()
+        self.ret_left = pyglet.shapes.Line(self.mag_x, self.mag_y, self.mag_x, self.mag_y + RET_SIDE, width=10,
+                                           color=(200, 20, 20), batch=self.reticle_batch)
+        self.ret_right = pyglet.shapes.Line(self.mag_x + RET_SIDE, self.mag_y, self.mag_x + RET_SIDE, self.mag_y + RET_SIDE, width=10,
+                                            color=(200, 20, 20), batch=self.reticle_batch)
+        self.ret_top = pyglet.shapes.Line(self.mag_x - RET_BOX_WT // 2, self.mag_y + RET_SIDE, self.mag_x + RET_SIDE + RET_BOX_WT // 2, self.mag_y + RET_SIDE, width=10,
+                                          color=(200, 20, 20), batch=self.reticle_batch)
+        self.ret_bot = pyglet.shapes.Line(self.mag_x - RET_BOX_WT // 2, self.mag_y, self.mag_x + RET_SIDE + RET_BOX_WT // 2, self.mag_y, width=10,
+                                          color=(200, 20, 20), batch=self.reticle_batch)
 
     def idle(self, delta_time):
         """Clear medical imagery, return to idle screen."""
@@ -60,6 +78,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         print("Going idle, ", delta_time, " seconds since scan.")
         self.clear()
         self.image = None
+        self.orig_image = None
         self.video = None
         self.video_player.next_source()
         self.serial = None
@@ -88,7 +107,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             if tag.epc.species_string == 'Pig':
                 self.state = State.VID_SHOWING
                 self.image = None
-                self.video = files.random_species_dir_type(
+                self.orig_image = None
+                self.video, _ = files.random_species_dir_type(
                     'pig', 'vid', 'vid'
                 )
                 self.video_player.next_source()
@@ -98,7 +118,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             elif tag.epc.species_string == 'Goat':
                 self.state = State.VID_SHOWING
                 self.image = None
-                self.video = files.random_species_dir_type(
+                self.orig_image = None
+                self.video, _ = files.random_species_dir_type(
                     'goat', 'vid', 'vid'
                 )
                 self.video_player.next_source()
@@ -110,7 +131,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.video = None
                 self.video_player.next_source()
                 self.video_player.delete()
-                self.image = files.random_species_dir_type(
+                self.image, self.orig_image = files.random_species_dir_type(
                     tag.epc.species_string, self.media_dir, self.media_type)
                 self.label_controller.make_tag_labels(tag).draw()
             # self.graphics_batch.draw()
@@ -129,17 +150,31 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         if symbol == pyglet.window.key.P:
             print("Sending self same pig tag.")
             self.on_tag_read(epc.same_pig())
-        elif symbol == pyglet.window.key.D:
-            print("Sending self random dog tag.")
-            self.on_tag_read(epc.random_dog())
+        # elif symbol == pyglet.window.key.D:
+        #     print("Sending self random dog tag.")
+        #     self.on_tag_read(epc.random_dog())
         elif symbol == pyglet.window.key.G:
             print("Sending self same goat.")
             self.on_tag_read(epc.same_goat())
+        elif symbol == pyglet.window.key.D:
+            print("d pressed")
+            self.mag_x += 10
+        elif symbol == pyglet.window.key.A:
+            print("a pressed")
+            self.mag_x -= 10
+        elif symbol == pyglet.window.key.W:
+            print("w pressed")
+            self.mag_y += 10
+        elif symbol == pyglet.window.key.S:
+            print("s pressed")
+            self.mag_y -= 10
+
         else:
             pyglet.app.exit()
 
-    def update(self, dt):  # TODO remove if doesn't fix video
-        self.on_draw()
+    def on_mouse_motion(self, x, y, button, modifiers):
+        self.mag_x = x
+        self.mag_y = y
 
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
@@ -151,6 +186,17 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                                   pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
+
+            # Magnifier
+            mag_image = self.orig_image.get_region(
+                # Subtract half of RET_SIDE to center magnified image on cursor
+                x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
+                y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
+                width=RET_SIDE,
+                height=RET_SIDE)
+            mag_image.blit(self.mag_x, self.mag_y, 0)
+            self.reticle_batch.draw()
+
         if self.video:
             if self.video_player.source and self.video_player.source.video_format:
                 self.video_player.texture.anchor_x = self.video_player.texture.width // 2
@@ -175,6 +221,34 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
+
+    # def update(self, dt):  # TODO remove if doesn't fix video
+    #     self.on_draw()
+
+    def update(self, dt):
+        """Move position of magnifying image, and lines making rect."""
+        # Move position used to get magnified region of image.
+        # TODO: If randomly moving, keep within bounds of memory.
+        # self.mag_x += 50 * dt  # Move 50px per second
+        # self.mag_y += 50 * dt
+
+        # Move lines making up reticle rectangle
+        self.ret_left.x = self.mag_x
+        self.ret_left.y = self.mag_y
+        self.ret_left.x2 = self.mag_x
+        self.ret_left.y2 = self.mag_y + RET_SIDE
+        self.ret_right.x = self.mag_x + RET_SIDE
+        self.ret_right.y = self.mag_y
+        self.ret_right.x2 = self.mag_x + RET_SIDE
+        self.ret_right.y2 = self.mag_y + RET_SIDE
+        self.ret_top.x = self.mag_x - RET_BOX_WT // 2
+        self.ret_top.y = self.mag_y + RET_SIDE
+        self.ret_top.x2 = self.mag_x + RET_SIDE + RET_BOX_WT // 2
+        self.ret_top.y2 = self.mag_y + RET_SIDE
+        self.ret_bot.x = self.mag_x - RET_BOX_WT // 2
+        self.ret_bot.y = self.mag_y
+        self.ret_bot.x2 = self.mag_x + RET_SIDE + RET_BOX_WT // 2
+        self.ret_bot.y2 = self.mag_y
 
 
 ScannerWindow.register_event_type('on_tag_read')

@@ -2,6 +2,7 @@
 import json
 import os
 import random
+import copy
 import pyglet  # type: ignore
 from rich.traceback import install
 install(show_locals=True)
@@ -48,14 +49,31 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     print(img_path)
     img_resource = file_types[media_type](img_path)
 
-    # may not work for images larger than 1920 x 1080...
+    orig_image = img_resource
     if media_type == 'img':
-        scale_factor = img_resource.height / 1080
-        img_resource.height = 1080
-        img_resource.width = img_resource.width / scale_factor
+        orig_image = copy.copy(img_resource)
+
+        height, width = 1080, 1920  # Desired resolution
+
+        scale_y = min(img_resource.height, height) / \
+            max(img_resource.height, height)
+        scale_x = min(width, img_resource.width) / \
+            max(width, img_resource.width)
+        img_resource.scale = min(scale_x, scale_y)
+
+        img_resource.width = img_resource.width * img_resource.scale
+        img_resource.height = img_resource.height * img_resource.scale
+
+    # may not work for images larger than 1920 x 1080...
+    # if media_type == 'img':
+    #     scale_factor = img_resource.height / 1080
+    #     img_resource.height = 1080
+    #     img_resource.width = img_resource.width / scale_factor
+
+    # TODO: Video scaling
     # elif media_type == 'vid':
     #     scale_factor = img_resource.size.height / 1080
     #     img_resource.size.height = 1080
     #     img_resource.size.width = img_resource.size.width / scale_factor
 
-    return img_resource
+    return img_resource, orig_image
