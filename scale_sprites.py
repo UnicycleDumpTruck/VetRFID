@@ -28,7 +28,7 @@ AN_X, AN_Y = 0, SCREEN_HEIGHT - AN_HEIGHT  # origin of animal window
 MD_WIDTH, MD_HEIGHT = 640, 320
 MD_X, MD_Y = 0, 0
 
-
+# Line weight for divisions, reticle
 DIV_WT = 10
 
 scale_y = min(image.height, AN_HEIGHT) / max(image.height, AN_HEIGHT)
@@ -43,15 +43,12 @@ image.height = image.height * image.scale
 logger.debug(f"image now w:{image.width} h:{image.height}")
 logger.debug(f"orig_image now w:{orig_image.width} h:{orig_image.height}")
 
+# Scale reticle rect size according to available pixels.
+# Mag display is fixed size, so reticle is adjusted.
 RET_WIDTH = MD_WIDTH * image.scale
 RET_HEIGHT = MD_HEIGHT * image.scale
 
-# RET_SIDE = 200  # Length of side of reticle box
 RET_BOX_WT = 10  # Line weight of reticle box lines
-
-
-# ball_image = pyglet.image.load('ball.png')
-cat = pyglet.sprite.Sprite(image, x=100, y=100)
 
 display = pyglet.canvas.get_display()
 screens = display.get_screens()
@@ -291,6 +288,7 @@ class MagWindow(pyglet.window.Window):
         self.ret_bot.x2 = self.mag_x + RET_WIDTH + RET_BOX_WT // 2
         self.ret_bot.y2 = self.mag_y
 
+        # Update lines linking reticle to fixed mag display section
         self.tl_link.x2 = self.mag_x
         self.tl_link.y2 = self.mag_y
         self.tr_link.x2 = self.mag_x + RET_WIDTH
