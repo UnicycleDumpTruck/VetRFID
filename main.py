@@ -88,7 +88,7 @@ if __name__ == "__main__":
     #       1920, 1080, "Pet U 2", True, fullscreen=True,
     #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
     window1 = scanner_window.ScannerWindow(
-        1920, 1080, "Pet U 1", True, fullscreen=True,
+        1600, 900, "Pet U 1", True, fullscreen=True,
         screen=screens[0], window_number=1, idle_seconds=idle_seconds)
     # window1 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
