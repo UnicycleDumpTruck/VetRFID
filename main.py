@@ -14,6 +14,7 @@ from epc import Tag  # pylint: disable=unused-import
 
 install(show_locals=True)
 
+pyglet.options['search_local_libs'] = True
 pyglet.options['debug_gl'] = False
 pyglet.options['debug_gl_trace'] = False
 pyglet.options['debug_gl_trace_args'] = False

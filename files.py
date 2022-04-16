@@ -3,6 +3,7 @@ import json
 import os
 import random
 import copy
+from PIL import Image
 import pyglet  # type: ignore
 from loguru import logger
 from rich.traceback import install
@@ -82,3 +83,7 @@ if __name__ == "__main__":
         logger.info(f"Directory: {dirpath}")
         for file_name in files:
             logger.info(file_name)
+            if file_name.endswith(".png"):
+                continue
+            with Image.open(file_name) as other_type_file:
+                other_type_file.save(f"{file_name[:-3]}.png")
