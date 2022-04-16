@@ -1,4 +1,6 @@
 """Load dict from json file. Make random pyglet imag from directory."""
+from __future__ import annotations
+from typing import List
 import json
 import os
 import random
@@ -76,14 +78,38 @@ def random_species_dir_type(animal_species, media_directory, media_type):
 
     return img_resource, orig_image
 
+new_ext = {".jpg": ".png", "jpeg": "png", "webp": "png"}
 
-if __name__ == "__main__":
+def convert_all_to_png():
     logger.info("Printing file list.")
     for dirpath, dirnames, files in os.walk('media'):
         logger.info(f"Directory: {dirpath}")
         for file_name in files:
             logger.info(file_name)
-            if file_name.endswith(".png"):
-                continue
-            with Image.open(file_name) as other_type_file:
-                other_type_file.save(f"{file_name[:-3]}.png")
+            logger.info(file_name[-4:])
+            if file_name[-4:] in {".jpg", "jpeg", "webp"}:
+                new_name = os.path.join(dirpath, f"{file_name[:-4]}{new_ext[file_name[-4:]]}")
+                old_name = os.path.join(dirpath, file_name)
+                logger.info(new_name)
+                if not os.path.isfile(new_name):
+                    try:
+                        with Image.open(old_name) as other_type_file:
+                            other_type_file.save(new_name)
+                        
+                    except Exception as e:
+                        logger.error(e)
+                else:
+                    os.remove(old_name)
+
+
+def list_all_png() -> List:
+    file_list = []
+    for dirpath, dirnames, files in os.walk('media'):
+        for file_name in files:
+            file_path = os.path.join(dirpath, file_name)
+            logger.info(file_path)
+            file_list.append(file_path)
+    return file_list
+
+if __name__ == "__main__":
+    list_all_png()
