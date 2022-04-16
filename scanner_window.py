@@ -50,9 +50,13 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.idle(0)
 
         self.label_bg = pyglet.resource.image('graphics/cow_overlay.png')
+        self.label_bg.width = self.label_bg.width // 2
+        self.label_bg.height = self.label_bg.height // 2
         # self.background_graphics.append(self.bg)
-        self.label_bg.anchor_x = self.label_bg.width // 2
-        self.label_bg.anchor_y = self.label_bg.height // 2
+        
+        # Disabled anchor change for new label overlay
+        # self.label_bg.anchor_x = self.label_bg.width // 2
+        # self.label_bg.anchor_y = self.label_bg.height // 2
 
         self.image = None
         self.orig_image = None
@@ -235,11 +239,14 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         if self.state != State.VID_SHOWING:
-            self.label_bg.blit(self.width // 2, self.height // 2)
+            # self.label_bg.blit(self.width // 2, self.height // 2)
+            self.label_bg.blit(40,40)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
         elif self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
+
+
         # if self.state != State.VID_SHOWING:
         #     self.label_controller.always_labels.draw()
         # Commented out for now, as one station will show many imagery types

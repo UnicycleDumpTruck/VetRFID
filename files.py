@@ -60,7 +60,8 @@ def random_species_dir_type(animal_species, media_directory, media_type):
 
 
 def scale_image(img):
-    height, width = 1080, 1920  # Desired resolution
+    # height, width = 1080, 1920  # Desired resolution
+    height, width = 720, 1280  # Desired resolution
 
     scale_y = min(img.height, height) / max(img.height, height)
     scale_x = min(width, img.width) / max(width, img.width)
