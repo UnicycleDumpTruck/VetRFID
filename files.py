@@ -26,7 +26,9 @@ def json_export(filename, ldict):
         json_file.write(jstr)
 
 
-file_types = {'img': pyglet.resource.image, 'vid': pyglet.media.load, }
+file_types = {'img': pyglet.resource.image,
+              # 'vid': pyglet.resource.image, }
+              'vid': pyglet.media.load, }
 
 
 def random_species_dir_type(animal_species, media_directory, media_type):
@@ -54,7 +56,7 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         return scale_image(img_resource), orig_image
 
     # TODO: Video Scaling
-    return img_resource, orig_image #TODO: toss extra return, clean from SWin
+    return img_resource, orig_image  # TODO: toss extra return, clean from SWin
 
 
 def scale_image(img):
@@ -77,6 +79,7 @@ def scale_image(img):
 
 new_ext = {".jpg": ".png", "jpeg": "png", "webp": "png"}
 
+
 def convert_all_to_png():
     logger.info("Printing file list.")
     for dirpath, dirnames, files in os.walk('media'):
@@ -85,14 +88,15 @@ def convert_all_to_png():
             logger.info(file_name)
             logger.info(file_name[-4:])
             if file_name[-4:] in {".jpg", "jpeg", "webp"}:
-                new_name = os.path.join(dirpath, f"{file_name[:-4]}{new_ext[file_name[-4:]]}")
+                new_name = os.path.join(
+                    dirpath, f"{file_name[:-4]}{new_ext[file_name[-4:]]}")
                 old_name = os.path.join(dirpath, file_name)
                 logger.info(new_name)
                 if not os.path.isfile(new_name):
                     try:
                         with Image.open(old_name) as other_type_file:
                             other_type_file.save(new_name)
-                        
+
                     except Exception as e:
                         logger.error(e)
                 else:
@@ -105,14 +109,16 @@ def list_all_of(file_extension: str) -> List:
         for file_name in files:
             if file_name.endswith(file_extension):
                 file_path = os.path.join(dirpath, file_name)
-                #logger.info(file_path)
+                # logger.info(file_path)
                 file_list.append(file_path)
     return file_list
+
 
 all_png = list_all_of("png")
 current_png = 0
 all_mp4 = list_all_of("mp4")
 current_mp4 = 0
+
 
 def next_png():
     global current_png
@@ -121,12 +127,14 @@ def next_png():
         current_png = 0
     return load_png(all_png[current_png])
 
+
 def prev_png():
     global current_png
     current_png -= 1
     if current_png < 0:
         current_png = len(all_png) - 1
     return load_png(all_png[current_png])
+
 
 def load_png(path):
     logger.debug(path)
@@ -135,13 +143,13 @@ def load_png(path):
     return scale_image(resource), orig
 
 
-
 def next_mp4():
     global current_mp4
     current_mp4 += 1
     if current_mp4 >= len(all_mp4):
         current_mp4 = 0
     return pyglet.media.load(all_mp4[current_mp4])
+
 
 if __name__ == "__main__":
     list_all_of("mp4")

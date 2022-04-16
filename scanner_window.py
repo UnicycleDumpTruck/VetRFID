@@ -49,7 +49,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             print("Video player telling window to idle!")
             self.idle(0)
 
-        self.label_bg = pyglet.resource.image('graphics/background1080.png')
+        self.label_bg = pyglet.resource.image('graphics/cow_overlay.png')
         # self.background_graphics.append(self.bg)
         self.label_bg.anchor_x = self.label_bg.width // 2
         self.label_bg.anchor_y = self.label_bg.height // 2
@@ -149,14 +149,13 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         return pyglet.event.EVENT_HANDLED
 
     def show_image(self, imgs):
-            self.state = State.IMG_SHOWING
-            self.video = None
-            self.video_player.next_source()
-            self.video_player.delete()
-            self.image, self.orig_image = imgs[0], imgs[1]
-            logger.debug(f"H:{self.image.height}, W:{self.image.width}")
-            #self.label_controller.make_tag_labels(tag).draw()
-
+        self.state = State.IMG_SHOWING
+        self.video = None
+        self.video_player.next_source()
+        self.video_player.delete()
+        self.image, self.orig_image = imgs[0], imgs[1]
+        logger.debug(f"H:{self.image.height}, W:{self.image.width}")
+        # self.label_controller.make_tag_labels(tag).draw()
 
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
@@ -196,7 +195,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
     def on_mouse_motion(self, x, y, button, modifiers):
         self.mag_x = x
         self.mag_y = y
-        self.update_magnifier(0) # TODO: ? Not tested, passing dt. Schedule this?
+        # TODO: ? Not tested, passing dt. Schedule this?
+        self.update_magnifier(0)
 
     def draw_magnifier(self):
         mag_image = self.orig_image.get_region(
@@ -207,7 +207,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             height=RET_SIDE)
         mag_image.blit(self.mag_x, self.mag_y, 0)
         self.reticle_batch.draw()
-
 
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
@@ -247,7 +246,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
-
 
     def update_magnifier(self, dt):
         """Move position of magnifying image, and lines making rect."""
