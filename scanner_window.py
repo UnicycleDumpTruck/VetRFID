@@ -240,7 +240,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         if self.state != State.VID_SHOWING:
             # self.label_bg.blit(self.width // 2, self.height // 2)
-            self.label_bg.blit(40,40)
+            self.label_bg.blit(20,20)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
         elif self.state == State.IDLE:
