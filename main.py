@@ -66,9 +66,9 @@ if __name__ == "__main__":
         sleep(1)
         reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
         if args.power:
-            reader.set_read_plan([1,2], "GEN2", read_power=args.power)
+            reader.set_read_plan([1, 2], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1,2], "GEN2", read_power=1000)
+            reader.set_read_plan([1, 2], "GEN2", read_power=1000)
 
     idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
@@ -139,8 +139,7 @@ if __name__ == "__main__":
 
     def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
-        tag = read_queue()
-        if tag:
+        if tag := read_queue():
             print("Read tag:", tag)
             td.tags_read(tag)
         else:

@@ -4,6 +4,7 @@ import os
 import random
 import copy
 import pyglet  # type: ignore
+from loguru import logger
 from rich.traceback import install
 install(show_locals=True)
 
@@ -12,8 +13,7 @@ def json_import(filename) -> dict:
     """Read json from 'filename', return dictionary."""
     with open(filename, 'r', encoding="UTF8") as json_file:
         data = json_file.read()
-    js_dict = json.loads(data)
-    return js_dict
+    return json.loads(data)
 
 
 def json_export(filename, ldict):
@@ -38,12 +38,9 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         [pyglet.resource....]: [resource type determined by media_type]
     """
     # animal_species="monkey", media_directory="xray"
-    dir_path = "media/" + animal_species.lower() + "/" + media_directory + "/"
+    dir_path = f"media/{animal_species.lower()}/{media_directory}/"
     all_files = os.listdir(dir_path)
-    valid_files = []
-    for file in all_files:
-        if file[0] != ".":
-            valid_files.append(file)
+    valid_files = [file for file in all_files if file[0] != "."]
     print(valid_files)
     img_path = dir_path + random.choice(valid_files)
     print(img_path)
@@ -77,3 +74,11 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     #     img_resource.size.width = img_resource.size.width / scale_factor
 
     return img_resource, orig_image
+
+
+if __name__ == "__main__":
+    logger.info("Printing file list.")
+    for dirpath, dirnames, files in os.walk('media'):
+        logger.info(f"Directory: {dirpath}")
+        for file_name in files:
+            logger.info(file_name)

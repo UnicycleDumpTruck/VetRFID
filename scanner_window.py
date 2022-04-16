@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import List, Any
 from datetime import datetime
 from enum import Enum, auto
+from loguru import logger
 import pyglet  # type: ignore
 import files
 import epc
@@ -13,6 +14,7 @@ RET_SIDE = 200  # Length of side of reticle box
 RET_BOX_WT = 10  # Line weight of reticle box lines
 
 LABEL_FONT = 'Montserrat-SemiBold'
+
 
 class State(Enum):
     """Window state, whether a tag is being displayed."""
@@ -169,7 +171,14 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         elif symbol == pyglet.window.key.S:
             print("s pressed")
             self.mag_y -= 10
-
+        elif symbol == pyglet.window.key.LEFT:
+            logger.debug("Up. Dislaying previous image.")
+        elif symbol == pyglet.window.key.RIGHT:
+            logger.debug("Up. Displaying next image.")
+        elif symbol == pyglet.window.key.UP:
+            logger.debug("Up. Previous overlay.")
+        elif symbol == pyglet.window.key.DOWN:
+            logger.debug("Down. Next overlay.")
         else:
             pyglet.app.exit()
 
@@ -322,7 +331,7 @@ class LabelController():
         last_seen_label_2 = pyglet.text.Label(
             text=last_seen_date,
             color=(255, 255, 255, 255),
-            font_size=28, font_name='LABEL_FONT,
+            font_size=28, font_name=LABEL_FONT,
             x=self.window.width - X_LABEL_OFFSET, y=self.window.height - Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='center',
             batch=self.tag_labels)
