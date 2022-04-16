@@ -49,34 +49,31 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     print(img_path)
     img_resource = file_types[media_type](img_path)
 
-    orig_image = img_resource
+    orig_image = copy.copy(img_resource)
     if media_type == 'img':
-        orig_image = copy.copy(img_resource)
+        return scale_image(img_resource), orig_image
 
-        height, width = 1080, 1920  # Desired resolution
+    # TODO: Video Scaling
+    return img_resource, orig_image #TODO: toss extra return, clean from SWin
 
-        scale_y = min(img_resource.height, height) / \
-            max(img_resource.height, height)
-        scale_x = min(width, img_resource.width) / \
-            max(width, img_resource.width)
-        img_resource.scale = min(scale_x, scale_y)
 
-        img_resource.width = img_resource.width * img_resource.scale
-        img_resource.height = img_resource.height * img_resource.scale
+def scale_image(img):
+    height, width = 1080, 1920  # Desired resolution
 
-    # may not work for images larger than 1920 x 1080...
-    # if media_type == 'img':
-    #     scale_factor = img_resource.height / 1080
-    #     img_resource.height = 1080
-    #     img_resource.width = img_resource.width / scale_factor
+    scale_y = min(img.height, height) / max(img.height, height)
+    scale_x = min(width, img.width) / max(width, img.width)
 
-    # TODO: Video scaling
-    # elif media_type == 'vid':
-    #     scale_factor = img_resource.size.height / 1080
-    #     img_resource.size.height = 1080
-    #     img_resource.size.width = img_resource.size.width / scale_factor
+    if img.height < height and img.width < width:
+        img.scale = max(scale_x, scale_y)
+        img.width = img.width / img.scale
+        img.height = img.height / img.scale
+    else:
+        img.scale = min(scale_x, scale_y)
+        img.width = img.width * img.scale
+        img.height = img.height * img.scale
 
-    return img_resource, orig_image
+    return img
+
 
 new_ext = {".jpg": ".png", "jpeg": "png", "webp": "png"}
 
@@ -102,14 +99,49 @@ def convert_all_to_png():
                     os.remove(old_name)
 
 
-def list_all_png() -> List:
+def list_all_of(file_extension: str) -> List:
     file_list = []
     for dirpath, dirnames, files in os.walk('media'):
         for file_name in files:
-            file_path = os.path.join(dirpath, file_name)
-            logger.info(file_path)
-            file_list.append(file_path)
+            if file_name.endswith(file_extension):
+                file_path = os.path.join(dirpath, file_name)
+                #logger.info(file_path)
+                file_list.append(file_path)
     return file_list
 
+all_png = list_all_of("png")
+current_png = 0
+all_mp4 = list_all_of("mp4")
+current_mp4 = 0
+
+def next_png():
+    global current_png
+    current_png += 1
+    if current_png >= len(all_png):
+        current_png = 0
+    return load_png(all_png[current_png])
+
+def prev_png():
+    global current_png
+    current_png -= 1
+    if current_png < 0:
+        current_png = len(all_png) - 1
+    return load_png(all_png[current_png])
+
+def load_png(path):
+    logger.debug(path)
+    resource = pyglet.resource.image(path)
+    orig = copy.copy(resource)
+    return scale_image(resource), orig
+
+
+
+def next_mp4():
+    global current_mp4
+    current_mp4 += 1
+    if current_mp4 >= len(all_mp4):
+        current_mp4 = 0
+    return pyglet.media.load(all_mp4[current_mp4])
+
 if __name__ == "__main__":
-    list_all_png()
+    list_all_of("mp4")

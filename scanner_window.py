@@ -148,6 +148,16 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
+    def show_image(self, imgs):
+            self.state = State.IMG_SHOWING
+            self.video = None
+            self.video_player.next_source()
+            self.video_player.delete()
+            self.image, self.orig_image = imgs[0], imgs[1]
+            logger.debug(f"H:{self.image.height}, W:{self.image.width}")
+            #self.label_controller.make_tag_labels(tag).draw()
+
+
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
         if symbol == pyglet.window.key.P:
@@ -172,19 +182,32 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             print("s pressed")
             self.mag_y -= 10
         elif symbol == pyglet.window.key.LEFT:
-            logger.debug("Up. Dislaying previous image.")
+            self.show_image(files.prev_png())
         elif symbol == pyglet.window.key.RIGHT:
             logger.debug("Up. Displaying next image.")
+            self.show_image(files.next_png())
         elif symbol == pyglet.window.key.UP:
-            logger.debug("Up. Previous overlay.")
+            self.show_vid(files.next_mp4())
         elif symbol == pyglet.window.key.DOWN:
-            logger.debug("Down. Next overlay.")
+            self.show_vid(files.prev_mp4())
         else:
             pyglet.app.exit()
 
     def on_mouse_motion(self, x, y, button, modifiers):
         self.mag_x = x
         self.mag_y = y
+        self.update_magnifier(0) # TODO: ? Not tested, passing dt. Schedule this?
+
+    def draw_magnifier(self):
+        mag_image = self.orig_image.get_region(
+            # Subtract half of RET_SIDE to center magnified image on cursor
+            x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
+            y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
+            width=RET_SIDE,
+            height=RET_SIDE)
+        mag_image.blit(self.mag_x, self.mag_y, 0)
+        self.reticle_batch.draw()
+
 
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
@@ -198,14 +221,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.image.blit(self.width // 2, self.height // 2)
 
             # Magnifier
-            mag_image = self.orig_image.get_region(
-                # Subtract half of RET_SIDE to center magnified image on cursor
-                x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
-                y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
-                width=RET_SIDE,
-                height=RET_SIDE)
-            mag_image.blit(self.mag_x, self.mag_y, 0)
-            self.reticle_batch.draw()
+            # self.draw_magnifier()
 
         if self.video:
             if self.video_player.source and self.video_player.source.video_format:
@@ -232,10 +248,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
 
-    # def update(self, dt):  # TODO remove if doesn't fix video
-    #     self.on_draw()
 
-    def update(self, dt):
+    def update_magnifier(self, dt):
         """Move position of magnifying image, and lines making rect."""
         # Move position used to get magnified region of image.
         # TODO: If randomly moving, keep within bounds of memory.
