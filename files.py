@@ -60,10 +60,11 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     return img_resource, orig_image  # TODO: toss extra return, clean from SWin
 
 
-def rand_of_species(ext, species):
-    glob_path = f"/media/all_{ext}/{species}*"
-    species_glob = glob(glob_path)
-    return random.choice(species_glob)
+def rand_ext_of_species(ext, species):
+    glob_path = f"media/all_{ext}/{species}*"
+    if species_glob := glob(glob_path):
+        return random.choice(species_glob)
+    return None
 
 
 def scale_image(img):
@@ -173,4 +174,5 @@ def prev_mp4():
 
 if __name__ == "__main__":
     for _ in range(20):
-        print(rand_of_species("turtle"))
+        print(rand_ext_of_species("png", "snake"))
+        print(rand_ext_of_species("png", "turtle"))
