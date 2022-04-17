@@ -156,7 +156,6 @@ def next_mp4():
         current_mp4 = 0
     return load_mp4(all_mp4[current_mp4])
 
-
 def prev_mp4():
     global current_mp4
     current_mp4 -= 1
