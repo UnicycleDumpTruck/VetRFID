@@ -5,6 +5,7 @@ import json
 import os
 import random
 import copy
+from glob import glob
 from PIL import Image
 import pyglet  # type: ignore
 from loguru import logger
@@ -57,6 +58,12 @@ def random_species_dir_type(animal_species, media_directory, media_type):
 
     # TODO: Video Scaling
     return img_resource, orig_image  # TODO: toss extra return, clean from SWin
+
+
+def rand_of_species(ext, species):
+    glob_path = f"/media/all_{ext}/{species}*"
+    species_glob = glob(glob_path)
+    return random.choice(species_glob)
 
 
 def scale_image(img):
@@ -164,6 +171,6 @@ def prev_mp4():
     return load_mp4(all_mp4[current_mp4])
 
 
-
 if __name__ == "__main__":
-    list_all_of("mp4")
+    for _ in range(20):
+        print(rand_of_species("turtle"))
