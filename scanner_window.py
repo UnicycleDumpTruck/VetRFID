@@ -161,6 +161,16 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         logger.debug(f"H:{self.image.height}, W:{self.image.width}")
         # self.label_controller.make_tag_labels(tag).draw()
 
+    def show_video(self, vid):
+        self.state = State.VID_SHOWING
+        self.image = None
+        self.orig_image = None
+        self.video = vid
+        self.video_player.next_source()
+        self.video_player.delete()
+        self.video_player.queue(self.video)
+        self.video_player.play()
+
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
         if symbol == pyglet.window.key.P:
@@ -187,12 +197,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         elif symbol == pyglet.window.key.LEFT:
             self.show_image(files.prev_png())
         elif symbol == pyglet.window.key.RIGHT:
-            logger.debug("Up. Displaying next image.")
             self.show_image(files.next_png())
         elif symbol == pyglet.window.key.UP:
-            self.show_vid(files.next_mp4())
+            self.show_video(files.next_mp4())
         elif symbol == pyglet.window.key.DOWN:
-            self.show_vid(files.prev_mp4())
+            self.show_video(files.prev_mp4())
         else:
             pyglet.app.exit()
 
@@ -238,11 +247,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-        if self.state != State.VID_SHOWING:
-            # self.label_bg.blit(self.width // 2, self.height // 2)
-            self.label_bg.blit(20,20)
+        # if self.state != State.VID_SHOWING:
+        #     self.label_bg.blit(self.width // 2, self.height // 2)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
+            self.label_bg.blit(20,20)
         elif self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
 

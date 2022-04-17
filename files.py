@@ -108,7 +108,7 @@ def list_all_of(file_extension: str) -> List:
     file_list = []
     for dirpath, dirnames, files in os.walk('media'):
         for file_name in files:
-            if file_name.endswith(file_extension):
+            if file_name.endswith(file_extension) and not file_name.endswith("."):
                 file_path = os.path.join(dirpath, file_name)
                 # logger.info(file_path)
                 file_list.append(file_path)
@@ -144,12 +144,26 @@ def load_png(path):
     return scale_image(resource), orig
 
 
+def load_mp4(path):
+    logger.debug(f"Loading MP4: {path}")
+    return pyglet.media.load(path)
+
+
 def next_mp4():
     global current_mp4
     current_mp4 += 1
     if current_mp4 >= len(all_mp4):
         current_mp4 = 0
-    return pyglet.media.load(all_mp4[current_mp4])
+    return load_mp4(all_mp4[current_mp4])
+
+
+def prev_mp4():
+    global current_mp4
+    current_mp4 -= 1
+    if current_mp4 < 0:
+        current_mp4 = len(all_mp4) - 1
+    return load_mp4(all_mp4[current_mp4])
+
 
 
 if __name__ == "__main__":
