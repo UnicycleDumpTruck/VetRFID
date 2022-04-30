@@ -108,7 +108,7 @@ class WriterUI(QMainWindow):
         # self.set_display_text(str(self.serial_int + 1))
 
         self.animal_selector = QComboBox()
-        self.animal_selector.addItems(epc.species_names.values())
+        self.animal_selector.addItems(sorted(epc.species_names.values()))
         self.write_layout.addWidget(self.animal_selector)
 
         self.position_selector = QComboBox()
@@ -172,8 +172,9 @@ class WriterCtrl(QObject):
     def _create_next_tag(self):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
-        new_epc.species_num = str(
-            self._view.animal_selector.currentIndex() + 1)
+        # TODO: Group animals for easy finding, categories for exhibit or type (lizard)
+        set_species_num = self._view.animal_selector.currentText()
+        new_epc.species_num = epc.species_name_from_int(set_species_num)
         new_epc.serial = str(self.serial_int + 1)
         new_epc.location = str(self._view.position_selector.currentIndex() + 1)
         new_epc.date_now()
