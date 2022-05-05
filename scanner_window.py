@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import List, Any
 from datetime import datetime
 from enum import Enum, auto
+from loguru import logger
 import pyglet  # type: ignore
 import files
 import epc
@@ -13,6 +14,7 @@ RET_SIDE = 200  # Length of side of reticle box
 RET_BOX_WT = 10  # Line weight of reticle box lines
 
 LABEL_FONT = 'Montserrat-SemiBold'
+
 
 class State(Enum):
     """Window state, whether a tag is being displayed."""
@@ -47,10 +49,14 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             print("Video player telling window to idle!")
             self.idle(0)
 
-        self.label_bg = pyglet.resource.image('graphics/background1080.png')
+        self.label_bg = pyglet.resource.image('graphics/cow_overlay.png')
+        self.label_bg.width = self.label_bg.width // 2
+        self.label_bg.height = self.label_bg.height // 2
         # self.background_graphics.append(self.bg)
-        self.label_bg.anchor_x = self.label_bg.width // 2
-        self.label_bg.anchor_y = self.label_bg.height // 2
+        
+        # Disabled anchor change for new label overlay
+        # self.label_bg.anchor_x = self.label_bg.width // 2
+        # self.label_bg.anchor_y = self.label_bg.height // 2
 
         self.image = None
         self.orig_image = None
@@ -149,6 +155,25 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
+    def show_image(self, imgs):
+        self.state = State.IMG_SHOWING
+        self.video = None
+        self.video_player.next_source()
+        self.video_player.delete()
+        self.image, self.orig_image = imgs[0], imgs[1]
+        logger.debug(f"H:{self.image.height}, W:{self.image.width}")
+        # self.label_controller.make_tag_labels(tag).draw()
+
+    def show_video(self, vid):
+        self.state = State.VID_SHOWING
+        self.image = None
+        self.orig_image = None
+        self.video = vid
+        self.video_player.next_source()
+        self.video_player.delete()
+        self.video_player.queue(self.video)
+        self.video_player.play()
+
     def on_key_press(self, symbol, modifiers):
         """Pressing any key exits app."""
         if symbol == pyglet.window.key.P:
@@ -172,13 +197,32 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         elif symbol == pyglet.window.key.S:
             print("s pressed")
             self.mag_y -= 10
-
+        elif symbol == pyglet.window.key.LEFT:
+            self.show_image(files.prev_png())
+        elif symbol == pyglet.window.key.RIGHT:
+            self.show_image(files.next_png())
+        elif symbol == pyglet.window.key.UP:
+            self.show_video(files.next_mp4())
+        elif symbol == pyglet.window.key.DOWN:
+            self.show_video(files.prev_mp4())
         else:
             pyglet.app.exit()
 
     def on_mouse_motion(self, x, y, button, modifiers):
         self.mag_x = x
         self.mag_y = y
+        # TODO: ? Not tested, passing dt. Schedule this?
+        self.update_magnifier(0)
+
+    def draw_magnifier(self):
+        mag_image = self.orig_image.get_region(
+            # Subtract half of RET_SIDE to center magnified image on cursor
+            x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
+            y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
+            width=RET_SIDE,
+            height=RET_SIDE)
+        mag_image.blit(self.mag_x, self.mag_y, 0)
+        self.reticle_batch.draw()
 
     def draw_mag_image(self):
         # Magnifier
@@ -203,7 +247,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                                   pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
 
-        # self.draw_mag_image()
+            # Magnifier
+            # self.draw_magnifier()
 
         if self.video:
             if self.video_player.source and self.video_player.source.video_format:
@@ -217,12 +262,15 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-        if self.state != State.VID_SHOWING:
-            self.label_bg.blit(self.width // 2, self.height // 2)
+        # if self.state != State.VID_SHOWING:
+        #     self.label_bg.blit(self.width // 2, self.height // 2)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
+            self.label_bg.blit(20,20)
         elif self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
+
+
         # if self.state != State.VID_SHOWING:
         #     self.label_controller.always_labels.draw()
         # Commented out for now, as one station will show many imagery types
@@ -230,10 +278,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
     def __repr__(self):
         return f'ScannerWindow #{self.window_number}'
 
-    # def update(self, dt):  # TODO remove if doesn't fix video
-    #     self.on_draw()
-
-    def update_mag_reticle(self, dt):
+    def update_magnifier(self, dt):
         """Move position of magnifying image, and lines making rect."""
         # Move position used to get magnified region of image.
         # TODO: If randomly moving, keep within bounds of memory.

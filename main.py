@@ -14,6 +14,7 @@ from epc import Tag  # pylint: disable=unused-import
 
 install(show_locals=True)
 
+pyglet.options['search_local_libs'] = True
 pyglet.options['debug_gl'] = False
 pyglet.options['debug_gl_trace'] = False
 pyglet.options['debug_gl_trace_args'] = False
@@ -66,9 +67,9 @@ if __name__ == "__main__":
         sleep(1)
         reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
         if args.power:
-            reader.set_read_plan([1,2], "GEN2", read_power=args.power)
+            reader.set_read_plan([1, 2], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1,2], "GEN2", read_power=1000)
+            reader.set_read_plan([1, 2], "GEN2", read_power=1000)
 
     idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
@@ -87,11 +88,11 @@ if __name__ == "__main__":
     # window2 = scanner_window.ScannerWindow(
     #       1920, 1080, "Pet U 2", True, fullscreen=True,
     #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    window1 = scanner_window.ScannerWindow(
-        1920, 1080, "Pet U 1", True, fullscreen=True,
-        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
     # window1 = scanner_window.ScannerWindow(
-    #     1280, 720, "Pet U 1", True, window_number=1, idle_seconds=idle_seconds)
+    #     1600, 900, "Pet U 1", True, fullscreen=True,
+    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    window1 = scanner_window.ScannerWindow(
+        1280, 720, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
@@ -139,8 +140,7 @@ if __name__ == "__main__":
 
     def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
-        tag = read_queue()
-        if tag:
+        if tag := read_queue():
             print("Read tag:", tag)
             td.tags_read(tag)
         else:
