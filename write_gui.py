@@ -173,8 +173,9 @@ class WriterCtrl(QObject):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
         # TODO: Group animals for easy finding, categories for exhibit or type (lizard)
-        set_species_num = self._view.animal_selector.currentText()
-        new_epc.species_num = epc.species_name_from_int(set_species_num)
+        set_species = self._view.animal_selector.currentText()
+        logger.debug(f"{set_species} selected.")
+        new_epc.species_num = epc.int_from_species_name(set_species)
         new_epc.serial = str(self.serial_int + 1)
         new_epc.location = str(self._view.position_selector.currentIndex() + 1)
         new_epc.date_now()
@@ -188,9 +189,12 @@ class WriterCtrl(QObject):
     def write_tag(self):
         """Write tag with currently selected values."""
         tags_read = self.read_tag()  # TODO pass timeout
+        logger.debug(f"tags_read: {tags_read}")
         sleep(0.5)  # TODO use same time as above
         if tags_read:
-            tags_read = tags_read.sort(key=lambda tag: tag.rssi)
+            logger.debug(f"tags_read: {tags_read}")
+            tags_read.sort(key=lambda tag: tag.rssi)
+            logger.debug(f"tags_read: {tags_read}")
             self._view.read_display.setText(str(tags_read))
             self._view.read_display.setFocus()
             target_tag = tags_read[0]
@@ -202,7 +206,7 @@ class WriterCtrl(QObject):
                 animal = self.next_tag.species_string
                 loc = self._view.position_selector.currentText()
                 ser = self.next_tag.serial
-                log_str = f"Success: Label your tag: {animal} {loc} {ser}"
+                log_str = f"Success: Label as {animal} {loc} {ser.lstrip('0')}"
                 self._view.log_display.setText(log_str)
                 logger.debug(log_str)
 

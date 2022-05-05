@@ -30,6 +30,14 @@ def species_name_from_int(species_num: int):
     return species_names.get(str(species_num).zfill(SPECIES_DIGITS))
 
 
+def int_from_species_name(species_name: str) -> int:
+    """Looks up the integer code for a species, given the string name."""
+    flipped_dict = dict((v, k) for k, v in species_names.items())
+    print(flipped_dict)
+    result = flipped_dict.get(species_name)
+    return int(result)
+
+
 class EpcCode():
     """24-digit number written to Tag, containing different fields."""
 
