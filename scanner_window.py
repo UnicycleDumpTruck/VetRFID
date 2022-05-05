@@ -58,6 +58,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clock = pyglet.clock.get_default()
         self.idle(0)  # idle needs delta_time argument
 
+        # self.setup_magnifer()
+
+    def setup_magnifer(self):
         # Magnifier
         self.mag_pos = [0, 0]
         self.mag_x = 0
@@ -177,6 +180,18 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.mag_x = x
         self.mag_y = y
 
+    def draw_mag_image(self):
+        # Magnifier
+        mag_image = self.orig_image.get_region(
+            # Subtract half of RET_SIDE to center magnified image on cursor
+            x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
+            y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
+            width=RET_SIDE,
+            height=RET_SIDE)
+        mag_image.blit(self.mag_x, self.mag_y, 0)
+        self.reticle_batch.draw()
+
+
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
         self.clear()
@@ -188,15 +203,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                                   pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
             self.image.blit(self.width // 2, self.height // 2)
 
-            # Magnifier
-            mag_image = self.orig_image.get_region(
-                # Subtract half of RET_SIDE to center magnified image on cursor
-                x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
-                y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
-                width=RET_SIDE,
-                height=RET_SIDE)
-            mag_image.blit(self.mag_x, self.mag_y, 0)
-            self.reticle_batch.draw()
+        # self.draw_mag_image()
 
         if self.video:
             if self.video_player.source and self.video_player.source.video_format:
@@ -226,7 +233,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
     # def update(self, dt):  # TODO remove if doesn't fix video
     #     self.on_draw()
 
-    def update(self, dt):
+    def update_mag_reticle(self, dt):
         """Move position of magnifying image, and lines making rect."""
         # Move position used to get magnified region of image.
         # TODO: If randomly moving, keep within bounds of memory.
@@ -322,7 +329,7 @@ class LabelController():
         last_seen_label_2 = pyglet.text.Label(
             text=last_seen_date,
             color=(255, 255, 255, 255),
-            font_size=28, font_name='LABEL_FONT,
+            font_size=28, font_name=LABEL_FONT,
             x=self.window.width - X_LABEL_OFFSET, y=self.window.height - Y_LABEL_OFFSET,
             anchor_x='center', anchor_y='center',
             batch=self.tag_labels)

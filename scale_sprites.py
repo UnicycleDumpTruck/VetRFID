@@ -243,6 +243,7 @@ class MagWindow(pyglet.window.Window):
     def on_mouse_motion(self, x, y, button, modifiers):
         self.mag_x = x
         self.mag_y = y
+        self.update()
         # logger.debug(f"Mouse press x:{x} y:{y}")
 
     def on_key_press(self, symbol, modifiers):
