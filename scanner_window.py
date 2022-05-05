@@ -208,11 +208,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         else:
             pyglet.app.exit()
 
-    def on_mouse_motion(self, x, y, button, modifiers):
-        self.mag_x = x
-        self.mag_y = y
-        # TODO: ? Not tested, passing dt. Schedule this?
-        self.update_magnifier(0)
+    # def on_mouse_motion(self, x, y, button, modifiers):
+    #     self.mag_x = x
+    #     self.mag_y = y
+    #     # TODO: ? Not tested, passing dt. Schedule this?
+    #     self.update_magnifier(0)
 
     def draw_magnifier(self):
         mag_image = self.orig_image.get_region(
@@ -264,10 +264,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         # if self.state != State.VID_SHOWING:
         #     self.label_bg.blit(self.width // 2, self.height // 2)
-        if self.state == State.IMG_SHOWING:
-            self.label_controller.tag_labels.draw()
-            self.label_bg.blit(20,20)
-        elif self.state == State.IDLE:
+        # if self.state == State.IMG_SHOWING:
+        #     self.label_controller.tag_labels.draw()
+        #     self.label_bg.blit(20,20)
+        if self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
 
 

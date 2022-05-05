@@ -69,7 +69,7 @@ if __name__ == "__main__":
         if args.power:
             reader.set_read_plan([1, 2], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1, 2], "GEN2", read_power=1000)
+            reader.set_read_plan([1, 2], "GEN2", read_power=1500)
 
     idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
@@ -89,10 +89,10 @@ if __name__ == "__main__":
     #       1920, 1080, "Pet U 2", True, fullscreen=True,
     #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
     # window1 = scanner_window.ScannerWindow(
-    #     1600, 900, "Pet U 1", True, fullscreen=True,
+    #     1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
     #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
     window1 = scanner_window.ScannerWindow(
-        1280, 720, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
+        1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
