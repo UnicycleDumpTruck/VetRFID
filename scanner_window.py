@@ -53,7 +53,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.label_bg.width = self.label_bg.width // 2
         self.label_bg.height = self.label_bg.height // 2
         # self.background_graphics.append(self.bg)
-        
+
         # Disabled anchor change for new label overlay
         # self.label_bg.anchor_x = self.label_bg.width // 2
         # self.label_bg.anchor_y = self.label_bg.height // 2
@@ -144,11 +144,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.image, self.orig_image = files.random_species_dir_type(
                     tag.epc.species_string, self.media_dir, self.media_type)
                 self.label_controller.make_tag_labels(tag).draw()
-            # self.graphics_batch.draw()
-            # self.heartrate_player.play()
-
-            # Seemed required to cause window refresh, but caused flicker
-            # self.flip() # Removed, seems to work now.
         # else:
         #     if self.state == State.VID_SHOWING:
         #         self.video_player.loop = True
@@ -235,7 +230,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         mag_image.blit(self.mag_x, self.mag_y, 0)
         self.reticle_batch.draw()
 
-
     def on_draw(self):
         """Draw what should be on the screen, set by other methods."""
         self.clear()
@@ -269,7 +263,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         #     self.label_bg.blit(20,20)
         if self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
-
 
         # if self.state != State.VID_SHOWING:
         #     self.label_controller.always_labels.draw()

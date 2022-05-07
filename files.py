@@ -43,7 +43,6 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     Returns:
         [pyglet.resource....]: [resource type determined by media_type]
     """
-    # animal_species="monkey", media_directory="xray"
     dir_path = f"media/{animal_species.lower()}/{media_directory}/"
     all_files = os.listdir(dir_path)
     valid_files = [file for file in all_files if file[0] != "."]
@@ -61,6 +60,9 @@ def random_species_dir_type(animal_species, media_directory, media_type):
 
 
 def rand_ext_of_species(ext, species):
+    """Given file extension (without period) and species name,
+    return random file of that extension."""
+    # TODO: add * in front of species so files can be named w multiple species
     glob_path = f"media/all_{ext}/{species}*"
     if species_glob := glob(glob_path):
         return random.choice(species_glob)
@@ -68,6 +70,7 @@ def rand_ext_of_species(ext, species):
 
 
 def scale_image(img):
+    """Scale image to 1920 by 1080"""
     # height, width = 1080, 1920  # Desired resolution
     height, width = 720, 1280  # Desired resolution
 
@@ -83,9 +86,10 @@ def scale_image(img):
         img.width = img.width * img.scale
         img.height = img.height * img.scale
 
-    return img
+    return img  # TODO: not necessary, since scaled in place. remove and test.
 
 
+# Extension replacements for use converting new files:
 new_ext = {".jpg": ".png", "jpeg": "png", "webp": "png"}
 
 
@@ -122,6 +126,8 @@ def list_all_of(file_extension: str) -> List:
                 file_list.append(file_path)
     return file_list
 
+
+# TODO: Enclose following into slideshow class?
 
 all_png = list_all_of("png")
 current_png = 0
@@ -163,6 +169,7 @@ def next_mp4():
     if current_mp4 >= len(all_mp4):
         current_mp4 = 0
     return load_mp4(all_mp4[current_mp4])
+
 
 def prev_mp4():
     global current_mp4
