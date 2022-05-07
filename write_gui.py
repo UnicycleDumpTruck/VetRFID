@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
 )
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from rich.traceback import install
 
 import epc
@@ -27,9 +27,9 @@ import izar
 
 install(show_locals=True)
 
-# reader = izar.MockReader()
-reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
-reader.set_read_plan([1], "GEN2", read_power=1500)
+reader = izar.MockReader()
+# reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+# reader.set_read_plan([1], "GEN2", read_power=1500)
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
 # reader.set_read_plan([1], "GEN2", read_power=1900)
@@ -44,7 +44,7 @@ class WriterUI(QMainWindow):
         """View initializer."""
         super().__init__()
         # Set some main window's properties
-        self.setWindowTitle("PyCalc")
+        self.setWindowTitle("Vet U RFID Tag Writer")
         # self.setFixedSize(500, 500)
         # Set the central widget and the general layout
         self.general_layout = QVBoxLayout()
@@ -62,14 +62,15 @@ class WriterUI(QMainWindow):
         self.title_widget = QWidget()
         self.title_layout = QHBoxLayout(self.title_widget)
         self.logo_widget = QLabel()
-        self.logo = QPixmap("media/icons/vet_u_paw.png").scaledToHeight(150)
+        self.logo = QPixmap("media/icons/logo.png").scaledToHeight(150)
         self.logo_widget.setPixmap(self.logo)
         self.title_layout.addWidget(self.logo_widget)
-        self.title_layout.addSpacing(20)
-        self.title_label = QLabel("Read Set Vet RFID", self.title_widget)
-        self.title_label.setAlignment(Qt.AlignVCenter)
-        self.title_layout.addWidget(self.title_label)
-        self.title_layout.addStretch()
+        self.logo_widget.setAlignment(Qt.AlignHCenter)
+        # self.title_layout.addSpacing(20)
+        # self.title_label = QLabel("Read Set Vet RFID", self.title_widget)
+        # self.title_label.setAlignment(Qt.AlignVCenter)
+        # self.title_layout.addWidget(self.title_label)
+        # self.title_layout.addStretch()
         self.general_layout.addWidget(self.title_widget)
 
     def _create_read_widget(self):
@@ -112,7 +113,7 @@ class WriterUI(QMainWindow):
         self.write_layout.addWidget(self.animal_selector)
 
         self.position_selector = QComboBox()
-        self.position_selector.addItems(["Head", "Tail"])
+        self.position_selector.addItems(["Head", "Tail", "Mid"])
         self.write_layout.addWidget(self.position_selector)
 
         self.write_button = QPushButton("Write Tag")
@@ -211,7 +212,7 @@ class WriterCtrl(QObject):
                 logger.debug(log_str)
 
                 # Increment position, maybe serial after successful write
-                if self._view.position_selector.currentIndex() == 1:
+                if self._view.position_selector.currentIndex() > 0:
                     self.increment_serial()
                     self._view.position_selector.setCurrentIndex(0)
                 else:
@@ -222,7 +223,7 @@ class WriterCtrl(QObject):
                 logger.warning("Write failed.")
         else:
             self._view.log_display.setText(
-                "Error: Can't write, no tag detected.")
+                "Error: Can't write. No tag detected.")
             logger.warning("Can't write, no tag detected.")
 
     def increment_serial(self):
@@ -255,14 +256,15 @@ def WriterModel():  # pylint: disable=invalid-name
 
 def main():
     """Main function."""
-    pycalc = QApplication(sys.argv)
+    app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("media/icons/logo.png"))
     view = WriterUI()
     view.show()
     model = WriterModel
     # assigning to ctrllr fixed signals, tho ctrllr not used
     ctrllr = WriterCtrl(model=model, view=view)
     logger.debug(f"{type(ctrllr)} assigned.")
-    sys.exit(pycalc.exec())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":
