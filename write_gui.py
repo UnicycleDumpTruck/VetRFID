@@ -27,9 +27,9 @@ import izar
 
 install(show_locals=True)
 
-reader = izar.MockReader()
-# reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
-# reader.set_read_plan([1], "GEN2", read_power=1500)
+# reader = izar.MockReader()
+reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+reader.set_read_plan([1], "GEN2", read_power=1500)
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
 # reader.set_read_plan([1], "GEN2", read_power=1900)
@@ -212,7 +212,7 @@ class WriterCtrl(QObject):
                 logger.debug(log_str)
 
                 # Increment position, maybe serial after successful write
-                if self._view.position_selector.currentIndex() > 0:
+                if self._view.position_selector.currentIndex() == 1: # If tail was just written
                     self.increment_serial()
                     self._view.position_selector.setCurrentIndex(0)
                 else:
