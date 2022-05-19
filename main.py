@@ -86,16 +86,16 @@ if __name__ == "__main__":
     screens = display.get_screens()
     for i, screen in enumerate(screens):
         print(f"Screen #{i}: {screen}")
-    window2 = scanner_window.ScannerWindow(
-          1920, 1080, "Ready Set Vet Screen 2", True, fullscreen=True,
-          screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    window1 = scanner_window.ScannerWindow(
-        1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
-        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
-    # window1 = scanner_window.ScannerWindow(
-    #     1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
-    #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
+    #       1920, 1080, "Ready Set Vet Screen 2", True, fullscreen=True,
+    #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
+    # window1 = scanner_window.ScannerWindow(
+    #     1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
+    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    window1 = scanner_window.ScannerWindow(
+        1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
+    window2 = scanner_window.ScannerWindow(
+        1920, 1080, "Ready Set Vet", True, window_number=2, idle_seconds=idle_seconds)
 
     window1.set_icon(vet_paw)
     window2.set_icon(vet_paw)
@@ -121,17 +121,21 @@ if __name__ == "__main__":
     def tag_to_queue(tag):
         """Put tag into queue."""
         if not tag_queue.full():
+            logger.debug(f"{tag} going into queue from reading callback")
             tag_queue.put(tag, timeout=0.5)
+        else:
+            logger.error("Queue full!")
 
-    def read_queue():
+    def not_read_queue():
         """Empty queue, return last item."""
         if not tag_queue.empty():
             last_tag = None
             while tag_queue.empty() is False:
                 try:
                     tag = tag_queue.get(timeout=0.5)
+                    logger.info(tag)
                 except Empty as ex:
-                    print("read_queue exception:\n", ex)
+                    logger.error(f"read_queue exception:\n {ex}")
                     return None
                 if tag is not None:
                     last_tag = tag
@@ -139,36 +143,41 @@ if __name__ == "__main__":
                     break
             return last_tag
 
-    def not_read_queue():
+    def read_queue():
         """Empty queue, return last item."""
         if not tag_queue.empty():
             contents = []
-            while tag_queue.empty() is False:
+            logger.debug(f"Queue size: {tag_queue.qsize()}")
+            # while not tag_queue.empty():
+            for _ in range(tag_queue.qsize()):
                 try:
-                    contents.append(tag_queue.get(timeout=0.5))
+                    tag = tag_queue.get(timeout=0.5)
+                    contents.append(tag)
+                    logger.info(f"{tag} popped from queue. {tag_queue.qsize()} remaining.")
                 except Empty as ex:
-                    logger.error("read_queue exception:\n", ex)
-                    return None
-                else:
-                    break
+                    logger.error(f"read_queue exception:\n {ex}")
+                    # return None
+                # else:
+                #     break
             logger.debug(contents)
             return contents
 
-    def not_send_tag_to_td(delta_time):  # pylint: disable=unused-argument
+    def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
-        for tag in read_queue():
-            logger.debug("Read tag:", tag)
-            td.tags_read(tag)
+        if contents := read_queue():
+            for tag in contents:
+                logger.debug(f"Read tag: {tag}")
+                td.tags_read(tag)
         else:
             logger.debug("Empty send_tag_to_td call!")
 
-    def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
+    def not_send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
         if tag := read_queue():
-            print("Read tag:", tag)
+            logger.info(f"Read tag: {tag}")
             td.tags_read(tag)
         else:
-            print("Empty send_tag_to_td call!")
+            logger.info("Empty send_tag_to_td call!")
 
     clock = pyglet.clock.get_default()
     if args.poll:

@@ -43,20 +43,24 @@ def random_species_dir_type(animal_species, media_directory, media_type):
     Returns:
         [pyglet.resource....]: [resource type determined by media_type]
     """
-    dir_path = f"media/{animal_species.lower()}/{media_directory}/"
-    all_files = os.listdir(dir_path)
-    valid_files = [file for file in all_files if file[0] != "."]
-    print(valid_files)
-    img_path = dir_path + random.choice(valid_files)
-    print(img_path)
-    img_resource = file_types[media_type](img_path)
+    try:
+        dir_path = f"media/{animal_species.lower()}/{media_directory}/"
+        all_files = os.listdir(dir_path)
+        valid_files = [file for file in all_files if file[0] != "."]
+        print(valid_files)
+        img_path = dir_path + random.choice(valid_files)
+        print(img_path)
+        img_resource = file_types[media_type](img_path)
 
-    orig_image = copy.copy(img_resource)
-    if media_type == 'img':
-        return scale_image(img_resource), orig_image
+        orig_image = copy.copy(img_resource)
+        if media_type == 'img':
+            return scale_image(img_resource), orig_image
 
-    # TODO: Video Scaling
-    return img_resource, orig_image  # TODO: toss extra return, clean from SWin
+        # TODO: Video Scaling
+        return img_resource, orig_image  # TODO: toss extra return, clean from SWin
+    except FileNotFoundError as e:
+        logger.error(e)
+        return None, None
 
 
 def rand_ext_of_species(ext, species):
