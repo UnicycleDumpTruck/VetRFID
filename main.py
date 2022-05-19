@@ -6,6 +6,7 @@ from os import environ
 import argparse
 from queue import Queue, Empty
 from rich.traceback import install
+from loguru import logger
 import pyglet  # type: ignore
 import scanner_window
 import tag_dispatcher
@@ -67,11 +68,11 @@ if __name__ == "__main__":
         sleep(1)
         reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
         if args.power:
-            reader.set_read_plan([1, 2], "GEN2", read_power=args.power)
+            reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1, 2], "GEN2", read_power=1500)
+            reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=1900)
 
-    idle_seconds = 3  # pylint: disable=invalid-name
+    idle_seconds = 4  # pylint: disable=invalid-name
     if args.idle:
         idle_seconds = args.idle
 
@@ -85,32 +86,32 @@ if __name__ == "__main__":
     screens = display.get_screens()
     for i, screen in enumerate(screens):
         print(f"Screen #{i}: {screen}")
-    # window2 = scanner_window.ScannerWindow(
-    #       1920, 1080, "Pet U 2", True, fullscreen=True,
-    #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    # window1 = scanner_window.ScannerWindow(
-    #     1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
-    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    window2 = scanner_window.ScannerWindow(
+          1920, 1080, "Ready Set Vet Screen 2", True, fullscreen=True,
+          screen=screens[1], window_number=2, idle_seconds=idle_seconds)
     window1 = scanner_window.ScannerWindow(
-        1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
+        1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
+        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    # window1 = scanner_window.ScannerWindow(
+    #     1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
     #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
 
     window1.set_icon(vet_paw)
-    # window2.set_icon(vet_paw)
+    window2.set_icon(vet_paw)
 
     # event_logger1 = pyglet.window.event.WindowEventLogger()
     # window1.push_handlers(event_logger1)
     # event_logger2 = pyglet.window.event.WindowEventLogger()
     # window2.push_handlers(event_logger2)
     windows = {
-        window1: [1, 2],
-        # window2: [3, 4]
+        window2: [1, 2],
+        window1: [3, 4]
     }
-    antennas = {'1': window1,
-                '2': window1,
-                # '3': window2,
-                # '4': window2
+    antennas = {'1': window2,
+                '2': window2,
+                '3': window1,
+                '4': window1
                 }
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
@@ -138,6 +139,29 @@ if __name__ == "__main__":
                     break
             return last_tag
 
+    def not_read_queue():
+        """Empty queue, return last item."""
+        if not tag_queue.empty():
+            contents = []
+            while tag_queue.empty() is False:
+                try:
+                    contents.append(tag_queue.get(timeout=0.5))
+                except Empty as ex:
+                    logger.error("read_queue exception:\n", ex)
+                    return None
+                else:
+                    break
+            logger.debug(contents)
+            return contents
+
+    def not_send_tag_to_td(delta_time):  # pylint: disable=unused-argument
+        """Send tag from the reader thread to the tag dispatcher."""
+        for tag in read_queue():
+            logger.debug("Read tag:", tag)
+            td.tags_read(tag)
+        else:
+            logger.debug("Empty send_tag_to_td call!")
+
     def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
         if tag := read_queue():
@@ -153,7 +177,7 @@ if __name__ == "__main__":
         clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
         pyglet.app.run()
     else:
-        reader.start_reading(tag_to_queue)
-        clock.schedule_interval(send_tag_to_td, 1)
+        reader.start_reading(on_time=500, callback=tag_to_queue)
+        clock.schedule_interval(send_tag_to_td, 0.5)
         pyglet.app.run()
         reader.stop_reading()

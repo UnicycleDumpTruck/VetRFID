@@ -46,7 +46,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
         @self.video_player.event  # TODO reassess after video fix
         def on_eos():  # Attempting to stop error on video end
-            print("Video player telling window to idle!")
+            logger.debug("Video player telling window to idle!")
             self.idle(0)
 
         self.label_bg = pyglet.resource.image('graphics/cow_overlay.png')
@@ -85,7 +85,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         """Clear medical imagery, return to idle screen."""
         self.clock.unschedule(self.idle)
         self.state = State.IDLE
-        print("Going idle, ", delta_time, " seconds since scan.")
+        logger.info(f"{self.window_number} Going idle, ", delta_time, " seconds since scan.")
         self.clear()
         self.image = None
         self.orig_image = None
@@ -96,24 +96,24 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
     def on_player_eos(self):  # TODO reassess after video fix
         """When video player runs out of queued files."""
-        print("Player EOS received by ScannerWindow!")
+        logger.debug("Player EOS received by ScannerWindow!")
         self.idle(0)
 
     def on_eos(self):  # TODO reassess after video fix
         """When current video file ends."""
-        print("EOS received by ScannerWindow")
+        logger.debug("EOS received by ScannerWindow")
         self.idle(0)
 
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
-        print("Tag received by on_tag_read in ScannerWindow")
+        logger.info(f"{tag.epc.species_string} {tag.epc.serial} rx by ScannerWindow {self.window_number}")
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:
             tag.last_seen = log.log_tag(tag)
             self.clear()
             self.serial = serial
-            print("Seeking imagery for ", tag.epc.species_string)
+            logger.info("Seeking imagery for ", tag.epc.species_string)
             if tag.epc.species_string == 'Pig':
                 self.state = State.VID_SHOWING
                 self.image = None
