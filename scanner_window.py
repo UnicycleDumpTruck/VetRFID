@@ -143,7 +143,6 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.video_player.next_source()
                 self.video_player.delete()
                 self.image, self.orig_image = file, file
-                self.label_controller.make_tag_labels(tag).draw()
             elif file_type == "vid":
                 self.state = State.VID_SHOWING
                 self.image = None
@@ -153,6 +152,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.video_player.delete()
                 self.video_player.queue(self.video)
                 self.video_player.play()
+            self.label_controller.make_tag_labels(tag).draw()
             self.label_bg = overlay
 
         # else:

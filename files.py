@@ -62,7 +62,7 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         logger.warning(e)
         return None, None
 
-def random_species(species):
+def random_species(species: str):
     """Given species, directory, media type, return random pyglet.resource.
 
     Args:
@@ -73,7 +73,9 @@ def random_species(species):
         [string]: file type, either "img" or "vid"
     """
     # TODO: add * in front of species so files can be named w multiple species
-    glob_path = f"media/all/*{species.lower()}*"
+    species = species.replace(" ", "_").lower()
+    logger.info(f"Looking for {species} files")
+    glob_path = f"media/all/*{species}*"
     if species_glob := glob(glob_path):
         file_path = random.choice(species_glob)
         if file_path[-4:] == ".mp4":
@@ -89,7 +91,7 @@ def random_species(species):
             logger.warning(f"No overlay found for {species}, returned overlay=None")
             overlay = None
         return resource, file_type, overlay
-
+    logger.warning(f"No files found for {species}!")
     return None, None, None
 
 

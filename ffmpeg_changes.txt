@@ -1,11 +1,26 @@
 ffmpeg.py:982 has problems with the end of some videos, resulting in
 an exception because video_packet has no attribute "image"
-Make the following changes starting at line 982:
+Make the following changes to get_next_video_frame() starting around line 982:
 
+    def get_next_video_frame(self, skip_empty_frame=True):
+        if not self.video_format:
+            return
+
+        while True:
+            # We skip video packets which are not video frames
+            # This happens in mkv files for the first few frames.
+            video_packet = self._get_video_packet()
             if hasattr(video_packet, "image"):
                 if video_packet.image == 0:
                     self._decode_video_packet(video_packet)
+                if video_packet.image is not None or not skip_empty_frame:
+                    break
             else:
                 print("Whoops, video_packet has no attr image. ffmpeg.py:986")
+                break
 
-Adding the if hasattr() else print seems to fix it, for now :-)
+
+        if _debug:
+            print('Returning', video_packet)
+
+        return video_packet.image if hasattr(video_packet, "image") else None
