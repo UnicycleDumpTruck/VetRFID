@@ -28,6 +28,8 @@ pyglet.options['debug_trace_depth'] = 4
 
 
 if __name__ == "__main__":
+    logger.add("main.log", rotation="1024 MB")    
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-background",
@@ -124,7 +126,7 @@ if __name__ == "__main__":
             logger.debug(f"{tag} going into queue from reading callback")
             tag_queue.put(tag, timeout=0.5)
         else:
-            logger.error("Queue full!")
+            logger.warning("Queue full!")
 
     def not_read_queue():
         """Empty queue, return last item."""
@@ -133,9 +135,9 @@ if __name__ == "__main__":
             while tag_queue.empty() is False:
                 try:
                     tag = tag_queue.get(timeout=0.5)
-                    logger.info(tag)
+                    logger.debug(tag)
                 except Empty as ex:
-                    logger.error(f"read_queue exception:\n {ex}")
+                    logger.warning(f"read_queue exception:\n {ex}")
                     return None
                 if tag is not None:
                     last_tag = tag
@@ -153,9 +155,9 @@ if __name__ == "__main__":
                 try:
                     tag = tag_queue.get(timeout=0.5)
                     contents.append(tag)
-                    logger.info(f"{tag} popped from queue. {tag_queue.qsize()} remaining.")
+                    logger.debug(f"{tag} popped from queue. {tag_queue.qsize()} remaining.")
                 except Empty as ex:
-                    logger.error(f"read_queue exception:\n {ex}")
+                    logger.warning(f"read_queue exception:\n {ex}")
                     # return None
                 # else:
                 #     break
@@ -174,10 +176,10 @@ if __name__ == "__main__":
     def not_send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
         if tag := read_queue():
-            logger.info(f"Read tag: {tag}")
+            logger.debug(f"Read tag: {tag}")
             td.tags_read(tag)
         else:
-            logger.info("Empty send_tag_to_td call!")
+            logger.debug("Empty send_tag_to_td call!")
 
     clock = pyglet.clock.get_default()
     if args.poll:
