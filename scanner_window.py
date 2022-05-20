@@ -49,7 +49,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             logger.debug("Video player telling window to idle!")
             self.idle(0)
 
-        self.label_bg = pyglet.resource.image('graphics/cow_overlay.png')
+        self.label_bg = pyglet.resource.image('media/species_overlays/cow_overlay.png')
         self.label_bg.width = self.label_bg.width // 2
         self.label_bg.height = self.label_bg.height // 2
         # self.background_graphics.append(self.bg)
