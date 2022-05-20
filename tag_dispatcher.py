@@ -59,7 +59,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
                 best_tag: epc.Tag = window_tags[window][0]
                 # best_tag.last_seen = log.log_tag(best_tag) #TODO: Delete, not in prod?
                 window.dispatch_event('on_tag_read', best_tag)
-                logger.debug("Dispatched tag with best rssi: ", best_tag)
+                logger.debug(f"Dispatched tag with best rssi: {best_tag}")
 
 
 TagDispatcher.register_event_type('on_tag_read')

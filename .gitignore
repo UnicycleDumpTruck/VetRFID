@@ -1,5 +1,6 @@
-# Ignore log file, so that scanning doesn't affect git changes.
+# Ignore log files, so that scanning doesn't affect git changes.
 jlog.json
+*.log
 
 .DS_Store
 .vscode

@@ -59,7 +59,7 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         # TODO: Video Scaling
         return img_resource, orig_image  # TODO: toss extra return, clean from SWin
     except FileNotFoundError as e:
-        logger.error(e)
+        logger.warning(e)
         return None, None
 
 def random_species(species):
@@ -86,7 +86,7 @@ def random_species(species):
         if overlay_glob := glob(f"media/species_overlays/*{species}*"):
             overlay = pyglet.resource.image(random.choice(overlay_glob))
         else:
-            logger.error(f"No overlay found for {species}, returned overlay=None")
+            logger.warning(f"No overlay found for {species}, returned overlay=None")
             overlay = None
         return resource, file_type, overlay
 
@@ -145,7 +145,7 @@ def convert_all_to_png():
                             other_type_file.save(new_name)
 
                     except Exception as e:
-                        logger.error(e)
+                        logger.warning(e)
                 else:
                     os.remove(old_name)
 

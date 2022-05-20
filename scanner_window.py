@@ -105,14 +105,14 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
-        logger.info(f"{tag.epc.species_string} {tag.epc.serial} rx by ScannerWindow {self.window_number}")
+        logger.debug(f"{tag.epc.species_string} {tag.epc.serial} rx by ScannerWindow {self.window_number}")
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:
             tag.last_seen = log.log_tag(tag)
             self.clear()
             self.serial = serial
-            logger.info("Seeking imagery for ", tag.epc.species_string)
+            logger.warning(f"Seeking imagery for {tag.epc.species_string}")
             # if tag.epc.species_string == 'Pig':
             #     self.state = State.VID_SHOWING
             #     self.image = None
@@ -271,7 +271,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         #     self.label_bg.blit(self.width // 2, self.height // 2)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
-            self.label_bg.blit(40,40)
+            if self.label_bg:
+                self.label_bg.blit(40,40)
         if self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
 
