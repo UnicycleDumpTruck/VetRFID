@@ -83,9 +83,14 @@ def random_species(species):
         else:
             raise ValueError("Unable to match file extension to determine file_type.")
         resource = file_types[file_type](file_path)
-        return resource, file_type
+        if overlay_glob := glob(f"media/species_overlays/*{species}*"):
+            overlay = pyglet.resource.image(random.choice(overlay_glob))
+        else:
+            logger.error(f"No overlay found for {species}, returned overlay=None")
+            overlay = None
+        return resource, file_type, overlay
 
-    return None, None
+    return None, None, None
 
 
 def rand_ext_of_species(ext, species):

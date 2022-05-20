@@ -49,9 +49,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             logger.debug("Video player telling window to idle!")
             self.idle(0)
 
-        self.label_bg = pyglet.resource.image('media/species_overlays/cow_overlay.png')
-        self.label_bg.width = self.label_bg.width // 2
-        self.label_bg.height = self.label_bg.height // 2
+        self.label_bg = None
         # self.background_graphics.append(self.bg)
 
         # Disabled anchor change for new label overlay
@@ -89,6 +87,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clear()
         self.image = None
         self.orig_image = None
+        self.label_bg = None
         self.video = None
         self.video_player.next_source()
         self.serial = None
@@ -137,7 +136,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             #     self.video_player.queue(self.video)
             #     self.video_player.play()
             # else:
-            file, file_type = files.random_species(tag.epc.species_string)
+            file, file_type, overlay = files.random_species(tag.epc.species_string)
             if file_type == "img":
                 self.state = State.IMG_SHOWING
                 self.video = None
@@ -154,6 +153,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 self.video_player.delete()
                 self.video_player.queue(self.video)
                 self.video_player.play()
+            self.label_bg = overlay
+
         # else:
         #     if self.state == State.VID_SHOWING:
         #         self.video_player.loop = True
@@ -270,7 +271,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         #     self.label_bg.blit(self.width // 2, self.height // 2)
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
-            self.label_bg.blit(20,20)
+            self.label_bg.blit(40,40)
         if self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
 
