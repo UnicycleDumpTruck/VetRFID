@@ -62,6 +62,31 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         logger.error(e)
         return None, None
 
+def random_species(species):
+    """Given species, directory, media type, return random pyglet.resource.
+
+    Args:
+        species ([string]): "monkey", "dog", or "pig"
+
+    Returns:
+        [pyglet.resource....]: [resource type determined by media_type]
+        [string]: file type, either "img" or "vid"
+    """
+    # TODO: add * in front of species so files can be named w multiple species
+    glob_path = f"media/all/*{species.lower()}*"
+    if species_glob := glob(glob_path):
+        file_path = random.choice(species_glob)
+        if file_path[-4:] == ".mp4":
+            file_type = "vid"
+        elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
+            file_type = "img"
+        else:
+            raise ValueError("Unable to match file extension to determine file_type.")
+        resource = file_types[file_type](file_path)
+        return resource, file_type
+
+    return None, None
+
 
 def rand_ext_of_species(ext, species):
     """Given file extension (without period) and species name,

@@ -114,36 +114,46 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.clear()
             self.serial = serial
             logger.info("Seeking imagery for ", tag.epc.species_string)
-            if tag.epc.species_string == 'Pig':
-                self.state = State.VID_SHOWING
-                self.image = None
-                self.orig_image = None
-                self.video, _ = files.random_species_dir_type(
-                    'pig', 'vid', 'vid'
-                )
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.video_player.queue(self.video)
-                self.video_player.play()
-            elif tag.epc.species_string == 'Goat':
-                self.state = State.VID_SHOWING
-                self.image = None
-                self.orig_image = None
-                self.video, _ = files.random_species_dir_type(
-                    'goat', 'vid', 'vid'
-                )
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.video_player.queue(self.video)
-                self.video_player.play()
-            else:
+            # if tag.epc.species_string == 'Pig':
+            #     self.state = State.VID_SHOWING
+            #     self.image = None
+            #     self.orig_image = None
+            #     self.video, _ = files.random_species_dir_type(
+            #         'pig', 'vid', 'vid'
+            #     )
+            #     self.video_player.next_source()
+            #     self.video_player.delete()
+            #     self.video_player.queue(self.video)
+            #     self.video_player.play()
+            # elif tag.epc.species_string == 'Goat':
+            #     self.state = State.VID_SHOWING
+            #     self.image = None
+            #     self.orig_image = None
+            #     self.video, _ = files.random_species_dir_type(
+            #         'goat', 'vid', 'vid'
+            #     )
+            #     self.video_player.next_source()
+            #     self.video_player.delete()
+            #     self.video_player.queue(self.video)
+            #     self.video_player.play()
+            # else:
+            file, file_type = files.random_species(tag.epc.species_string)
+            if file_type == "img":
                 self.state = State.IMG_SHOWING
                 self.video = None
                 self.video_player.next_source()
                 self.video_player.delete()
-                self.image, self.orig_image = files.random_species_dir_type(
-                    tag.epc.species_string, self.media_dir, self.media_type)
+                self.image, self.orig_image = file, file
                 self.label_controller.make_tag_labels(tag).draw()
+            elif file_type == "vid":
+                self.state = State.VID_SHOWING
+                self.image = None
+                self.orig_image = None
+                self.video = file
+                self.video_player.next_source()
+                self.video_player.delete()
+                self.video_player.queue(self.video)
+                self.video_player.play()
         # else:
         #     if self.state == State.VID_SHOWING:
         #         self.video_player.loop = True
