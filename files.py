@@ -1,4 +1,6 @@
-"""Load dict from json file. Make random pyglet imag from directory."""
+"""Load dict from json file. Make random pyglet imag from directory.
+Image conversion functions.
+"""
 from __future__ import annotations
 from typing import List
 import json
@@ -32,39 +34,8 @@ file_types = {'img': pyglet.resource.image,
               'vid': pyglet.media.load, }
 
 
-def random_species_dir_type(animal_species, media_directory, media_type):
-    """Given species, directory, media type, return random pyglet.resource.
-
-    Args:
-        animal_species ([string]): "monkey", "dog", or "pig"
-        media_directory ([string]): "xray"
-        media_type ([string]): "img" or "vid"
-
-    Returns:
-        [pyglet.resource....]: [resource type determined by media_type]
-    """
-    try:
-        dir_path = f"media/{animal_species.lower()}/{media_directory}/"
-        all_files = os.listdir(dir_path)
-        valid_files = [file for file in all_files if file[0] != "."]
-        print(valid_files)
-        img_path = dir_path + random.choice(valid_files)
-        print(img_path)
-        img_resource = file_types[media_type](img_path)
-
-        orig_image = copy.copy(img_resource)
-        if media_type == 'img':
-            return scale_image(img_resource), orig_image
-
-        # TODO: Video Scaling
-        return img_resource, orig_image  # TODO: toss extra return, clean from SWin
-    except FileNotFoundError as e:
-        logger.warning(e)
-        return None, None
-
-
-def random_species(species: str):
-    """Given species, directory, media type, return random pyglet.resource.
+def random_of_species(species: str):
+    """Given species, return random pyglet.resource.
 
     Args:
         species ([string]): "monkey", "dog", or "pig"
@@ -73,7 +44,6 @@ def random_species(species: str):
         [pyglet.resource....]: [resource type determined by media_type]
         [string]: file type, either "img" or "vid"
     """
-    # TODO: add * in front of species so files can be named w multiple species
     species = species.replace(" ", "_").lower()
     logger.info(f"Looking for {species} files")
     glob_path = f"media/all/*{species}*"
@@ -102,8 +72,7 @@ def random_species(species: str):
 def rand_ext_of_species(ext, species):
     """Given file extension (without period) and species name,
     return random file of that extension."""
-    # TODO: add * in front of species so files can be named w multiple species
-    glob_path = f"media/all_{ext}/{species}*"
+    glob_path = f"media/all_{ext}/*{species}*"
     if species_glob := glob(glob_path):
         return random.choice(species_glob)
     return None
@@ -111,8 +80,8 @@ def rand_ext_of_species(ext, species):
 
 def scale_image(img):
     """Scale image to 1920 by 1080"""
-    # height, width = 1080, 1920  # Desired resolution
-    height, width = 720, 1280  # Desired resolution
+    height, width = 1080, 1920  # Desired resolution
+    # height, width = 720, 1280  # Desired resolution
 
     scale_y = min(img.height, height) / max(img.height, height)
     scale_x = min(width, img.width) / max(width, img.width)
