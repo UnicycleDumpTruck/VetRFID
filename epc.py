@@ -18,24 +18,21 @@ def json_import(filename: str) -> dict[str, str]:
     """Load species from filename, return dictionary."""
     with open(filename, 'r', encoding="UTF8") as json_file:
         data = json_file.read()
-    json_dict = json.loads(data)
-    return json_dict
+    return json.loads(data)
 
 
 species_names = json_import('species.json')
+species_nums = {v: k for k, v in species_names.items()}
 
 
 def species_name_from_int(species_num: int):
-    """Looks up int in species dict."""
+    """Given int, returns name of species."""
     return species_names.get(str(species_num).zfill(SPECIES_DIGITS))
 
 
 def int_from_species_name(species_name: str) -> int:
-    """Looks up the integer code for a species, given the string name."""
-    flipped_dict = dict((v, k) for k, v in species_names.items())
-    print(flipped_dict)
-    result = flipped_dict.get(species_name)
-    return int(result)
+    """Given string name of species, returns int."""
+    return int(species_nums.get(species_name, default=0))
 
 
 class EpcCode():
@@ -51,7 +48,7 @@ class EpcCode():
     @property
     def location(self) -> str:
         """Return location data string."""
-        return self.code[0:LOCATION_DIGITS]
+        return self.code[:LOCATION_DIGITS]
 
     @location.setter
     def location(self, loc: str):
@@ -99,8 +96,7 @@ class EpcCode():
     @property
     def species_string(self) -> str:
         """Return species name as a string, like 'horse'."""
-        spec = species_names.get(self.species_num)
-        if spec:
+        if spec := species_names.get(self.species_num):
             return spec
         raise ValueError("Species not found in species.json file.")
 
@@ -112,7 +108,7 @@ class EpcCode():
     @date_string.setter
     def date_string(self, d_str: str):
         """Set date with str formated YYYYMMDD"""
-        self.code = "".join([self.code[0:SPECIES_END], d_str])
+        self.code = "".join([self.code[:SPECIES_END], d_str])
         return self.code
 
     def date_now(self):
@@ -167,16 +163,22 @@ class Tag():
 def random_dog():
     """Return a dog species tag with random serial for testing."""
     return Tag().from_parameters(
-        '0001' + str(randint(1, 999999)).zfill(SPECIES_DIGITS) +
-        '00000220211216',
+        "".join(
+            '0001',
+            str(randint(1, 999999)).zfill(SPECIES_DIGITS),
+            '00000220211216'
+        ),
         '1', '-88', '0', '1')
 
 
 def random_pig():
     """Return a pig species tag with random serial for testing."""
     return Tag().from_parameters(
-        '0001' + str(randint(1, 999999)).zfill(SPECIES_DIGITS) +
-        '00000620211216',
+        "".join(
+            '0001',
+            str(randint(1, 999999)).zfill(SPECIES_DIGITS),
+            '00000620211216'
+        ),
         '1', '-88', '0', '1')
 
 
