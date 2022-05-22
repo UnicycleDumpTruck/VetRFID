@@ -62,6 +62,7 @@ def random_species_dir_type(animal_species, media_directory, media_type):
         logger.warning(e)
         return None, None
 
+
 def random_species(species: str):
     """Given species, directory, media type, return random pyglet.resource.
 
@@ -78,17 +79,20 @@ def random_species(species: str):
     glob_path = f"media/all/*{species}*"
     if species_glob := glob(glob_path):
         file_path = random.choice(species_glob)
+        logger.info(f"File chosen: {file_path}")
         if file_path[-4:] == ".mp4":
             file_type = "vid"
         elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
             file_type = "img"
         else:
-            raise ValueError("Unable to match file extension to determine file_type.")
+            raise ValueError(
+                "Unable to match file extension to determine file_type.")
         resource = file_types[file_type](file_path)
         if overlay_glob := glob(f"media/species_overlays/*{species}*"):
             overlay = pyglet.resource.image(random.choice(overlay_glob))
         else:
-            logger.warning(f"No overlay found for {species}, returned overlay=None")
+            logger.warning(
+                f"No overlay found for {species}, returned overlay=None")
             overlay = None
         return resource, file_type, overlay
     logger.warning(f"No files found for {species}!")

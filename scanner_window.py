@@ -83,7 +83,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         """Clear medical imagery, return to idle screen."""
         self.clock.unschedule(self.idle)
         self.state = State.IDLE
-        logger.info(f"{self.window_number} Going idle, ", delta_time, " seconds since scan.")
+        logger.info(f"{self.window_number} Going idle, ",
+                    delta_time, " seconds since scan.")
         self.clear()
         self.image = None
         self.orig_image = None
@@ -105,7 +106,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
-        logger.debug(f"{tag.epc.species_string} {tag.epc.serial} rx by ScannerWindow {self.window_number}")
+        logger.debug(
+            f"{tag.epc.species_string} {tag.epc.serial} rx by ScannerWindow {self.window_number}")
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:
@@ -113,45 +115,25 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.clear()
             self.serial = serial
             logger.warning(f"Seeking imagery for {tag.epc.species_string}")
-            # if tag.epc.species_string == 'Pig':
-            #     self.state = State.VID_SHOWING
-            #     self.image = None
-            #     self.orig_image = None
-            #     self.video, _ = files.random_species_dir_type(
-            #         'pig', 'vid', 'vid'
-            #     )
-            #     self.video_player.next_source()
-            #     self.video_player.delete()
-            #     self.video_player.queue(self.video)
-            #     self.video_player.play()
-            # elif tag.epc.species_string == 'Goat':
-            #     self.state = State.VID_SHOWING
-            #     self.image = None
-            #     self.orig_image = None
-            #     self.video, _ = files.random_species_dir_type(
-            #         'goat', 'vid', 'vid'
-            #     )
-            #     self.video_player.next_source()
-            #     self.video_player.delete()
-            #     self.video_player.queue(self.video)
-            #     self.video_player.play()
-            # else:
-            file, file_type, overlay = files.random_species(tag.epc.species_string)
+            file, file_type, overlay = files.random_species(
+                tag.epc.species_string)
             if file_type == "img":
-                self.state = State.IMG_SHOWING
-                self.video = None
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.image, self.orig_image = file, file
+                self.show_image(file)
+                # self.state = State.IMG_SHOWING
+                # self.video = None
+                # self.video_player.next_source()
+                # self.video_player.delete()
+                # self.image, self.orig_image = file, file
             elif file_type == "vid":
-                self.state = State.VID_SHOWING
-                self.image = None
-                self.orig_image = None
-                self.video = file
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.video_player.queue(self.video)
-                self.video_player.play()
+                self.show_video(file)
+                # self.state = State.VID_SHOWING
+                # self.image = None
+                # self.orig_image = None
+                # self.video = file
+                # self.video_player.next_source()
+                # self.video_player.delete()
+                # self.video_player.queue(self.video)
+                # self.video_player.play()
             self.label_controller.make_tag_labels(tag).draw()
             self.label_bg = overlay
 
@@ -161,13 +143,12 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
-    def show_image(self, imgs):
+    def show_image(self, file):
         self.state = State.IMG_SHOWING
         self.video = None
         self.video_player.next_source()
         self.video_player.delete()
-        self.image, self.orig_image = imgs[0], imgs[1]
-        logger.debug(f"H:{self.image.height}, W:{self.image.width}")
+        self.image = file
         # self.label_controller.make_tag_labels(tag).draw()
 
     def show_video(self, vid):
@@ -272,7 +253,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         if self.state == State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
             if self.label_bg:
-                self.label_bg.blit(40,40)
+                self.label_bg.blit(40, 40)
         if self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
 
