@@ -28,7 +28,7 @@ pyglet.options['debug_trace_depth'] = 4
 
 
 if __name__ == "__main__":
-    logger.add("main.log", rotation="1024 MB")    
+    logger.add("main.log", rotation="1024 MB")
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -147,22 +147,24 @@ if __name__ == "__main__":
 
     def read_queue():
         """Empty queue, return last item."""
-        if not tag_queue.empty():
-            contents = []
-            logger.debug(f"Queue size: {tag_queue.qsize()}")
-            # while not tag_queue.empty():
-            for _ in range(tag_queue.qsize()):
-                try:
-                    tag = tag_queue.get(timeout=0.5)
-                    contents.append(tag)
-                    logger.debug(f"{tag} popped from queue. {tag_queue.qsize()} remaining.")
-                except Empty as ex:
-                    logger.warning(f"read_queue exception:\n {ex}")
-                    # return None
-                # else:
-                #     break
-            logger.debug(contents)
-            return contents
+        if tag_queue.empty():
+            return
+        contents = []
+        logger.debug(f"Queue size: {tag_queue.qsize()}")
+        # while not tag_queue.empty():
+        for _ in range(tag_queue.qsize()):
+            try:
+                tag = tag_queue.get(timeout=0.5)
+                contents.append(tag)
+                logger.debug(
+                    f"{tag} popped from queue. {tag_queue.qsize()} remaining.")
+            except Empty as ex:
+                logger.warning(f"read_queue exception:\n {ex}")
+                # return None
+            # else:
+            #     break
+        logger.debug(contents)
+        return contents
 
     def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""

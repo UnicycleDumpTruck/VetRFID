@@ -7,16 +7,17 @@ import epc
 # If the jlog.json file gets wiped, put an empty pair
 # of {} in it to allow a new file to be created.
 
+# TODO: If no log file exists, create it.
+# TODO: Put log filename in constant, rename to end in ".log"
+
 
 def print_log_dict(ldict):
     """Print dictionary line by line."""
     for itm in ldict.items():
         print(itm[0], itm[1].values())
 
-# TODO Log tags by Serial and date, with dict for num_reads by position with total
 
-
-def log_tag(tag: epc.Tag) -> datetime:  # string input
+def log_tag(tag: epc.Tag) -> datetime:
     """Log epc string to jlog.json file."""
     log_dict = files.json_import('jlog.json')
     last_seen = None
