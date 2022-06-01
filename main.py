@@ -88,16 +88,16 @@ if __name__ == "__main__":
     screens = display.get_screens()
     for i, screen in enumerate(screens):
         print(f"Screen #{i}: {screen}")
-    # window2 = scanner_window.ScannerWindow(
-    #       1920, 1080, "Ready Set Vet Screen 2", True, fullscreen=True,
-    #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    # window1 = scanner_window.ScannerWindow(
-    #     1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
-    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
-    window1 = scanner_window.ScannerWindow(
-        1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
     window2 = scanner_window.ScannerWindow(
-        1920, 1080, "Ready Set Vet", True, window_number=2, idle_seconds=idle_seconds)
+          1920, 1080, "Ready Set Vet Screen 2", True, fullscreen=True,
+          screen=screens[1], window_number=2, idle_seconds=idle_seconds)
+    window1 = scanner_window.ScannerWindow(
+        1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
+        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    # window1 = scanner_window.ScannerWindow(
+    #     1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
+    # window2 = scanner_window.ScannerWindow(
+    #     1920, 1080, "Ready Set Vet", True, window_number=2, idle_seconds=idle_seconds)
 
     window1.set_icon(vet_paw)
     window2.set_icon(vet_paw)
