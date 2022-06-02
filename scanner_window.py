@@ -50,11 +50,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.idle(0)
 
         self.label_bg = None
-        # self.background_graphics.append(self.bg)
 
-        # Disabled anchor change for new label overlay
-        # self.label_bg.anchor_x = self.label_bg.width // 2
-        # self.label_bg.anchor_y = self.label_bg.height // 2
+        # self.idle_image = pyglet.resource.image("graphics/idle.png")
+        # self.idle_image.anchor_x = self.image.width // 2
+        # self.idle_image.anchor_y = self.image.height // 2
 
         self.image = None
         self.orig_image = None
@@ -250,12 +249,13 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         # if self.state != State.VID_SHOWING:
         #     self.label_bg.blit(self.width // 2, self.height // 2)
-        if self.state == State.IMG_SHOWING:
+        if self.state != State.IDLE: #== State.IMG_SHOWING:
             self.label_controller.tag_labels.draw()
             if self.label_bg:
                 self.label_bg.blit(40, 40)
         if self.state == State.IDLE:
             self.label_controller.idle_labels.draw()
+            # self.idle_image.blit(self.width // 2, self.height // 2)
 
         # if self.state != State.VID_SHOWING:
         #     self.label_controller.always_labels.draw()
