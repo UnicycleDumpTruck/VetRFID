@@ -250,7 +250,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         # if self.state != State.VID_SHOWING:
         #     self.label_bg.blit(self.width // 2, self.height // 2)
         if self.state != State.IDLE: #== State.IMG_SHOWING:
-            self.label_controller.tag_labels.draw()
+            # Draw species detected and last-seen labels
+            #self.label_controller.tag_labels.draw()
+            
+            # Draw species illustration and label graphic overlay
             if self.label_bg:
                 self.label_bg.blit(40, 40)
         if self.state == State.IDLE:
