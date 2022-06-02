@@ -60,7 +60,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.video = None
         self.clock = pyglet.clock.get_default()
         self.idle(0)  # idle needs delta_time argument
-
+        self.set_mouse_visible(False)
         # self.setup_magnifer()
 
     def setup_magnifer(self):
