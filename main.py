@@ -75,7 +75,7 @@ if __name__ == "__main__":
         if args.power:
             reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=1600)
+            reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=1800)
 
     idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
