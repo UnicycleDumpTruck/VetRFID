@@ -3,6 +3,7 @@
 from __future__ import print_function
 from time import sleep
 from os import environ
+import sys
 import argparse
 from queue import Queue, Empty
 from rich.traceback import install
@@ -28,6 +29,8 @@ pyglet.options['debug_trace_depth'] = 4
 
 
 if __name__ == "__main__":
+    logger.remove()
+    logger.add(sys.stderr, level="INFO")
     logger.add("main.log", rotation="1024 MB")
 
     parser = argparse.ArgumentParser()
