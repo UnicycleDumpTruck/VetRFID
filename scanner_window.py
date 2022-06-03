@@ -52,8 +52,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.label_bg = None
 
         self.idle_image = pyglet.resource.image("graphics/instructions.png")
-        self.idle_image.anchor_x = self.image.width // 2
-        self.idle_image.anchor_y = self.image.height // 2
+        self.idle_image.anchor_x = self.idle_image.width // 2
+        self.idle_image.anchor_y = self.idle_image.height // 2
 
         self.image = None
         self.orig_image = None
