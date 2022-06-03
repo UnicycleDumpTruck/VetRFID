@@ -45,7 +45,7 @@ def random_of_species(species: str):
         [string]: file type, either "img" or "vid"
     """
     species = species.replace(" ", "_").lower()
-    logger.info(f"Looking for {species} files")
+    # logger.info(f"Looking for {species} files")
     glob_path = f"media/all/*{species}*"
     if species_glob := glob(glob_path):
         file_path = random.choice(species_glob)

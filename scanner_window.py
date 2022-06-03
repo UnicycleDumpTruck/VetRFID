@@ -110,10 +110,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:
+            logger.info(f"New tag: {tag.epc.species_string} {tag.epc.serial} on window {self.window_number}")
             tag.last_seen = log.log_tag(tag)
             self.clear()
             self.serial = serial
-            logger.warning(f"Seeking imagery for {tag.epc.species_string}")
+            logger.debug(f"Seeking imagery for {tag.epc.species_string}")
             file, file_type, overlay = files.random_of_species(
                 tag.epc.species_string)
             if file_type == "img":
