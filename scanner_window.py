@@ -51,9 +51,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
         self.label_bg = None
 
-        # self.idle_image = pyglet.resource.image("graphics/idle.png")
-        # self.idle_image.anchor_x = self.image.width // 2
-        # self.idle_image.anchor_y = self.image.height // 2
+        self.idle_image = pyglet.resource.image("graphics/instructions.png")
+        self.idle_image.anchor_x = self.image.width // 2
+        self.idle_image.anchor_y = self.image.height // 2
 
         self.image = None
         self.orig_image = None
@@ -257,9 +257,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             if self.label_bg:
                 self.label_bg.blit(40, 40)
         if self.state == State.IDLE:
-            pass
             # self.label_controller.idle_labels.draw()
-            # self.idle_image.blit(self.width // 2, self.height // 2)
+            self.idle_image.blit(self.width // 2, self.height // 2)
 
         # if self.state != State.VID_SHOWING:
         #     self.label_controller.always_labels.draw()
