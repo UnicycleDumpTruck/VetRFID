@@ -9,6 +9,9 @@ SPLUNK_URL = os.environ.get('SPLUNK_URL')
 SPLUNK_SOURCETYPE = os.environ.get('SPLUNK_SOURCETYPE')
 SPLUNK_AUTH = os.environ.get('SPLUNK_AUTH')
 
+if not all((SPLUNK_URL, SPLUNK_SOURCETYPE, SPLUNK_AUTH)):
+    logger.warning("Failed to read Splunk telemetry environmental variables.")
+
 
 def send_log_messge(message):
     """Send a message to log aggregation server."""
