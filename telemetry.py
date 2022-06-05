@@ -13,7 +13,7 @@ if not all((SPLUNK_URL, SPLUNK_SOURCETYPE, SPLUNK_AUTH)):
     logger.warning("Failed to read Splunk telemetry environmental variables.")
 
 
-def send_log_messge(message):
+def send_log_message(message):
     """Send a message to log aggregation server."""
     payload = {"event": message, "sourcetype": SPLUNK_SOURCETYPE}
     try:

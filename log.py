@@ -1,8 +1,12 @@
 """Log tags to file for popularity tracking."""
 from __future__ import annotations
 from datetime import datetime
+
+from loguru import logger
+
 import files
 import epc
+import telemetry
 
 # If the jlog.json file gets wiped, put an empty pair
 # of {} in it to allow a new file to be created.
@@ -17,8 +21,16 @@ def print_log_dict(ldict):
         print(itm[0], itm[1].values())
 
 
+def log_file(file_path: str) -> None:
+    logger.info(f"File chosen: {file_path}")
+    telemetry.send_log_message(file_path)
+
+
 def log_tag(tag: epc.Tag) -> datetime:
     """Log epc string to jlog.json file."""
+    
+    telemetry.send_log_message(f"{tag.epc.species_string} {tag.epc.code}")
+
     log_dict = files.json_import('jlog.json')
     last_seen = None
     last_seen_obj = None
@@ -39,4 +51,5 @@ def log_tag(tag: epc.Tag) -> datetime:
                                   }
         last_seen_obj = datetime.now()
     files.json_export('jlog.json', log_dict)
+
     return last_seen_obj

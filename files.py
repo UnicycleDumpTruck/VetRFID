@@ -12,6 +12,9 @@ from PIL import Image
 import pyglet  # type: ignore
 from loguru import logger
 from rich.traceback import install
+
+import log
+
 install(show_locals=True)
 
 
@@ -49,7 +52,7 @@ def random_of_species(species: str):
     glob_path = f"media/all/*{species}*"
     if species_glob := glob(glob_path):
         file_path = random.choice(species_glob)
-        logger.info(f"File chosen: {file_path}")
+        log.log_file(file_path)
         if file_path[-4:] == ".mp4":
             file_type = "vid"
         elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
