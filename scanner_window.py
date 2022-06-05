@@ -46,8 +46,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
         @self.video_player.event  # TODO reassess after video fix
         def on_eos():  # Attempting to stop error on video end
-            logger.debug("Video player telling window to idle!")
-            self.idle(0)
+            logger.debug("Video player telling window to idle, but line is commented.")
+            # self.idle(0) # Commented out to allow looping
 
         self.label_bg = None
 
@@ -93,15 +93,17 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.serial = None
         self.label_controller.idle_labels.draw()
 
-    def on_player_eos(self):  # TODO reassess after video fix
-        """When video player runs out of queued files."""
-        logger.debug("Player EOS received by ScannerWindow!")
-        self.idle(0)
 
-    def on_eos(self):  # TODO reassess after video fix
-        """When current video file ends."""
-        logger.debug("EOS received by ScannerWindow")
-        self.idle(0)
+    # Not used at all?
+    # def on_player_eos(self):  # TODO reassess after video fix
+    #     """When video player runs out of queued files."""
+    #     logger.debug("Player EOS received by ScannerWindow!")
+    #     # self.idle(0)
+
+    # def on_eos(self):  # TODO reassess after video fix
+    #     """When current video file ends."""
+    #     logger.debug("EOS received by ScannerWindow")
+    #     # self.idle(0)
 
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
@@ -137,9 +139,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
             self.label_controller.make_tag_labels(tag).draw()
             self.label_bg = overlay
 
-        # else:
-        #     if self.state == State.VID_SHOWING:
-        #         self.video_player.loop = True
+        else:
+            if self.state == State.VID_SHOWING:
+                self.video_player.loop = True
         self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
