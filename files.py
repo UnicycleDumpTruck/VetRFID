@@ -52,7 +52,7 @@ def random_of_species(species: str):
     glob_path = f"media/all/*{species}*"
     if species_glob := glob(glob_path):
         file_path = random.choice(species_glob)
-        log.log_file(file_path.split("/")[-1]) # just the filename
+        log.log_file(file_path)
         if file_path[-4:] == ".mp4":
             file_type = "vid"
         elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:

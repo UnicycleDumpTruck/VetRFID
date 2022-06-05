@@ -23,13 +23,13 @@ def print_log_dict(ldict):
 
 def log_file(file_path: str) -> None:
     logger.info(f"File chosen: {file_path}")
-    telemetry.send_log_message(file_path)
+    telemetry.send_log_message(f"f={file_path.split('/')[-1]}") # just the filename
 
 
 def log_tag(tag: epc.Tag) -> datetime:
     """Log epc string to jlog.json file."""
     
-    telemetry.send_log_message(f"{tag.epc.species_string} {tag.epc.code}")
+    telemetry.send_log_message(f"s={tag.epc.species_string} t={tag.epc.code}")
 
     log_dict = files.json_import('jlog.json')
     last_seen = None
