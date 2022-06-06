@@ -113,7 +113,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         serial = tag.epc.serial
         if serial != self.serial:
             logger.info(f"New tag: {tag.epc.species_string} {tag.epc.serial} on window {self.window_number}")
-            tag.last_seen = log.log_tag(tag)
+            tag.last_seen = log.log_tag(tag, self)
             self.clear()
             self.serial = serial
             logger.debug(f"Seeking imagery for {tag.epc.species_string}")

@@ -6,6 +6,7 @@ from loguru import logger
 
 import files
 import epc
+import scanner_window
 import telemetry
 
 # If the jlog.json file gets wiped, put an empty pair
@@ -28,10 +29,10 @@ def log_file(file_path: str) -> None:
         f"f={file_path.split('/')[-1]}")  # just the filename
 
 
-def log_tag(tag: epc.Tag) -> datetime:
+def log_tag(tag: epc.Tag, win: scanner_window.ScannerWindow) -> datetime:
     """Log epc string to jlog.json file."""
 
-    telemetry.send_log_message(f"s={tag.epc.species_string} t={tag.epc.code}")
+    telemetry.send_log_message(f"s={tag.epc.species_string} t={tag.epc.code} w={win.window_number}")
 
     log_dict = files.json_import('jlog.json')
     last_seen = None
