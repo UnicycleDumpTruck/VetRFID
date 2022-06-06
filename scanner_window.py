@@ -195,6 +195,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         elif symbol == pyglet.window.key.DOWN:
             self.show_video(files.prev_mp4())
         else:
+            logger.warning(f"{symbol} key pressed, exiting application!")
             pyglet.app.exit()
 
     # def on_mouse_motion(self, x, y, button, modifiers):

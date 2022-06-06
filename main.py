@@ -9,6 +9,8 @@ from queue import Queue, Empty
 from rich.traceback import install
 from loguru import logger
 import pyglet  # type: ignore
+
+import telemetry
 import scanner_window
 import tag_dispatcher
 import izar
@@ -187,6 +189,8 @@ if __name__ == "__main__":
             logger.debug("Empty send_tag_to_td call!")
 
     clock = pyglet.clock.get_default()
+    telemetry.send_log_message("Application started!")
+    logger.warning("Application started!")
     if args.poll:
         print("WARNING: Polled reading interferes with video playback!")
         sleep(3)
@@ -197,3 +201,5 @@ if __name__ == "__main__":
         clock.schedule_interval(send_tag_to_td, 0.5)
         pyglet.app.run()
         reader.stop_reading()
+    telemetry.send_log_message("Application exited!")
+    logger.warning("Application exited!")
