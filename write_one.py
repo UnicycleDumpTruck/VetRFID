@@ -12,8 +12,8 @@ print(reader.get_supported_regions())
 # reader.set_read_plan([1, 2], "GEN2", read_power=1900)
 # print(reader.read())
 
-OLD = b'000100000800000320211223'
-NEW = b'000100000800000320211223'
+OLD = b'E28011303000020796DE35B4'
+NEW = b'000200002600000520220103'
 
 if reader.write(epc_code=NEW, epc_target=OLD):
     print(f"Rewrote {str(OLD)} with {str(NEW)}")

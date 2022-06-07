@@ -32,7 +32,7 @@ def species_name_from_int(species_num: int):
 
 def int_from_species_name(species_name: str) -> int:
     """Given string name of species, returns int."""
-    return int(species_nums.get(species_name, default=0))
+    return int(species_nums.get(species_name, 0))
 
 
 class EpcCode():

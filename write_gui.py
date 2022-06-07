@@ -29,7 +29,7 @@ install(show_locals=True)
 
 # reader = izar.MockReader()
 reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
-reader.set_read_plan([1], "GEN2", read_power=1500)
+reader.set_read_plan([3], "GEN2", read_power=1500)
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
 # reader.set_read_plan([1], "GEN2", read_power=1900)
