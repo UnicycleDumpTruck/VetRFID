@@ -30,6 +30,11 @@ install(show_locals=True)
 # reader = izar.MockReader()
 reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
 reader.set_read_plan([3], "GEN2", read_power=1500)
+print(f"Read power: {reader.get_read_powers()}")
+print(f"Write power: {reader.get_write_powers()}")
+reader.set_write_powers([(3,2000)])
+print(f"Write power after setting: {reader.get_write_powers()}")
+
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
 # reader.set_read_plan([1], "GEN2", read_power=1900)
