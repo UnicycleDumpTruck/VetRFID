@@ -9,6 +9,7 @@ from loguru import logger
 import epc
 import izar  # new __init__.py messing up imports?
 from scanner_window import ScannerWindow
+import telemetry
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
@@ -48,10 +49,13 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
         # add tags to the appropriate list in window_tags dict
         for tag in read_tags:
-            logger.debug(f"Sorted tag into per-window list: {tag} RSSI: {tag.rssi}")
-            win = self.antennas[str(tag.antenna)]
-            window_tags[win].append(tag)
-
+            if tag.epc.species_string:
+                logger.debug(f"Sorted tag into per-window list: {tag} RSSI: {tag.rssi}")
+                win = self.antennas[str(tag.antenna)]
+                window_tags[win].append(tag)
+            else:
+                logger.warning(f"Invalid tag read: {tag.epc.code}")
+                telemetry.send_log_message(f"Invalid tag read: {tag.epc.code}")
         # go thru the tags for each window, if any
         for window in window_tags:
             if window_tags[window]:

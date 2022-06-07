@@ -4,6 +4,8 @@ from datetime import datetime
 import json
 from random import randint
 
+from loguru import logger
+
 # Number of digits for each field.
 LOCATION_DIGITS = 4  # First four digits, location on animal
 SERIAL_DIGITS = 6  # Second six, ANIMAL serial, not tag serial
@@ -98,7 +100,7 @@ class EpcCode():
         """Return species name as a string, like 'horse'."""
         if spec := species_names.get(self.species_num):
             return spec
-        raise ValueError("Species not found in species.json file.")
+        logger.warning(f"Species number {self.species_num} not found in species.json file.")
 
     @property
     def date_string(self) -> str:
