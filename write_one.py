@@ -9,7 +9,7 @@ print(reader.get_model())
 print(reader.get_supported_regions())
 
 # Adding bank= causes segmentation fault, maybe tags don't support
-# reader.set_read_plan([1, 2], "GEN2", read_power=1900)
+reader.set_read_plan([3], "GEN2", read_power=1900)
 # print(reader.read())
 
 OLD = b'E28011303000020796DE35B4'
