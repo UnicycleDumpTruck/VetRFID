@@ -16,6 +16,7 @@ from rich.traceback import install
 import log
 
 install(show_locals=True)
+media_resources = {}
 
 
 def json_import(filename) -> dict:
@@ -37,7 +38,55 @@ file_types = {'img': pyglet.resource.image,
               'vid': pyglet.media.load, }
 
 
+def cache_media():
+    species_names = [name for name in json_import('species.json').keys() if name]
+    for species in species_names:
+        media_resources[species] = []
+        glob_path = f"media/all/*{species}*"
+        if species_glob := glob(glob_path)
+            for file_path in species_glob:
+                log.log_file(f"Caching: {file_path}")
+                if file_path[-4:] == ".mp4":
+                    file_type = "vid"
+                elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
+                    file_type = "img"
+                else:
+                    raise ValueError(
+                        "Unable to match file extension to determine file_type.")
+                resource = file_types[file_type](file_path)
+                if overlay_glob := glob(f"media/species_overlays/*{species}*"):
+                    overlay = pyglet.resource.image(random.choice(overlay_glob))
+                else:
+                    logger.warning(
+                        f"No overlay found for {species}, returned overlay=None")
+                    overlay = None
+                media_resources[species].append((resource, file_type, overlay))
+        logger.warning(f"No files found for {species}!")
+    logger.debug(f"Cached media{media_resources}")
+
+
+cache_media()
+
+
 def random_of_species(species: str):
+    """Given species, return random pyglet.resource.
+
+    Args:
+        species ([string]): "monkey", "dog", or "pig"
+
+    Returns:
+        [pyglet.resource....]: [resource type determined by media_type]
+        [string]: file type, either "img" or "vid"
+    """
+    species = species.replace(" ", "_").lower()
+
+    if available_resources := media_resources.get(species):
+        return random.choice(available_resources)
+    logger.warning(f"No files found for {species}!")
+    return None, None, None
+
+
+def random_of_uncached_species(species: str):
     """Given species, return random pyglet.resource.
 
     Args:
