@@ -39,13 +39,12 @@ file_types = {'img': pyglet.resource.image,
 
 
 def cache_media():
-    species_names = [name for name in json_import('species.json').keys() if name]
+    species_names = [name.replace(" ", "_").lower() for _, name in json_import('species.json').items() if name]
     for species in species_names:
         media_resources[species] = []
         glob_path = f"media/all/*{species}*"
-        if species_glob := glob(glob_path)
+        if species_glob := glob(glob_path):
             for file_path in species_glob:
-                log.log_file(f"Caching: {file_path}")
                 if file_path[-4:] == ".mp4":
                     file_type = "vid"
                 elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
@@ -83,6 +82,7 @@ def random_of_species(species: str):
     if available_resources := media_resources.get(species):
         return random.choice(available_resources)
     logger.warning(f"No files found for {species}!")
+    log.log_file(f"Caching: {available_resources[0]}")
     return None, None, None
 
 
