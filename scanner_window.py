@@ -127,7 +127,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                 # self.video_player.delete()
                 # self.image, self.orig_image = file, file
             elif file_type == "vid":
-                self.show_video(file)
+                if file.is_player_source:
+                    self.idle(0)
+                else:
+                    self.show_video(file)
                 # self.state = State.VID_SHOWING
                 # self.image = None
                 # self.orig_image = None
