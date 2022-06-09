@@ -109,7 +109,11 @@ def random_of_uncached_species(species: str):
         else:
             raise ValueError(
                 "Unable to match file extension to determine file_type.")
-        resource = file_types[file_type](file_path)
+        #resource = file_types[file_type](file_path)
+        if file_type == "img":
+            resource = pyglet.resource.image(file_path)
+        else:
+            resource = pyglet.media.load(file_path, streaming = False)
         if overlay_glob := glob(f"media/species_overlays/*{species}*"):
             overlay = pyglet.resource.image(random.choice(overlay_glob))
         else:
