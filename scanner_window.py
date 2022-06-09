@@ -2,7 +2,7 @@
 """Subclassing pyglet Window to add behavior."""
 from __future__ import annotations
 from typing import List, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum, auto
 from loguru import logger
 import pyglet  # type: ignore
@@ -39,6 +39,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.media_dir = 'xray'
         self.media_type = 'img'
         self.serial = None
+        self.start_time = None
         self.label_controller = LabelController(self)
         self.video_player = pyglet.media.Player()
         source = pyglet.media.StreamingSource()  # TODO In pyglet examples, but unused?
@@ -112,7 +113,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:
+            # TODO: Log last tag to Splunk here
+            elapsed_time = datetime.now() - self.start_time
+            logger.info(f"Outgoing tag was displayed for {elapsed_time.total_seconds()} seconds.")
             logger.info(f"New tag: {tag.epc.species_string} {tag.epc.serial} on window {self.window_number}")
+            self.start_time = datetime.now()
             tag.last_seen = log.log_tag(tag, self)
             self.clear()
             self.serial = serial
