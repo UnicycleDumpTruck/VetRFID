@@ -29,11 +29,7 @@ def log_file(file_path: str) -> None:
         f"f={file_path.split('/')[-1]}")  # just the filename
 
 
-def log_tag(tag: epc.Tag, win: scanner_window.ScannerWindow) -> datetime:
-    """Log epc string to jlog.json file."""
-
-    telemetry.send_log_message(f"s={tag.epc.species_string} t={tag.epc.code} w={win.window_number}")
-
+def get_last_seen(tag: epc.Tag) -> datetime:
     log_dict = files.json_import('jlog.json')
     last_seen = None
     last_seen_obj = None
@@ -42,6 +38,29 @@ def log_tag(tag: epc.Tag, win: scanner_window.ScannerWindow) -> datetime:
         last_seen_obj = datetime.strptime(last_seen, "%Y-%m-%d %H:%M:%S.%f")
         last_seen_str = datetime.strftime(last_seen_obj, "%m/%d/%Y, %H:%M:%S")
         print(f"Logged {tag.epc.code}. Last seen {last_seen_str}")
+    else:
+        last_seen_obj = datetime.now()
+    return last_seen_obj
+
+
+def log_animal(tag: epc.Tag, win: scanner_window.ScannerWindow) -> None:
+    """Send animal species, animal serial number, window number to Splunk."""
+    telemetry.send_log_message(
+        f"s='{tag.epc.species_string}' a={tag.epc.serial} w={win.window_number}")
+
+
+def log_tag(tag: epc.Tag, win: scanner_window.ScannerWindow) -> datetime:
+    """Log epc string to jlog.json file."""
+
+    log_dict = files.json_import('jlog.json')
+    last_seen = None
+    last_seen_obj = None
+    if log_dict.get(tag.epc.code):
+        last_seen = log_dict[tag.epc.code]['last_seen']
+        last_seen_obj = datetime.strptime(last_seen, "%Y-%m-%d %H:%M:%S.%f")
+        last_seen_str = datetime.strftime(last_seen_obj, "%m/%d/%Y, %H:%M:%S")
+        logger.debug(f"Logged {tag.epc.code}. Last seen {last_seen_str}")
+
         log_dict[tag.epc.code]['last_seen'] = str(datetime.now())
         log_dict[tag.epc.code]['num_reads'] = str(
             int(log_dict[tag.epc.code]['num_reads']) + 1)
