@@ -1,6 +1,6 @@
 """Log tags to file for popularity tracking."""
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from loguru import logger
 
@@ -43,10 +43,11 @@ def get_last_seen(tag: epc.Tag) -> datetime:
     return last_seen_obj
 
 
-def log_animal(tag: epc.Tag, win: scanner_window.ScannerWindow) -> None:
+def log_animal(tag: epc.Tag, elapsed: timedelta, win: scanner_window.ScannerWindow) -> None:
     """Send animal species, animal serial number, window number to Splunk."""
-    telemetry.send_log_message(
-        f"s='{tag.epc.species_string}' a={tag.epc.serial} w={win.window_number}")
+    log_message = f"s='{tag.epc.species_string}' a={tag.epc.serial} w={win.window_number} t={elapsed.total_seconds()}"
+    logger.info(f"Sending to Splunk: {log_message}")
+    telemetry.send_log_message(log_message)
 
 
 def log_tag(tag: epc.Tag, win: scanner_window.ScannerWindow) -> datetime:

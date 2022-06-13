@@ -61,6 +61,8 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.orig_image = None
         self.video = None
         self.clock = pyglet.clock.get_default()
+        self.start_time = datetime.now()
+        self.last_tag = None
         self.idle(0)  # idle needs delta_time argument
         self.set_mouse_visible(False)
         # self.setup_magnifer()
@@ -86,6 +88,10 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.state = State.IDLE
         logger.info(f"{self.window_number} Going idle, ",
                     delta_time, " seconds since scan.")
+        elapsed_time = datetime.now() - self.start_time
+        if self.last_tag and elapsed_time.total_seconds() > 2:
+            log.log_animal(self.last_tag, elapsed_time, self)
+        self.last_tag = None
         self.clear()
         self.image = None
         self.orig_image = None
@@ -104,10 +110,11 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         if serial != self.serial:
             log.log_tag(tag, self)
             elapsed_time = datetime.now() - self.start_time
-            if elapsed_time.total_seconds() > 2:
-                log.log_animal(tag, self)
-            logger.info(
-                f"Outgoing tag was displayed for {elapsed_time.total_seconds()} seconds.")
+            if self.last_tag and elapsed_time.total_seconds() > 2:
+                log.log_animal(self.last_tag, elapsed_time, self)
+            if self.last_tag:
+                logger.info(
+                    f"Outgoing {self.last_tag.epc.species_string} was displayed for {elapsed_time.total_seconds()} seconds.")
             logger.info(
                 f"New: {tag.epc.species_string} {tag.epc.serial} win: {self.window_number}")
             self.start_time = datetime.now()
@@ -126,6 +133,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                     self.show_video(file)
             self.label_controller.make_tag_labels(tag).draw()
             self.label_bg = overlay
+            self.last_tag = tag
 
         elif self.state == State.VID_SHOWING:
             self.video_player.loop = True
