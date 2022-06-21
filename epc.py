@@ -149,13 +149,17 @@ class Tag():
 
     def from_tag(self, tag):
         """Initialize from hardware issued tag."""
-        self.epc = EpcCode(str(tag.epc)[2:26])
-        self.phase = tag.phase
-        self.antenna = tag.antenna
-        self.read_count = tag.read_count
-        self.rssi = tag.rssi
-        self.last_seen = None
-        return self
+        try:
+            self.epc = EpcCode(str(tag.epc)[2:26])
+            self.phase = tag.phase
+            self.antenna = tag.antenna
+            self.read_count = tag.read_count
+            self.rssi = tag.rssi
+            self.last_seen = None
+            return self
+        except Exception as e:
+            logger.warning(f"Failed to create tag: {e}")
+            return None
 
     def __repr__(self):
         """Represent EPC Code."""

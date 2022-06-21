@@ -23,7 +23,7 @@ class IzarReader(mercury.Reader):
         """Return list of tags visible to reader."""
         raw_tags = super().read()  # TODO pass timeout to super
         rtag_list = [epc.Tag().from_tag(tag) for tag in raw_tags]
-        return rtag_list
+        return list(filter(None, rtag_list))
 
 
 class MockReader():
