@@ -3,7 +3,9 @@
 from __future__ import print_function
 import izar
 
-reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+# reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+reader = izar.IzarReader("tmr:///dev/ttyUSB0")
+
 
 print(reader.get_model())
 print(reader.get_supported_regions())
@@ -12,7 +14,7 @@ print(reader.get_supported_regions())
 # reader.set_read_plan([1, 2], "GEN2", read_power=1900)
 # print(reader.read())
 
-OLD = b'000100000800000320211223'
+OLD = b'E28011303000020796DD25C4'
 NEW = b'000100000800000320211223'
 
 if reader.write(epc_code=NEW, epc_target=OLD):

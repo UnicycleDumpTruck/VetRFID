@@ -28,7 +28,8 @@ import izar
 install(show_locals=True)
 
 # reader = izar.MockReader()
-reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+# reader = izar.IzarReader("llrp://izar-51e4c8.local", protocol="GEN2")
+reader = izar.IzarReader("tmr:///dev/ttyUSB0")
 reader.set_read_plan([1], "GEN2", read_power=1500)
 
 # reader.set_read_plan([1], "GEN2", read_power=1500)
@@ -187,9 +188,11 @@ class WriterCtrl(QObject):
     def write_tag(self):
         """Write tag with currently selected values."""
         tags_read = self.read_tag()  # TODO pass timeout
-        sleep(0.5)  # TODO use same time as above
+        logger.debug(f"Tag zero rssi: {tags_read[0].rssi}")
+        sleep(2)  # TODO use same time as above
         if tags_read:
-            tags_read = tags_read.sort(key=lambda tag: tag.rssi)
+            # tags_read = tags_read.sort(key=lambda tag: tag.rssi)
+            logger.debug(f"Sorted Tags: {tags_read}")
             self._view.read_display.setText(str(tags_read))
             self._view.read_display.setFocus()
             target_tag = tags_read[0]
