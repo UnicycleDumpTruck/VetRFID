@@ -1,4 +1,6 @@
-"""Load dict from json file. Make random pyglet imag from directory."""
+"""Load dict from json file. Make random pyglet imag from directory.
+Image conversion functions.
+"""
 from __future__ import annotations
 from typing import List
 import json
@@ -10,7 +12,11 @@ from PIL import Image
 import pyglet  # type: ignore
 from loguru import logger
 from rich.traceback import install
+
+import log
+
 install(show_locals=True)
+media_resources = {}
 
 
 def json_import(filename) -> dict:
@@ -32,44 +38,111 @@ file_types = {'img': pyglet.resource.image,
               'vid': pyglet.media.load, }
 
 
-def random_species_dir_type(animal_species, media_directory, media_type):
-    """Given species, directory, media type, return random pyglet.resource.
+def cache_media():
+    species_names = [name.replace(" ", "_").lower() for _, name in json_import('species.json').items() if name]
+    for species in species_names:
+        media_resources[species] = []
+        glob_path = f"media/all/*{species}*"
+        if species_glob := glob(glob_path):
+            for file_path in species_glob:
+                if file_path[-4:] == ".mp4":
+                    file_type = "vid"
+                elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
+                    file_type = "img"
+                else:
+                    raise ValueError(
+                        "Unable to match file extension to determine file_type.")
+                #resource = file_types[file_type](file_path)
+                if file_type == "img":
+                    resource = pyglet.resource.image(file_path)
+                else:
+                    resource = pyglet.media.load(file_path)
+
+                if overlay_glob := glob(f"media/species_overlays/*{species}*"):
+                    overlay = pyglet.resource.image(random.choice(overlay_glob))
+                else:
+                    logger.warning(
+                        f"No overlay found for {species}, returned overlay=None")
+                    overlay = None
+                media_resources[species].append((resource, file_type, overlay))
+        logger.warning(f"No files found for {species}!")
+    logger.debug(f"Cached media{media_resources}")
+
+
+cache_media()
+
+
+def random_of_species(species: str):
+    """Given species, return random pyglet.resource.
 
     Args:
-        animal_species ([string]): "monkey", "dog", or "pig"
-        media_directory ([string]): "xray"
-        media_type ([string]): "img" or "vid"
+        species ([string]): "monkey", "dog", or "pig"
 
     Returns:
         [pyglet.resource....]: [resource type determined by media_type]
+        [string]: file type, either "img" or "vid"
     """
-    # animal_species="monkey", media_directory="xray"
-    dir_path = f"media/{animal_species.lower()}/{media_directory}/"
-    all_files = os.listdir(dir_path)
-    valid_files = [file for file in all_files if file[0] != "."]
-    print(valid_files)
-    img_path = dir_path + random.choice(valid_files)
-    print(img_path)
-    img_resource = file_types[media_type](img_path)
+    species = species.replace(" ", "_").lower()
 
-    orig_image = copy.copy(img_resource)
-    if media_type == 'img':
-        return scale_image(img_resource), orig_image
+    if available_resources := media_resources.get(species):
+        return random.choice(available_resources)
+    logger.warning(f"No files found for {species}!")
+    log.log_file(f"Caching: {available_resources[0]}")
+    return None, None, None
 
-    # TODO: Video Scaling
-    return img_resource, orig_image  # TODO: toss extra return, clean from SWin
+
+def random_of_uncached_species(species: str):
+    """Given species, return random pyglet.resource.
+
+    Args:
+        species ([string]): "monkey", "dog", or "pig"
+
+    Returns:
+        [pyglet.resource....]: [resource type determined by media_type]
+        [string]: file type, either "img" or "vid"
+    """
+    species = species.replace(" ", "_").lower()
+    # logger.info(f"Looking for {species} files")
+    glob_path = f"media/all/*{species}*"
+    if species_glob := glob(glob_path):
+        file_path = random.choice(species_glob)
+        log.log_file(file_path)
+        if file_path[-4:] == ".mp4":
+            file_type = "vid"
+        elif file_path[-4:] in {"jpeg", ".jpg", ".png"}:
+            file_type = "img"
+        else:
+            raise ValueError(
+                "Unable to match file extension to determine file_type.")
+        #resource = file_types[file_type](file_path)
+        if file_type == "img":
+            resource = pyglet.resource.image(file_path)
+        else:
+            resource = pyglet.media.load(file_path, streaming = False)
+        if overlay_glob := glob(f"media/species_overlays/*{species}*"):
+            overlay = pyglet.resource.image(random.choice(overlay_glob))
+        else:
+            logger.warning(
+                f"No overlay found for {species}, returned overlay=None")
+            overlay = None
+        return resource, file_type, overlay
+    logger.warning(f"No files found for {species}!")
+    return None, None, None
 
 
 def rand_ext_of_species(ext, species):
-    glob_path = f"media/all_{ext}/{species}*"
+    """Given file extension (without period) and species name,
+    return random file of that extension."""
+    glob_path = f"media/all_{ext}/*{species}*"
     if species_glob := glob(glob_path):
         return random.choice(species_glob)
     return None
 
 
 def scale_image(img):
-    # height, width = 1080, 1920  # Desired resolution
-    height, width = 720, 1280  # Desired resolution
+    """Scale image to 1920 by 1080"""
+    height, width = 1080, 1920  # Desired resolution
+    # height, width = 720, 1280  # Desired resolution
 
     scale_y = min(img.height, height) / max(img.height, height)
     scale_x = min(width, img.width) / max(width, img.width)
@@ -83,9 +156,10 @@ def scale_image(img):
         img.width = img.width * img.scale
         img.height = img.height * img.scale
 
-    return img
+    return img  # TODO: not necessary, since scaled in place. remove and test.
 
 
+# Extension replacements for use converting new files:
 new_ext = {".jpg": ".png", "jpeg": "png", "webp": "png"}
 
 
@@ -107,7 +181,7 @@ def convert_all_to_png():
                             other_type_file.save(new_name)
 
                     except Exception as e:
-                        logger.error(e)
+                        logger.warning(e)
                 else:
                     os.remove(old_name)
 
@@ -122,6 +196,8 @@ def list_all_of(file_extension: str) -> List:
                 file_list.append(file_path)
     return file_list
 
+
+# TODO: Enclose following into slideshow class?
 
 all_png = list_all_of("png")
 current_png = 0
@@ -163,6 +239,7 @@ def next_mp4():
     if current_mp4 >= len(all_mp4):
         current_mp4 = 0
     return load_mp4(all_mp4[current_mp4])
+
 
 def prev_mp4():
     global current_mp4

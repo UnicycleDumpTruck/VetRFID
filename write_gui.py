@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
 )
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from rich.traceback import install
 
 import epc
@@ -45,7 +45,7 @@ class WriterUI(QMainWindow):
         """View initializer."""
         super().__init__()
         # Set some main window's properties
-        self.setWindowTitle("PyCalc")
+        self.setWindowTitle("Vet U RFID Tag Writer")
         # self.setFixedSize(500, 500)
         # Set the central widget and the general layout
         self.general_layout = QVBoxLayout()
@@ -63,14 +63,15 @@ class WriterUI(QMainWindow):
         self.title_widget = QWidget()
         self.title_layout = QHBoxLayout(self.title_widget)
         self.logo_widget = QLabel()
-        self.logo = QPixmap("media/icons/vet_u_paw.png").scaledToHeight(150)
+        self.logo = QPixmap("media/icons/logo.png").scaledToHeight(150)
         self.logo_widget.setPixmap(self.logo)
         self.title_layout.addWidget(self.logo_widget)
-        self.title_layout.addSpacing(20)
-        self.title_label = QLabel("Read Set Vet RFID", self.title_widget)
-        self.title_label.setAlignment(Qt.AlignVCenter)
-        self.title_layout.addWidget(self.title_label)
-        self.title_layout.addStretch()
+        self.logo_widget.setAlignment(Qt.AlignHCenter)
+        # self.title_layout.addSpacing(20)
+        # self.title_label = QLabel("Read Set Vet RFID", self.title_widget)
+        # self.title_label.setAlignment(Qt.AlignVCenter)
+        # self.title_layout.addWidget(self.title_label)
+        # self.title_layout.addStretch()
         self.general_layout.addWidget(self.title_widget)
 
     def _create_read_widget(self):
@@ -109,11 +110,11 @@ class WriterUI(QMainWindow):
         # self.set_display_text(str(self.serial_int + 1))
 
         self.animal_selector = QComboBox()
-        self.animal_selector.addItems(epc.species_names.values())
+        self.animal_selector.addItems(sorted(epc.species_names.values()))
         self.write_layout.addWidget(self.animal_selector)
 
         self.position_selector = QComboBox()
-        self.position_selector.addItems(["Head", "Tail"])
+        self.position_selector.addItems(["Head", "Tail", "Mid"])
         self.write_layout.addWidget(self.position_selector)
 
         self.write_button = QPushButton("Write Tag")
@@ -173,8 +174,10 @@ class WriterCtrl(QObject):
     def _create_next_tag(self):
         """Generate next tag to write."""
         new_epc = epc.EpcCode("000000000000000000000000")
-        new_epc.species_num = str(
-            self._view.animal_selector.currentIndex() + 1)
+        # TODO: Group animals for easy finding, categories for exhibit or type (lizard)
+        set_species = self._view.animal_selector.currentText()
+        logger.debug(f"{set_species} selected.")
+        new_epc.species_num = epc.int_from_species_name(set_species)
         new_epc.serial = str(self.serial_int + 1)
         new_epc.location = str(self._view.position_selector.currentIndex() + 1)
         new_epc.date_now()
@@ -204,12 +207,12 @@ class WriterCtrl(QObject):
                 animal = self.next_tag.species_string
                 loc = self._view.position_selector.currentText()
                 ser = self.next_tag.serial
-                log_str = f"Success: Label your tag: {animal} {loc} {ser}"
+                log_str = f"Success: Label as {animal} {loc} {ser.lstrip('0')}"
                 self._view.log_display.setText(log_str)
                 logger.debug(log_str)
 
                 # Increment position, maybe serial after successful write
-                if self._view.position_selector.currentIndex() == 1:
+                if self._view.position_selector.currentIndex() == 1: # If tail was just written
                     self.increment_serial()
                     self._view.position_selector.setCurrentIndex(0)
                 else:
@@ -220,7 +223,7 @@ class WriterCtrl(QObject):
                 logger.warning("Write failed.")
         else:
             self._view.log_display.setText(
-                "Error: Can't write, no tag detected.")
+                "Error: Can't write. No tag detected.")
             logger.warning("Can't write, no tag detected.")
 
     def increment_serial(self):
@@ -253,14 +256,15 @@ def WriterModel():  # pylint: disable=invalid-name
 
 def main():
     """Main function."""
-    pycalc = QApplication(sys.argv)
+    app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("media/icons/logo.png"))
     view = WriterUI()
     view.show()
     model = WriterModel
     # assigning to ctrllr fixed signals, tho ctrllr not used
     ctrllr = WriterCtrl(model=model, view=view)
     logger.debug(f"{type(ctrllr)} assigned.")
-    sys.exit(pycalc.exec())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

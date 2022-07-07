@@ -1,4 +1,7 @@
-#*.mp4
+# Ignore log files, so that scanning doesn't affect git changes.
+jlog.json
+*.log
+
 .DS_Store
 .vscode
 /vet

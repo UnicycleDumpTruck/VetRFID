@@ -2,7 +2,7 @@
 """Subclassing pyglet Window to add behavior."""
 from __future__ import annotations
 from typing import List, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum, auto
 from loguru import logger
 import pyglet  # type: ignore
@@ -39,6 +39,7 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         self.media_dir = 'xray'
         self.media_type = 'img'
         self.serial = None
+        self.start_time = None
         self.label_controller = LabelController(self)
         self.video_player = pyglet.media.Player()
         source = pyglet.media.StreamingSource()  # TODO In pyglet examples, but unused?
@@ -46,24 +47,27 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
 
         @self.video_player.event  # TODO reassess after video fix
         def on_eos():  # Attempting to stop error on video end
-            print("Video player telling window to idle!")
-            self.idle(0)
+            logger.debug(
+                "Video player telling window to idle, but line is commented.")
+            # self.idle(0) # Commented out to allow looping
 
-        self.label_bg = pyglet.resource.image('graphics/cow_overlay.png')
-        self.label_bg.width = self.label_bg.width // 2
-        self.label_bg.height = self.label_bg.height // 2
-        # self.background_graphics.append(self.bg)
-        
-        # Disabled anchor change for new label overlay
-        # self.label_bg.anchor_x = self.label_bg.width // 2
-        # self.label_bg.anchor_y = self.label_bg.height // 2
+        self.label_bg = None
+
+        self.idle_image = pyglet.resource.image("graphics/instructions.png")
+        self.idle_image.anchor_x = self.idle_image.width // 2
+        self.idle_image.anchor_y = self.idle_image.height // 2
 
         self.image = None
         self.orig_image = None
         self.video = None
         self.clock = pyglet.clock.get_default()
+        self.start_time = datetime.now()
+        self.last_tag = None
         self.idle(0)  # idle needs delta_time argument
+        self.set_mouse_visible(False)
+        # self.setup_magnifer()
 
+    def setup_magnifer(self):
         # Magnifier
         self.mag_pos = [0, 0]
         self.mag_x = 0
@@ -82,83 +86,66 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         """Clear medical imagery, return to idle screen."""
         self.clock.unschedule(self.idle)
         self.state = State.IDLE
-        print("Going idle, ", delta_time, " seconds since scan.")
+        logger.info(f"{self.window_number} Going idle, ",
+                    delta_time, " seconds since scan.")
+        elapsed_time = datetime.now() - self.start_time
+        if self.last_tag and elapsed_time.total_seconds() > 2:
+            log.log_animal(self.last_tag, elapsed_time, self)
+        self.last_tag = None
         self.clear()
         self.image = None
         self.orig_image = None
+        self.label_bg = None
         self.video = None
         self.video_player.next_source()
         self.serial = None
         self.label_controller.idle_labels.draw()
 
-    def on_player_eos(self):  # TODO reassess after video fix
-        """When video player runs out of queued files."""
-        print("Player EOS received by ScannerWindow!")
-        self.idle(0)
-
-    def on_eos(self):  # TODO reassess after video fix
-        """When current video file ends."""
-        print("EOS received by ScannerWindow")
-        self.idle(0)
-
     def on_tag_read(self, tag: epc.Tag):
         """New tag scanned, display imagery."""
-        print("Tag received by on_tag_read in ScannerWindow")
+        logger.debug(
+            f"{tag.epc.species_string} {tag.epc.serial} rx by win {self.window_number}")
         self.clock.unschedule(self.idle)
         serial = tag.epc.serial
         if serial != self.serial:
-            tag.last_seen = log.log_tag(tag)
+            log.log_tag(tag, self)
+            elapsed_time = datetime.now() - self.start_time
+            if self.last_tag and elapsed_time.total_seconds() > 2:
+                log.log_animal(self.last_tag, elapsed_time, self)
+            if self.last_tag:
+                logger.info(
+                    f"Outgoing {self.last_tag.epc.species_string} was displayed for {elapsed_time.total_seconds()} seconds.")
+            logger.info(
+                f"New: {tag.epc.species_string} {tag.epc.serial} win: {self.window_number}")
+            self.start_time = datetime.now()
+            tag.last_seen = log.get_last_seen(tag)  # Not displaying
             self.clear()
             self.serial = serial
-            print("Seeking imagery for ", tag.epc.species_string)
-            if tag.epc.species_string == 'Pig':
-                self.state = State.VID_SHOWING
-                self.image = None
-                self.orig_image = None
-                self.video, _ = files.random_species_dir_type(
-                    'pig', 'vid', 'vid'
-                )
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.video_player.queue(self.video)
-                self.video_player.play()
-            elif tag.epc.species_string == 'Goat':
-                self.state = State.VID_SHOWING
-                self.image = None
-                self.orig_image = None
-                self.video, _ = files.random_species_dir_type(
-                    'goat', 'vid', 'vid'
-                )
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.video_player.queue(self.video)
-                self.video_player.play()
-            else:
-                self.state = State.IMG_SHOWING
-                self.video = None
-                self.video_player.next_source()
-                self.video_player.delete()
-                self.image, self.orig_image = files.random_species_dir_type(
-                    tag.epc.species_string, self.media_dir, self.media_type)
-                self.label_controller.make_tag_labels(tag).draw()
-            # self.graphics_batch.draw()
-            # self.heartrate_player.play()
+            logger.debug(f"Seeking imagery for {tag.epc.species_string}")
+            file, file_type, overlay = files.random_of_species(
+                tag.epc.species_string)
+            if file_type == "img":
+                self.show_image(file)
+            elif file_type == "vid":
+                if file.is_player_source:
+                    self.idle(0)  # Video in use on other window
+                else:
+                    self.show_video(file)
+            self.label_controller.make_tag_labels(tag).draw()
+            self.label_bg = overlay
+            self.last_tag = tag
 
-            # Seemed required to cause window refresh, but caused flicker
-            # self.flip() # Removed, seems to work now.
-        # else:
-        #     if self.state == State.VID_SHOWING:
-        #         self.video_player.loop = True
+        elif self.state == State.VID_SHOWING:
+            self.video_player.loop = True
         self.clock.schedule_once(self.idle, self.idle_seconds)
         return pyglet.event.EVENT_HANDLED
 
-    def show_image(self, imgs):
+    def show_image(self, file):
         self.state = State.IMG_SHOWING
         self.video = None
         self.video_player.next_source()
         self.video_player.delete()
-        self.image, self.orig_image = imgs[0], imgs[1]
-        logger.debug(f"H:{self.image.height}, W:{self.image.width}")
+        self.image = file
         # self.label_controller.make_tag_labels(tag).draw()
 
     def show_video(self, vid):
@@ -176,24 +163,9 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         if symbol == pyglet.window.key.P:
             print("Sending self same pig tag.")
             self.on_tag_read(epc.same_pig())
-        # elif symbol == pyglet.window.key.D:
-        #     print("Sending self random dog tag.")
-        #     self.on_tag_read(epc.random_dog())
         elif symbol == pyglet.window.key.G:
             print("Sending self same goat.")
             self.on_tag_read(epc.same_goat())
-        elif symbol == pyglet.window.key.D:
-            print("d pressed")
-            self.mag_x += 10
-        elif symbol == pyglet.window.key.A:
-            print("a pressed")
-            self.mag_x -= 10
-        elif symbol == pyglet.window.key.W:
-            print("w pressed")
-            self.mag_y += 10
-        elif symbol == pyglet.window.key.S:
-            print("s pressed")
-            self.mag_y -= 10
         elif symbol == pyglet.window.key.LEFT:
             self.show_image(files.prev_png())
         elif symbol == pyglet.window.key.RIGHT:
@@ -203,15 +175,27 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
         elif symbol == pyglet.window.key.DOWN:
             self.show_video(files.prev_mp4())
         else:
+            logger.warning(f"{symbol} key pressed, exiting application!")
             pyglet.app.exit()
 
-    def on_mouse_motion(self, x, y, button, modifiers):
-        self.mag_x = x
-        self.mag_y = y
-        # TODO: ? Not tested, passing dt. Schedule this?
-        self.update_magnifier(0)
+    # def on_mouse_motion(self, x, y, button, modifiers):
+    #     self.mag_x = x
+    #     self.mag_y = y
+    #     # TODO: ? Not tested, passing dt. Schedule this?
+    #     self.update_magnifier(0)
 
     def draw_magnifier(self):
+        mag_image = self.orig_image.get_region(
+            # Subtract half of RET_SIDE to center magnified image on cursor
+            x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
+            y=self.mag_y // self.image.scale,  # - RET_SIDE // 2,
+            width=RET_SIDE,
+            height=RET_SIDE)
+        mag_image.blit(self.mag_x, self.mag_y, 0)
+        self.reticle_batch.draw()
+
+    def draw_mag_image(self):
+        # Magnifier
         mag_image = self.orig_image.get_region(
             # Subtract half of RET_SIDE to center magnified image on cursor
             x=self.mag_x // self.image.scale,  # - RET_SIDE // 2,
@@ -249,12 +233,16 @@ class ScannerWindow(pyglet.window.Window):  # pylint: disable=abstract-method
                               pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         # if self.state != State.VID_SHOWING:
         #     self.label_bg.blit(self.width // 2, self.height // 2)
-        if self.state == State.IMG_SHOWING:
-            self.label_controller.tag_labels.draw()
-            self.label_bg.blit(20,20)
-        elif self.state == State.IDLE:
-            self.label_controller.idle_labels.draw()
+        if self.state != State.IDLE:  # == State.IMG_SHOWING:
+            # Draw species detected and last-seen labels
+            # self.label_controller.tag_labels.draw()
 
+            # Draw species illustration and label graphic overlay
+            if self.label_bg:
+                self.label_bg.blit(40, 40)
+        if self.state == State.IDLE:
+            # self.label_controller.idle_labels.draw()
+            self.idle_image.blit(self.width // 2, self.height // 2)
 
         # if self.state != State.VID_SHOWING:
         #     self.label_controller.always_labels.draw()

@@ -9,6 +9,7 @@ from loguru import logger
 import epc
 import izar  # new __init__.py messing up imports?
 from scanner_window import ScannerWindow
+import telemetry
 
 
 class TagDispatcher(pyglet.event.EventDispatcher):
@@ -34,7 +35,7 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
     def tags_read(self, read_tags):
         """Called by continous read function in main.py. Processes tags if any."""
-        print("Tags received from continous read: ", read_tags)
+        logger.debug(f"Tags read in tag_dispatcher: {read_tags}")
         if read_tags:
             self.process_tags([epc.Tag().from_tag(read_tags)])
         else:
@@ -48,18 +49,21 @@ class TagDispatcher(pyglet.event.EventDispatcher):
 
         # add tags to the appropriate list in window_tags dict
         for tag in read_tags:
-            print("Read EPC: ", tag, ", RSSI: ", tag.rssi)
-            win = self.antennas[str(tag.antenna)]
-            window_tags[win].append(tag)
-
+            if tag.epc.species_string:
+                logger.debug(f"Sorted tag into per-window list: {tag} RSSI: {tag.rssi}")
+                win = self.antennas[str(tag.antenna)]
+                window_tags[win].append(tag)
+            else:
+                logger.warning(f"Invalid tag read: {tag.epc.code}")
+                telemetry.send_log_message(f"Invalid tag read: {tag.epc.code}")
         # go thru the tags for each window, if any
         for window in window_tags:
             if window_tags[window]:
                 window_tags[window].sort(key=lambda tag: tag.rssi)
                 best_tag: epc.Tag = window_tags[window][0]
-                # best_tag.last_seen = log.log_tag(best_tag)
+                # best_tag.last_seen = log.log_tag(best_tag) #TODO: Delete, not in prod?
                 window.dispatch_event('on_tag_read', best_tag)
-                print("Dispatched tag: ", best_tag)
+                logger.debug(f"Dispatched tag with best rssi: {best_tag}")
 
 
 TagDispatcher.register_event_type('on_tag_read')

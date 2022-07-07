@@ -1,20 +1,22 @@
 # VetRFID
 
-Museum exhibit using a JADAK 4-port RFID reader to read laundry tags in plush animals and display pretend medical imagery.
+Museum exhibit component in a vet-themed exhibit, using a
+JADAK 4-port RFID reader to read laundry tags in plush
+animals and display pretend medical imagery. Software runs
+two monitors on an Ubuntu desktop computer with NVidia 1660.
 
 ## Files and folders
 
 - main.py is the main application for the exhibit
-- write_new_tags.py is for setting up new RFID tags
-- tag_log.csv will hold EPC, first_seen, last_seen, num_reads
-- species.json holds animal names and numbers
+- write_gui.py is for setting up new RFID tags
+- jlog.json holds EPC, first_seen, last_seen, num_reads
+- species.json holds animal species names and associated numbers
 - last_serial.txt tracks last tag serial number written
-- Folders of sounds and folder of images. Short names will match tag, sound, image.
+- media/all contains imagery displayed
+- media/overlays are species-specific labels overlayed on imagery
 
 ## TODO
 
-- Fix background on fullscreen multiple monitors.
-- Investitate multi-channel sound.
-- Experiment with antenna placement, shielding, & power
+- Species Changer gui application for changing species of multiple tags
 - Setup.py
-- Better test coverage, where possible
+- Better test coverage, where possible given GUI

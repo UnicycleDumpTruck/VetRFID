@@ -21,21 +21,21 @@ print(all_species_dirs)
 #     assert isinstance(img, pyglet.image.ImageData)
 
 
-def test_load_one_xray():
-    """Test load a known file."""
-    img = pyglet.image.load(path.abspath(
-        path.join(MEDIA_DIR, 'cat/xray/001.jpg')))
-    assert isinstance(img, pyglet.image.ImageData)
+# def test_load_one_xray():
+#     """Test load a known file."""
+#     img = pyglet.image.load(path.abspath(
+#         path.join(MEDIA_DIR, 'cat/xray/001.jpg')))
+#     assert isinstance(img, pyglet.image.ImageData)
 
 
-def test_load_every_xray():
-    """Test load every xray image."""
-    for species_dir in all_species_dirs:
-        files = [f"{species_dir}{filename}"
-                 for filename in listdir(species_dir)
-                 if filename[0] != "."]
-        print(files)
-        for file in files:
-            img = pyglet.image.load(path.abspath(file))
-            print(f"Loaded {type(img)} of size {img.width}, {img.height}")
-            assert isinstance(img, pyglet.image.ImageData)
+# def test_load_every_xray():
+#     """Test load every xray image."""
+#     for species_dir in all_species_dirs:
+#         files = [f"{species_dir}{filename}"
+#                  for filename in listdir(species_dir)
+#                  if filename[0] != "."]
+#         print(files)
+#         for file in files:
+#             img = pyglet.image.load(path.abspath(file))
+#             print(f"Loaded {type(img)} of size {img.width}, {img.height}")
+#             assert isinstance(img, pyglet.image.ImageData)

@@ -15,12 +15,7 @@ class IzarReader(mercury.Reader):
         # TODO Should I pass args and kwargs?
         super().__init__()
 
-        logger.debug(self.get_model())
-        logger.debug("Serial: ", self.get_serial())
-        logger.debug("Available Antennas: ", self.get_antennas())
-        logger.debug("Connected Antenna Ports: ", self.get_connected_ports())
-        logger.debug("Supported Power Range in centidBm",
-                     self.get_power_range())
+        logger.debug(f"{self.get_model()} Serial: {self.get_serial()} Available Antennas: {self.get_antennas()} Connected Antenna Ports: {self.get_connected_ports()} Supported Power Range in centidBm {self.get_power_range()}")
 
         # return self ?
 
@@ -28,7 +23,7 @@ class IzarReader(mercury.Reader):
         """Return list of tags visible to reader."""
         raw_tags = super().read()  # TODO pass timeout to super
         rtag_list = [epc.Tag().from_tag(tag) for tag in raw_tags]
-        return rtag_list
+        return list(filter(None, rtag_list))
 
 
 class MockReader():

@@ -3,10 +3,14 @@
 from __future__ import print_function
 from time import sleep
 from os import environ
+import sys
 import argparse
 from queue import Queue, Empty
 from rich.traceback import install
+from loguru import logger
 import pyglet  # type: ignore
+
+import telemetry
 import scanner_window
 import tag_dispatcher
 import izar
@@ -27,6 +31,10 @@ pyglet.options['debug_trace_depth'] = 4
 
 
 if __name__ == "__main__":
+    logger.remove()
+    logger.add(sys.stderr, level="INFO")
+    logger.add("main.log", rotation="1024 MB")
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-background",
@@ -67,9 +75,9 @@ if __name__ == "__main__":
         sleep(1)
         reader = izar.IzarReader('llrp://izar-51e4c8.local', protocol="GEN2")
         if args.power:
-            reader.set_read_plan([1, 2], "GEN2", read_power=args.power)
+            reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=args.power)
         else:
-            reader.set_read_plan([1, 2], "GEN2", read_power=1000)
+            reader.set_read_plan([1, 2, 3, 4], "GEN2", read_power=1500)
 
     idle_seconds = 3  # pylint: disable=invalid-name
     if args.idle:
@@ -85,32 +93,32 @@ if __name__ == "__main__":
     screens = display.get_screens()
     for i, screen in enumerate(screens):
         print(f"Screen #{i}: {screen}")
-    # window2 = scanner_window.ScannerWindow(
-    #       1920, 1080, "Pet U 2", True, fullscreen=True,
-    #       screen=screens[1], window_number=2, idle_seconds=idle_seconds)
-    # window1 = scanner_window.ScannerWindow(
-    #     1600, 900, "Pet U 1", True, fullscreen=True,
-    #     screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    window2 = scanner_window.ScannerWindow(
+          1920, 1080, "Ready Set Vet Screen 2", True, fullscreen=True,
+          screen=screens[1], window_number=2, idle_seconds=idle_seconds)
     window1 = scanner_window.ScannerWindow(
-        1280, 720, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
+        1920, 1080, "Ready Set Vet Screen 1", True, fullscreen=True,
+        screen=screens[0], window_number=1, idle_seconds=idle_seconds)
+    # window1 = scanner_window.ScannerWindow(
+    #     1920, 1080, "Ready Set Vet", True, window_number=1, idle_seconds=idle_seconds)
     # window2 = scanner_window.ScannerWindow(
-    #     1280, 720, "Pet U 2", True, window_number=2, idle_seconds=idle_seconds)
+    #     1920, 1080, "Ready Set Vet", True, window_number=2, idle_seconds=idle_seconds)
 
     window1.set_icon(vet_paw)
-    # window2.set_icon(vet_paw)
+    window2.set_icon(vet_paw)
 
     # event_logger1 = pyglet.window.event.WindowEventLogger()
     # window1.push_handlers(event_logger1)
     # event_logger2 = pyglet.window.event.WindowEventLogger()
     # window2.push_handlers(event_logger2)
     windows = {
-        window1: [1, 2],
-        # window2: [3, 4]
+        window2: [1, 2],
+        window1: [3, 4]
     }
-    antennas = {'1': window1,
-                '2': window1,
-                # '3': window2,
-                # '4': window2
+    antennas = {'1': window2,
+                '2': window2,
+                '3': window1,
+                '4': window1
                 }
     td = tag_dispatcher.TagDispatcher(
         reader, windows, antennas)  # type: ignore
@@ -120,17 +128,21 @@ if __name__ == "__main__":
     def tag_to_queue(tag):
         """Put tag into queue."""
         if not tag_queue.full():
+            logger.debug(f"{tag} going into queue from reading callback")
             tag_queue.put(tag, timeout=0.5)
+        else:
+            logger.warning("Queue full!")
 
-    def read_queue():
+    def not_read_queue():
         """Empty queue, return last item."""
         if not tag_queue.empty():
             last_tag = None
             while tag_queue.empty() is False:
                 try:
                     tag = tag_queue.get(timeout=0.5)
+                    logger.debug(tag)
                 except Empty as ex:
-                    print("read_queue exception:\n", ex)
+                    logger.warning(f"read_queue exception:\n {ex}")
                     return None
                 if tag is not None:
                     last_tag = tag
@@ -138,22 +150,56 @@ if __name__ == "__main__":
                     break
             return last_tag
 
+    def read_queue():
+        """Empty queue, return last item."""
+        if tag_queue.empty():
+            return
+        contents = []
+        logger.debug(f"Queue size: {tag_queue.qsize()}")
+        # while not tag_queue.empty():
+        for _ in range(tag_queue.qsize()):
+            try:
+                tag = tag_queue.get(timeout=0.5)
+                contents.append(tag)
+                logger.debug(
+                    f"{tag} popped from queue. {tag_queue.qsize()} remaining.")
+            except Empty as ex:
+                logger.warning(f"read_queue exception:\n {ex}")
+                # return None
+            # else:
+            #     break
+        logger.debug(contents)
+        return contents
+
     def send_tag_to_td(delta_time):  # pylint: disable=unused-argument
         """Send tag from the reader thread to the tag dispatcher."""
+        if contents := read_queue():
+            for tag in contents:
+                logger.debug(f"Read tag: {tag}")
+                td.tags_read(tag)
+        else:
+            logger.debug("Empty send_tag_to_td call!")
+
+    def not_send_tag_to_td(delta_time):  # pylint: disable=unused-argument
+        """Send tag from the reader thread to the tag dispatcher."""
         if tag := read_queue():
-            print("Read tag:", tag)
+            logger.debug(f"Read tag: {tag}")
             td.tags_read(tag)
         else:
-            print("Empty send_tag_to_td call!")
+            logger.debug("Empty send_tag_to_td call!")
 
     clock = pyglet.clock.get_default()
+    telemetry.send_log_message("Application started!")
+    logger.warning("Application started!")
     if args.poll:
         print("WARNING: Polled reading interferes with video playback!")
         sleep(3)
         clock.schedule_interval(td.read_tags, 0.5)  # Called every 0.5 seconds
         pyglet.app.run()
     else:
-        reader.start_reading(tag_to_queue)
-        clock.schedule_interval(send_tag_to_td, 1)
+        reader.start_reading(on_time=500, callback=tag_to_queue)
+        clock.schedule_interval(send_tag_to_td, 0.5)
         pyglet.app.run()
         reader.stop_reading()
+    telemetry.send_log_message("Application exited!")
+    logger.warning("Application exited!")
